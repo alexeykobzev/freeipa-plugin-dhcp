@@ -1990,40 +1990,40 @@ class dhcphost_add_cmd(Command):
         )
         return dict(result=result['result'], value=cn)
 
-# @register()
-# class dhcphost_del_cmd(Command):
-#     has_output = output.standard_entry
-#     __doc__ = _('Delete a DHCP host.')
-#     msg_summary = _('Deleted DHCP host "%(value)s"')
+@register()
+class dhcphost_del_cmd(Command):
+    has_output = output.standard_entry
+    __doc__ = _('Delete a DHCP host.')
+    msg_summary = _('Deleted DHCP host "%(value)s"')
 
-#     takes_args = (
-#         Str(
-#             'hostname',
-#             cli_name='hostname',
-#             label=_('Hostname'),
-#             doc=_("Hostname.")
-#         ),
-#         Str(
-#             'macaddress',
-#             normalizer=lambda value: value.upper(),
-#             pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
-#             pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
-#                             'each H is a hexadecimal character.'),
-#             cli_name='macaddress',
-#             label=_('MAC Address'),
-#             doc=_("MAC address.")
-#         )
-#     )
+    takes_args = (
+        Str(
+            'hostname',
+            cli_name='hostname',
+            label=_('Hostname'),
+            doc=_("Hostname.")
+        ),
+        Str(
+            'macaddress',
+            normalizer=lambda value: value.upper(),
+            pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
+            pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
+                            'each H is a hexadecimal character.'),
+            cli_name='macaddress',
+            label=_('MAC Address'),
+            doc=_("MAC address.")
+        )
+    )
 
-#     def execute(self, *args, **kw):
-#         hostname = args[0]
-#         macaddress = args[1]
-#         cn = u'{hostname}-{macaddress}'.format(
-#             hostname=hostname,
-#             macaddress=macaddress.replace(':', '')
-#         )
-#         result = api.Command['dhcphost_del_dhcpschema'](cn)
-#         return dict(result=result['result'], value=cn)
+    def execute(self, *args, **kw):
+        hostname = args[0]
+        macaddress = args[1]
+        cn = u'{hostname}-{macaddress}'.format(
+            hostname=hostname,
+            macaddress=macaddress.replace(':', '')
+        )
+        result = api.Command['dhcphost_del_dhcpschema'](cn)
+        return dict(result=result['result'], value=cn)
 
 ###############################################################################
 
@@ -2040,60 +2040,60 @@ def host_add_dhcphost(self, ldap, dn, entry_attrs, *keys, **options):
 host.host_add.register_post_callback(host_add_dhcphost)
 
 
-# def host_mod_dhcphost(self, ldap, dn, entry_attrs, *keys, **options):
-#     if 'macaddress' not in options:
-#         return dn
+def host_mod_dhcphost(self, ldap, dn, entry_attrs, *keys, **options):
+    if 'macaddress' not in options:
+        return dn
 
-#     if options['macaddress'] is None:
-#         macaddresses = []
-#     else:
-#         macaddresses = list(options['macaddress'])
+    if options['macaddress'] is None:
+        macaddresses = []
+    else:
+        macaddresses = list(options['macaddress'])
 
-#     filter = ldap.make_filter(
-#         {
-#             'cn': entry_attrs['fqdn'][0]
-#         },
-#         exact=False,
-#         leading_wildcard=False,
-#         trailing_wildcard=True
-#     )
+    filter = ldap.make_filter(
+        {
+            'cn': entry_attrs['fqdn'][0]
+        },
+        exact=False,
+        leading_wildcard=False,
+        trailing_wildcard=True
+    )
 
-#     entries = []
-#     try:
-#         entries = ldap.get_entries(
-#             DN(container_dhcp_dn, dhcp_dn),
-#             ldap.SCOPE_SUBTREE,
-#             filter
-#         )
-#     except errors.NotFound:
-#         pass
+    entries = []
+    try:
+        entries = ldap.get_entries(
+            DN(container_dhcp_dn, dhcp_dn),
+            ldap.SCOPE_SUBTREE,
+            filter
+        )
+    except errors.NotFound:
+        pass
 
-#     for entry in entries:
-#         entry_macaddr = entry['dhcpHWAddress'][0].replace('ethernet ', '')
-#         if entry_macaddr not in macaddresses:
-#             api.Command['dhcphost_del'](entry_attrs['fqdn'][0], entry_macaddr)
-#         if entry_macaddr in macaddresses:
-#             macaddresses.remove(entry_macaddr)
+    for entry in entries:
+        entry_macaddr = entry['dhcpHWAddress'][0].replace('ethernet ', '')
+        if entry_macaddr not in macaddresses:
+            api.Command['dhcphost_del'](entry_attrs['fqdn'][0], entry_macaddr)
+        if entry_macaddr in macaddresses:
+            macaddresses.remove(entry_macaddr)
 
-#     for new_macaddr in macaddresses:
-#         api.Command['dhcphost_add'](entry_attrs['fqdn'][0], new_macaddr)
+    for new_macaddr in macaddresses:
+        api.Command['dhcphost_add'](entry_attrs['fqdn'][0], new_macaddr)
 
-#     return dn
+    return dn
 
-# host.host_mod.register_post_callback(host_mod_dhcphost)
+host.host_mod.register_post_callback(host_mod_dhcphost)
 
 
-# def host_del_dhcphost(self, ldap, dn, *keys, **options):
+def host_del_dhcphost(self, ldap, dn, *keys, **options):
 
-#     entry = ldap.get_entry(dn)
+    entry = ldap.get_entry(dn)
 
-#     if 'macaddress' in entry:
-#         for addr in entry['macaddress']:
-#             try:
-#                 api.Command['dhcphost_del_cmd'](entry['fqdn'][0], addr)
-#             except:
-#                 pass
+    if 'macaddress' in entry:
+        for addr in entry['macaddress']:
+            try:
+                api.Command['dhcphost_del_cmd'](entry['fqdn'][0], addr)
+            except:
+                pass
 
-#     return dn
+    return dn
 
-# host.host_del.register_pre_callback(host_del_dhcphost)
+host.host_del.register_pre_callback(host_del_dhcphost)
