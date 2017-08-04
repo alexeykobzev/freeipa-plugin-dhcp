@@ -39,8 +39,10 @@ from netaddr import *
 
 #### Constants ################################################################
 
-
-container_dn = DN(('cn', 'dhcp'))
+#dhcp_dn = 'cn=dhcp,{0}'.format(api.env.basedn)
+dhcp_dn = '{0}'.format(api.env.basedn)
+service_dhcp_dn = 'cn=v4'
+container_dhcp_dn = DN(('cn', 'v4'), 'cn=dhcp')
 register = Registry()
 
 
@@ -51,15 +53,16 @@ register = Registry()
 class dhcpservice(LDAPObject):
     object_name = _('DHCP configuration')
     object_name_plural = _('DHCP configuration')
-    object_class = ['dhcpservice']
+    object_class = ['dhcpservice', 'top']
+    default_attributes = ['cn']
     label = _('DHCP Configuration')
     label_singular = _('DHCP Configuration')
 
     managed_permissions = {
         'System: Read DHCP Configuration': {
             'non_object': True,
-            'ipapermlocation': api.env.basedn,
-            'ipapermtarget': DN('cn=dhcp', api.env.basedn),
+            'ipapermlocation': dhcp_dn,
+            'ipapermtarget': DN(service_dhcp_dn, dhcp_dn),
             'replaces_global_anonymous_aci': True,
             'ipapermbindruletype': 'anonymous',
             'ipapermright': {'read', 'search', 'compare'},
@@ -76,8 +79,8 @@ class dhcpservice(LDAPObject):
         'System: Write DHCP Configuration': {
             'non_object': True,
             'ipapermright': {'write'},
-            'ipapermlocation': api.env.basedn,
-            'ipapermtarget': DN('cn=dhcp', api.env.basedn),
+            'ipapermlocation': dhcp_dn,
+            'ipapermtarget': DN(service_dhcp_dn, dhcp_dn),
             'ipapermtargetfilter': ['(objectclass=dhcpservice)'],
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
@@ -165,13 +168,13 @@ class dhcpservice(LDAPObject):
     def get_dn(self, *keys, **kwargs):
         if not dhcpservice.dhcpservice_exists(self.api.Backend.ldap2):
             raise errors.NotFound(reason=_('DHCP is not configured'))
-        return DN(container_dn, api.env.basedn)
+        return DN(container_dhcp_dn, dhcp_dn)
 
 
     @staticmethod
     def dhcpservice_exists(ldap):
         try:
-            ldap.get_entry(DN(container_dn, api.env.basedn), [])
+            ldap.get_entry(DN(container_dhcp_dn, dhcp_dn), [])
         except errors.NotFound:
             return False
         return True
@@ -309,10 +312,11 @@ class dhcpservice_mod(LDAPUpdate):
 
 @register()
 class dhcpsubnet(LDAPObject):
-    container_dn = container_dn
+    container_dn = container_dhcp_dn
     object_name = _('DHCP subnet')
     object_name_plural = _('DHCP subnets')
-    object_class = ['dhcpsubnet']
+    object_class = ['dhcpsubnet', 'top']
+    default_attributes = ['cn']
     label = _('DHCP Subnets')
     label_singular = _('DHCP Subnet')
 
@@ -507,16 +511,271 @@ class dhcpsubnet_del(LDAPDelete):
     msg_summary = _('Deleted DHCP subnet "%(value)s"')
 
 
+#### dhcpfailoverpeer ###############################################################
+
+@register()
+class dhcpfailoverpeer(LDAPObject):
+    container_dn = container_dhcp_dn
+    object_name = _('DHCP Fail Over Peer')
+    object_name_plural = _('DHCP Fail Over Peers')
+    object_class = ['dhcpFailOverPeer', 'top']
+    default_attributes = ['cn', 
+                         'dhcpFailOverPrimaryServer', 
+                         'dhcpFailOverSecondaryServer',
+                         'dhcpFailOverPrimaryPort',
+                         'dhcpFailOvreSecondaryPort']
+    #uuid_attribute
+    #rdn_attribute
+    #attributer_members
+    label = _('DHCP Fail Over Peers')
+    label_singular = _('DHCP Fail Over Peer')
+
+    managed_permissions = {
+        'System: Add DHCP Fail Over': {
+            'ipapermright': {'add'},
+            'ipapermtargetfilter': ['(objectclass=dhcpFailOverPeer)'],
+            'default_privileges': {'DHCP Administrators'},
+        },
+        'System: Modify DHCP Fail Over': {
+            'ipapermright': {'write'},
+            'ipapermtargetfilter': ['(objectclass=dhcpFailOverPeer)'],
+            'ipapermdefaultattr': {
+                'cn', 'objectclass',
+                'dhcprange', 'dhcppermitlist',
+                'dhcpprimarydn', 'dhcpsecondarydn',
+                'dhcpstatements', 'dhcpoption', 'dhcpcomments'
+            },
+            'default_privileges': {'DHCP Administrators'},
+        },
+        'System: Remove DHCP Fail Over': {
+            'ipapermright': {'delete'},
+            'ipapermtargetfilter': ['(objectclass=dhcpFailOverPeer)'],
+            'default_privileges': {'DHCP Administrators'},
+        }
+    }
+
+    takes_params = (
+        Str(
+            'cn',
+            cli_name='fail_over_peer_name',
+            label=_('DHCP Fail Over Peer Name'),
+            primary_key=True,
+        ),
+        Str(
+            'dhcpfailoverprimaryserver',
+            cli_name='fail_over_primary_server',
+            label=_('DHCP Fail Over Primary Server'),
+        ),
+        Str(
+            'dhcpfailoversecondaryserver',
+            cli_name='fail_over_secondary_server',
+            label=_('DHCP Fail Over Secondary Server'),
+        ),
+        Str(
+            'dhcpfailoverprimaryport',
+            cli_name='fail_over_primary_port',
+            label=_('DHCP Fail Over Primary Port'),
+        ),
+        Str(
+            'dhcpfailoversecondaryport',
+            cli_name='fail_over_secondary_port',
+            label=_('DHCP Fail Over Secondary Port'),
+        ),
+        Str(
+            'dhcpfailoverresponsedelay',
+            cli_name='fail_over_response_delay',
+            label=_('DHCP Fail Over Response Delay'),
+        ),
+        Str(
+            'dhcpfailoverunackedupdates',
+            cli_name='fail_over_unacked_updates',
+            label=_('DHCP Fail Over Unacked Updates'),
+        ),
+        Str(
+            'dhcpmaxclientleadtime',
+            cli_name='fail_over_max_client_lead_time',
+            label=_('DHCP Fail Over Max Client Lead Time'),
+        ),
+        Str(
+            'dhcpfailoversplit',
+            cli_name='fail_over_split',
+            label=_('DHCP Fail Over Split'),
+        ),
+        Str(
+            'dhcphashbucketassignment',
+            cli_name='fail_over_hash_bucket_assignment',
+            label=_('DHCP Fail Over Hash Bucket Assignment'),
+        ),
+        Str(
+            'dhcpfailoverloadbalancetime',
+            cli_name='fail_over_load_balance_time',
+            label=_('DHCP Fail Over Load Balance Time'),
+        ),
+        Str(
+            'dhcpcomments',
+            cli_name='fail_over_comments',
+            label=_('DHCP Fail Over Comments'),
+        ),
+
+    )
+
+@register()
+class dhcpfailoverpeer_add(LDAPCreate):
+    __doc__ = _('Create a new DHCP fail over peer.')
+    msg_summary = _('Created DHCP fail over peer "%(value)s"')
+
+@register()
+class dhcpfailoverpeer_find(LDAPSearch):
+    __doc__ = _('Search for a DHCP fail over peer.')
+    msg_summary = ngettext(
+        '%(count)d DHCP fail over peer matched',
+        '%(count)d DHCP fail over peers matched', 0
+    )
+
+
+@register()
+class dhcpfailoverpeer_show(LDAPRetrieve):
+    __doc__ = _('Display a DHCP fail over peer.')
+
+
+@register()
+class dhcpfailoverpeer_mod(LDAPUpdate):
+    __doc__ = _('Modify a DHCP fail over peer.')
+    msg_summary = _('Modified a DHCP fail over peer.')
+
+
+@register()
+class dhcpfailoverpeer_del(LDAPDelete):
+    __doc__ = _('Delete a DHCP fail over peer.')
+    msg_summary = _('Deleted DHCP fail over peer "%(value)s"')
+
+
+#### dhcpsharednetwork ###############################################################
+
+@register()
+class dhcpsharednetwork(LDAPObject):
+    container_dn = container_dhcp_dn
+    object_name = _('DHCP Shared Network')
+    object_name_plural = _('DHCP Shared Networks')
+    object_class = ['dhcpSharedNetwork', 'top']
+    default_attributes = ['cn']
+    #uuid_attribute
+    #rdn_attribute
+    #attributer_members
+    label = _('DHCP Shared Networks')
+    label_singular = _('DHCP Shared Network')
+
+    managed_permissions = {
+        'System: Add DHCP Shared Networks': {
+            'ipapermright': {'add'},
+            'ipapermtargetfilter': ['(objectclass=dhcpSharedNetwork)'],
+            'default_privileges': {'DHCP Administrators'},
+        },
+        'System: Modify DHCP Shared Networks': {
+            'ipapermright': {'write'},
+            'ipapermtargetfilter': ['(objectclass=dhcpSharedNetwork)'],
+            'ipapermdefaultattr': {
+                'cn', 'objectclass',
+                'dhcprange', 'dhcppermitlist',
+                'dhcpprimarydn', 'dhcpsecondarydn',
+                'dhcpstatements', 'dhcpoption', 'dhcpcomments'
+            },
+            'default_privileges': {'DHCP Administrators'},
+        },
+        'System: Remove DHCP Shared Networks': {
+            'ipapermright': {'delete'},
+            'ipapermtargetfilter': ['(objectclass=dhcpSharedNetwork)'],
+            'default_privileges': {'DHCP Administrators'},
+        }
+    }
+
+    takes_params = (
+        Str(
+            'cn',
+            cli_name='shared_network_name',
+            label=_('DHCP Shared Network Name'),
+            primary_key=True,
+        ),
+        Str(
+            'dhcpsubnetdn',
+            cli_name='shared_network_subnet_dn',
+            label=_('DHCP Shared Network Subnet DN'),
+        ),
+        Str(
+            'dhcppooldn',
+            cli_name='shared_network_pool_dn',
+            label=_('DHCP Shared Network Pool DN'),
+        ),
+        Str(
+            'dhcpoptionsdn',
+            cli_name='shared_network_options_dn',
+            label=_('DHCP Shared Network Options DN'),
+        ),
+        Str(
+            'dhcpzonedn',
+            cli_name='shared_network_zone_dn',
+            label=_('DHCP Shared Network Zone DN'),
+        ),
+        Str(
+            'dhcpstatements',
+            cli_name='shared_network_statements',
+            label=_('DHCP Shared Network Statements'),
+        ),
+        Str(
+            'dhcpcomments',
+            cli_name='shared_network_comments',
+            label=_('DHCP Shared Network Comments'),
+        ),
+        Str(
+            'dhcpoption',
+            cli_name='shared_network_option',
+            label=_('DHCP Shared Network Option'),
+        ),
+
+    )
+
+@register()
+class dhcpsharednetwork_add(LDAPCreate):
+    __doc__ = _('Create a new DHCP shared network.')
+    msg_summary = _('Created DHCP shared network "%(value)s"')
+
+@register()
+class dhcpsharednetwork_find(LDAPSearch):
+    __doc__ = _('Search for a DHCP shared network.')
+    msg_summary = ngettext(
+        '%(count)d DHCP shared network matched',
+        '%(count)d DHCP shared networks matched', 0
+    )
+
+
+@register()
+class dhcpsharednetwork_show(LDAPRetrieve):
+    __doc__ = _('Display a DHCP shared network.')
+
+
+@register()
+class dhcpsharednetwork_mod(LDAPUpdate):
+    __doc__ = _('Modify a DHCP shared network.')
+    msg_summary = _('Modified a DHCP shared network.')
+
+
+@register()
+class dhcpsharednetwork_del(LDAPDelete):
+    __doc__ = _('Delete a DHCP shared network.')
+    msg_summary = _('Deleted DHCP shared network "%(value)s"')
+
+
 #### dhcppool #################################################################
 
 
 @register()
 class dhcppool(LDAPObject):
     parent_object = 'dhcpsubnet'
-    container_dn = container_dn
+    container_dn = container_dhcp_dn
     object_name = _('DHCP pool')
     object_name_plural = _('DHCP pools')
-    object_class = ['dhcppool']
+    object_class = ['dhcppool', 'top']
+    default_attributes = ['cn']
     label = _('DHCP Pools')
     label_singular = _('DHCP Pool')
 
@@ -690,7 +949,7 @@ class dhcppool_add(LDAPCreate):
         if hasDefaultLeaseTime and hasMaxLeaseTime:
             return dn
 
-        config = ldap.get_entry(DN(container_dn, api.env.basedn))
+        config = ldap.get_entry(DN(container_dhcp_dn, dhcp_dn))
 
         if 'dhcpStatements' in config:
             configDHCPStatements = config['dhcpStatements']
@@ -877,8 +1136,8 @@ class dhcppool_is_valid(Command):
         ldap = self.api.Backend.ldap2
         dn = DN(
             ('cn', dhcpsubnetcn),
-            container_dn,
-            api.env.basedn
+            container_dhcp_dn,
+            dhcp_dn
         )
         try:
             entry = ldap.get_entry(dn)
@@ -903,15 +1162,456 @@ class dhcppool_is_valid(Command):
         return dict(result=True, value=u'Valid IP range.')
 
 
+#### dhcpgroup #################################################################
+
+
+@register()
+class dhcpgroup(LDAPObject):
+    parent_object = 'dhcpsubnet'
+    container_dn = container_dhcp_dn
+    object_name = _('DHCP group')
+    object_name_plural = _('DHCP groups')
+    object_class = ['dhcpgroup', 'top']
+    default_attributes = ['cn']
+    label = _('DHCP Groups')
+    label_singular = _('DHCP Group')
+
+    search_attributes = [ 'cn', 'dhcprange' ]
+
+    managed_permissions = {
+        'System: Add DHCP Groups': {
+            'ipapermright': {'add'},
+            'ipapermtargetfilter': ['(objectclass=dhcpgroup)'],
+            'default_privileges': {'DHCP Administrators'},
+        },
+        'System: Modify DHCP Groups': {
+            'ipapermright': {'write'},
+            'ipapermtargetfilter': ['(objectclass=dhcpgroup)'],
+            'ipapermdefaultattr': {
+                'cn', 'objectclass',
+                'dhcprange', 'dhcppermitlist',
+                'dhcpprimarydn', 'dhcpsecondarydn',
+                'dhcpstatements', 'dhcpoption', 'dhcpcomments'
+            },
+            'default_privileges': {'DHCP Administrators'},
+        },
+        'System: Remove DHCP Groups': {
+            'ipapermright': {'delete'},
+            'ipapermtargetfilter': ['(objectclass=dhcpgroup)'],
+            'default_privileges': {'DHCP Administrators'},
+        }
+    }
+
+    takes_params = (
+        Str(
+            'cn',
+            cli_name='name',
+            label=_('Name'),
+            doc=_('DHCP group name.'),
+            primary_key=True
+        ),
+        Str(
+            'dhcprange',
+            cli_name='range',
+            label=_('Range'),
+            doc=_('DHCP range.')
+        ),
+        Str(
+            'dhcppermitlist*',
+            cli_name='permitlist',
+            label=_('Permit List'),
+            doc=_('DHCP permit list.')
+        ),
+        Str(
+            'dhcpstatements*',
+            cli_name='dhcpstatements',
+            label=_('DHCP Statements'),
+            doc=_('DHCP statements.')
+        ),
+        Str(
+            'dhcpoption*',
+            cli_name='dhcpoptions',
+            label=_('DHCP Options'),
+            doc=_('DHCP options.')
+        ),
+        Str(
+            'dhcpcomments?',
+            cli_name='dhcpcomments',
+            label=_('Comments'),
+            doc=_('DHCP comments.')
+        ),
+        Int(
+            'defaultleasetime?',
+            cli_name='defaultleasetime',
+            label=_('Default Lease Time'),
+            doc=_('Default lease time.'),
+            flags=['virtual_attribute']
+        ),
+        Int(
+            'maxleasetime?',
+            cli_name='maxleasetime',
+            label=_('Maximum Lease Time'),
+            doc=_('Maximum lease time.'),
+            flags=['virtual_attribute']
+        ),
+        Bool(
+            'permitknownclients?',
+            cli_name='permitknownclients',
+            label=_('Permit Known Clients'),
+            doc=_('Permit known clients.'),
+            flags=['virtual_attribute']
+        ),
+        Bool(
+            'permitunknownclients?',
+            cli_name='permitunknownclients',
+            label=_('Permit Unknown Clients'),
+            doc=_('Permit unknown clients.'),
+            flags=['virtual_attribute']
+        ),
+        Str(
+            'domainname?',
+            cli_name='domainname',
+            label=_('Domain Name'),
+            doc=_('DNS domain name'),
+            flags=['virtual_attribute']
+        ),
+        Str(
+            'domainnameservers*',
+            cli_name='domainnameservers',
+            label=_('Domain Name Servers'),
+            doc=_('DNS domain name servers'),
+            flags=['virtual_attribute']
+        ),
+        Str(
+            'domainsearch*',
+            cli_name='domainsearch',
+            label=_('Domain Search'),
+            doc=_('DNS domain search'),
+            flags=['virtual_attribute']
+        ),
+        Str(
+            'router?',
+            cli_name='router',
+            label=_('Router'),
+            doc=_('Router.'),
+            flags=['virtual_attribute']
+        )
+
+    )
+
+
+    @staticmethod
+    def extract_virtual_params(ldap, dn, entry_attrs, keys, options):
+
+        dhcpPermitList = entry_attrs.get('dhcppermitlist', [])
+
+        for item in dhcpPermitList:
+            if item.endswith(' known-clients'):
+                if item.startswith('allow '):
+                    entry_attrs['permitknownclients'] = True
+                elif item.startswith('deny '):
+                    entry_attrs['permitknownclients'] = False
+            if item.endswith(' unknown-clients'):
+                if item.startswith('allow '):
+                    entry_attrs['permitunknownclients'] = True
+                elif item.startswith('deny '):
+                    entry_attrs['permitunknownclients'] = False
+
+        dhcpStatements = entry_attrs.get('dhcpstatements', [])
+
+        for statement in dhcpStatements:
+            if statement.startswith('default-lease-time '):
+                (s, v) = statement.split(' ', 1)
+                entry_attrs['defaultleasetime'] = v
+            if statement.startswith('max-lease-time '):
+                (s, v) = statement.split(' ', 1)
+                entry_attrs['maxleasetime'] = v
+
+        dhcpOptions = entry_attrs.get('dhcpoption', [])
+
+        for option in dhcpOptions:
+            if option.startswith('domain-name '):
+                (o, v) = option.split(' ', 1)
+                entry_attrs['domainname'] = v.replace('"', '')
+            if option.startswith('domain-name-servers '):
+                (o, v) = option.split(' ', 1)
+                entry_attrs['domainnameservers'] = v.split(', ')
+            if option.startswith('domain-search '):
+                (o, v) = option.split(' ', 1)
+                entry_attrs['domainsearch'] = v.replace('"', '').split(', ')
+            if option.startswith('routers '):
+                (o, v) = option.split(' ', 1)
+                entry_attrs['router'] = v
+
+        return entry_attrs
+
+
+@register()
+class dhcpgroup_add(LDAPCreate):
+    __doc__ = _('Create a new DHCP group.')
+    msg_summary = _('Created DHCP group "%(value)s"')
+
+
+    def pre_callback(self, ldap, dn, entry_attrs, attrs_list, *keys, **options):
+        assert isinstance(dn, DN)
+
+        # Allow known and unknown clients by default.
+
+        entry_attrs['dhcppermitlist'] = ['allow unknown-clients', 'allow known-clients']
+
+        # If the dhcpService entry has dhcpstatements attributes that start with
+        # "default-lease-time" or "max-lease-time", grab them and copy their
+        # values into the new group. This code could probably be a lot more
+        # efficient, but it works. The blame REALLY lies with the author of the
+        # DHCP LDAP schema for being so lazy.
+
+        hasDefaultLeaseTime = False
+        hasMaxLeaseTime = False
+
+        if 'dhcpstatements' in entry_attrs:
+            for statement in entry_attrs['dhcpstatements']:
+                if statement.startswith('default-lease-time'):
+                    hasDefaultLeaseTime = True
+                if statement.startswith('max-lease-time'):
+                    hasMaxLeaseTime = True
+
+        if hasDefaultLeaseTime and hasMaxLeaseTime:
+            return dn
+
+        config = ldap.get_entry(DN(container_dhcp_dn, dhcp_dn))
+
+        if 'dhcpStatements' in config:
+            configDHCPStatements = config['dhcpStatements']
+        else:
+            configDHCPStatements = []
+
+        defaultLeaseTime = None
+        maxLeaseTime = None
+
+        for statement in configDHCPStatements:
+            if statement.startswith('default-lease-time'):
+                (s, v) = statement.split(" ")
+                defaultLeaseTime = v
+            if statement.startswith('max-lease-time'):
+                (s, v) = statement.split(" ")
+                maxLeaseTime = v
+
+        if 'dhcpstatements' in entry_attrs:
+            entryDHCPStatements = entry_attrs['dhcpstatements']
+        else:
+            entryDHCPStatements = []
+
+        if defaultLeaseTime is not None:
+            foundStatement = False
+            for i, s in enumerate(entryDHCPStatements):
+                if s.startswith('default-lease-time'):
+                    foundStatement = True
+                    entryDHCPStatements[i] = 'default-lease-time {0}'.format(defaultLeaseTime)
+                    break
+            if foundStatement is False:
+                entryDHCPStatements.append('default-lease-time {0}'.format(defaultLeaseTime))
+
+        if maxLeaseTime is not None:
+            foundStatement = False
+            for i, s in enumerate(entryDHCPStatements):
+                if s.startswith('max-lease-time'):
+                    foundStatement = True
+                    maxDHCPStatements[i] = 'max-lease-time {0}'.format(maxLeaseTime)
+                    break
+            if foundStatement is False:
+                entryDHCPStatements.append('max-lease-time {0}'.format(maxLeaseTime))
+
+        entry_attrs['dhcpstatements'] = entryDHCPStatements
+
+
+        if 'dhcpoption' in entry_attrs:
+            dhcpOptions = entry_attrs.get('dhcpoption', [])
+        else:
+            dhcpOptions = entry.get('dhcpoption', [])
+
+        if 'domainname' in options:
+            option = 'domain-name "{0}"'.format(options['domainname'])
+            foundOption = False
+            for i, s in enumerate(dhcpOptions):
+                if s.startswith('domain-name '):
+                    foundOption = True
+                    dhcpOptions[i] = option
+                    break
+            if not foundOption:
+                dhcpOptions.append(option)
+                
+        if 'domainsearch' in options:
+            option = 'domain-search ' + ', '.join('"' + s + '"' for s in options['domainsearch'])
+            foundOption = False
+            for i, s in enumerate(dhcpOptions):
+                if s.startswith('domain-search '):
+                    foundOption = True
+                    dhcpOptions[i] = option
+                    break
+            if not foundOption:
+                dhcpOptions.append(option)
+
+        if 'router' in options:
+            option = 'routers {0}'.format(options['router'])
+            foundOption = False
+            for i, s in enumerate(dhcpOptions):
+                if s.startswith('routers '):
+                    foundOption = True
+                    dhcpOptions[i] = option
+                    break
+            if not foundOption:
+                dhcpOptions.append(option)
+                
+        entry_attrs['dhcpoption'] = dhcpOptions
+
+        return dn
+
+
+@register()
+class dhcpgroup_find(LDAPSearch):
+    __doc__ = _('Search for a DHCP group.')
+    msg_summary = ngettext(
+        '%(count)d DHCP group matched',
+        '%(count)d DHCP groups matched', 0
+    )
+
+
+@register()
+class dhcpgroup_show(LDAPRetrieve):
+    __doc__ = _('Display a DHCP group.')
+
+
+    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
+        assert isinstance(dn, DN)
+        entry_attrs = dhcpgroup.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
+        return dn
+
+
+@register()
+class dhcpgroup_mod(LDAPUpdate):
+    __doc__ = _('Modify a DHCP group.')
+    msg_summary = _('Modified a DHCP group.')
+
+
+    def pre_callback(self, ldap, dn, entry_attrs, attrs_list, *keys, **options):
+        assert isinstance(dn, DN)
+
+        entry = ldap.get_entry(dn)
+
+        if 'dhcppermitlist' in entry_attrs:
+            dhcpPermitList = entry_attrs.get('dhcppermitlist', [])
+        else:
+            dhcpPermitList = entry.get('dhcppermitlist', [])
+
+        if 'permitknownclients' in options:
+            item = '{0} known-clients'.format('allow' if options['permitknownclients'] else 'deny')
+            newPermitList = [p for p in dhcpPermitList if not p.endswith(' known-clients')]
+            newPermitList.append(item)
+            dhcpPermitList = newPermitList
+
+        if 'permitunknownclients' in options:
+            item = '{0} unknown-clients'.format('allow' if options['permitunknownclients'] else 'deny')
+            newPermitList = [p for p in dhcpPermitList if not p.endswith(' unknown-clients')]
+            newPermitList.append(item)
+            dhcpPermitList = newPermitList
+
+        entry_attrs['dhcppermitlist'] = dhcpPermitList
+
+
+        if 'dhcpstatements' in entry_attrs:
+            dhcpStatements = entry_attrs.get('dhcpstatements', [])
+        else:
+            dhcpStatements = entry.get('dhcpstatements', [])
+
+        if 'defaultleasetime' in options:
+            statement = 'default-lease-time {0}'.format(options['defaultleasetime'])
+            foundStatement = False
+            for i, s in enumerate(dhcpStatements):
+                if s.startswith('default-lease-time '):
+                    foundStatement = True
+                    dhcpStatements[i] = statement
+                    break
+            if not foundStatement:
+                dhcpStatements.append(statement)
+
+        if 'maxleasetime' in options:
+            statement = 'max-lease-time {0}'.format(options['maxleasetime'])
+            foundStatement = False
+            for i, s in enumerate(dhcpStatements):
+                if s.startswith('max-lease-time '):
+                    foundStatement = True
+                    dhcpStatements[i] = statement
+                    break
+            if not foundStatement:
+                dhcpStatements.append(statement)
+
+        entry_attrs['dhcpStatements'] = dhcpStatements
+
+        if 'dhcpoption' in entry_attrs:
+            dhcpOptions = entry_attrs.get('dhcpoption', [])
+        else:
+            dhcpOptions = entry.get('dhcpoption', [])
+
+        if 'domainname' in options:
+            option = 'domain-name "{0}"'.format(options['domainname'])
+            foundOption = False
+            for i, s in enumerate(dhcpOptions):
+                if s.startswith('domain-name '):
+                    foundOption = True
+                    dhcpOptions[i] = option
+                    break
+            if not foundOption:
+                dhcpOptions.append(option)
+                
+        if 'domainsearch' in options:
+            option = 'domain-search ' + ', '.join('"' + s + '"' for s in options['domainsearch'])
+            foundOption = False
+            for i, s in enumerate(dhcpOptions):
+                if s.startswith('domain-search '):
+                    foundOption = True
+                    dhcpOptions[i] = option
+                    break
+            if not foundOption:
+                dhcpOptions.append(option)
+
+        if 'router' in options:
+            option = 'routers {0}'.format(options['router'])
+            foundOption = False
+            for i, s in enumerate(dhcpOptions):
+                if s.startswith('routers '):
+                    foundOption = True
+                    dhcpOptions[i] = option
+                    break
+            if not foundOption:
+                dhcpOptions.append(option)
+
+        entry_attrs['dhcpoption'] = dhcpOptions
+
+        return dn
+
+
+    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
+        assert isinstance(dn, DN)
+        entry_attrs = dhcpgroup.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
+        return dn
+
+
+@register()
+class dhcpgroup_del(LDAPDelete):
+    __doc__ = _('Delete a DHCP group.')
+    msg_summary = _('Deleted DHCP group "%(value)s"')
+
+
 #### dhcpserver ###############################################################
 
 
 @register()
 class dhcpserver(LDAPObject):
-    container_dn = container_dn
+    container_dn = container_dhcp_dn
     object_name = _('DHCP server')
     object_name_plural = _('DHCP servers')
-    object_class = ['dhcpserver']
+    object_class = ['dhcpserver', 'top']
+    default_attributes = ['cn']
     label = _('DHCP Servers')
     label_singular = _('DHCP Server')
 
@@ -954,7 +1654,7 @@ class dhcpserver(LDAPObject):
             cli_name='dhcpservicedn',
             label=_('Service Instance'),
             doc=_('DHCP service instance DN'),
-            default_from=lambda: DN(container_dn, api.env.basedn),
+            default_from=lambda: DN(container_dhcp_dn, dhcp_dn),
             autofill=True
         ),
         Str(
@@ -987,7 +1687,7 @@ class dhcpserver_add(LDAPCreate):
     def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
         assert isinstance(dn, DN)
 
-        dhcpservice = ldap.get_entry(DN(container_dn, api.env.basedn))
+        dhcpservice = ldap.get_entry(DN(container_dhcp_dn, dhcp_dn))
         dhcpsecondarydns = dhcpservice.get('dhcpsecondarydn', [])
 
         if dn not in dhcpsecondarydns:
@@ -1032,7 +1732,7 @@ class dhcpserver_del(LDAPDelete):
     def pre_callback(self, ldap, dn, *keys, **options):
         assert isinstance(dn, DN)
 
-        dhcpservice = ldap.get_entry(DN(container_dn, api.env.basedn))
+        dhcpservice = ldap.get_entry(DN(container_dhcp_dn, dhcp_dn))
         dhcpsecondarydns = dhcpservice.get('dhcpsecondarydn', [])
 
         try:
@@ -1050,15 +1750,18 @@ class dhcpserver_del(LDAPDelete):
         return dn
 
 
-#### dhcphost #################################################################
+#### dhcphost ###############################################################
+
 
 
 @register()
 class dhcphost(LDAPObject):
-    container_dn = container_dn
+    parent_object = 'dhcpgroup'
+    container_dn = container_dhcp_dn
     object_name = _('DHCP host')
     object_name_plural = _('DHCP hosts')
-    object_class = ['dhcphost']
+    object_class = ['dhcphost', 'top']
+    default_attributes = ['cn']
     label = _('DHCP Hosts')
     label_singular = _('DHCP Host')
 
@@ -1096,30 +1799,48 @@ class dhcphost(LDAPObject):
             primary_key=True
         ),
         Str(
-            'dhcphwaddress',
-            cli_name='dhcphwaddress',
-            label=('DHCP Hardware Address'),
-            doc=_('DHCP hardware address.')
+            'fqdn',
+            cli_name='fqdn',
+            label=_('Host Name'),
+            doc=_('Host name.'),
+            flags=['virtual_attribute']
+        ),
+        Str('macaddress*',
+            normalizer=lambda value: value.upper(),
+            pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
+            pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
+                            'each H is a hexadecimal character.'),
+            label=_('MAC address'),
+            doc=_('Hardware MAC address(es) on this host'),
+            flags=['virtual_attribute']
         ),
         Str(
-            'dhcpstatements*',
-            cli_name='dhcpstatements',
-            label=_('DHCP Statements'),
-            doc=_('DHCP statements.')
-        ),
-        Str(
-            'dhcpoption*',
-            cli_name='dhcpoptions',
-            label=_('DHCP Options'),
-            doc=_('DHCP options.')
-        ),
-        Str(
-            'dhcpcomments?',
-            cli_name='dhcpcomments',
-            label=_('Comments'),
-            doc=_('DHCP comments.')
+            'ipaddress',
+            cli_name='ipaddress',
+            label=_('Host IP Address'),
+            doc=_('Host IP Address.'),
+            flags=['virtual_attribute']
         )
     )
+    
+    @staticmethod
+    def extract_virtual_params(ldap, dn, entry_attrs, keys, options):
+
+        dhcpStatements = entry_attrs.get('dhcpstatements', [])
+
+        for statements in dhcpStatements:
+            if statements.startswith('fixed-address '):
+                (o, v) = statements.split(' ', 1)
+                entry_attrs['ipaddress'] = v.replace('"', '')
+
+        dhcpHWaddress = entry_attrs.get('dhcphwaddress', [])
+
+        for hwaddress in dhcpHWaddress:
+            if hwaddress.startswith('ethernet '):
+                (o, v) = hwaddress.split(' ', 1)
+                entry_attrs['macaddress'] = v.replace('"', '')
+
+        return entry_attrs
 
 
 @register()
@@ -1142,7 +1863,11 @@ class dhcphost_find(LDAPSearch):
 class dhcphost_show(LDAPRetrieve):
     __doc__ = _('Display a DHCP host.')
 
-
+    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
+        assert isinstance(dn, DN)
+        entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
+        return dn
+    
 @register()
 class dhcphost_del_dhcpschema(LDAPDelete):
     NO_CLI = True
@@ -1150,8 +1875,77 @@ class dhcphost_del_dhcpschema(LDAPDelete):
     msg_summary = _('Deleted DHCP host "%(value)s"')
 
 
+
 @register()
-class dhcphost_add(Command):
+class dhcphost_add(LDAPCreate):
+    __doc__ = _('Create a new DHCP host.')
+    msg_summary = _('Created DHCP host "%(value)s"')
+
+    def pre_callback(self, ldap, dn, entry_attrs, attrs_list, *keys, **options):
+        assert isinstance(dn, DN)
+
+        if 'fqdn' in options:
+            hostname = options['fqdn']
+            
+        if 'macaddress' in options:
+            macaddress = options['macaddress']
+
+        if 'ipaddress' in options:
+            ipaddress = options['ipaddress']
+
+        if 'dhcpStatements' in entry_attrs:
+             entryDHCPStatements = entry_attrs['dhcpStatements']
+        else:
+             entryDHCPStatements = []
+
+        entryDHCPStatements.append(u'ddns-hostname {0}'.format(hostname))
+        entryDHCPStatements.append(u'fixed-address {0}'.format(ipaddress))
+
+        entry_attrs['dhcpstatements'] = entryDHCPStatements
+
+        if 'dhcpoption' in entry_attrs:
+            entryDHCPOptions = entry_attrs['dhcpoption']
+        else:
+            entryDHCPOptions = []
+
+        entryDHCPOptions.append(u'host-name "{0}"'.format(hostname))
+
+
+        macaddress = '{macaddress}'.format(macaddress=macaddress).replace('u','').replace('(','').replace(')','').replace('\'','').replace(',','')
+        entry_attrs['dhcpoption'] = entryDHCPOptions
+        entry_attrs['dhcphwaddress'] = 'ethernet {0}'.format(macaddress)
+
+        #entry_attrs['cn'] = '{hostname}-{macaddress}'.format(hostname=hostname,macaddress=macaddress.replace(':', '')) 
+
+        #self.pre_common_callback(ldap, dn, entry_attrs, attrs_list, *keys, **options)
+
+        return dn
+
+    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
+        assert isinstance(dn, DN)
+        entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
+
+        # self.post_common_callback(ldap, dn, entry_attrs, *keys, **options)
+        return dn
+
+@register()
+class dhcphost_mod(LDAPUpdate):
+    __doc__ = _('Modify a DHCP host.')
+    msg_summary = _('Modified a DHCP host.')
+
+    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
+        assert isinstance(dn, DN)
+        entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
+        return dn
+
+@register()
+class dhcphost_del(LDAPDelete):
+    __doc__ = _('Delete a DHCP host.')
+    msg_summary = _('Deleted DHCP host "%(value)s"')
+
+
+@register()
+class dhcphost_add_cmd(Command):
     has_output = output.standard_entry
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
@@ -1172,6 +1966,12 @@ class dhcphost_add(Command):
             cli_name='macaddress',
             label=_('MAC Address'),
             doc=_("MAC address.")
+        ),
+        Str(
+            'ipaddress',
+            cli_name='ipaddress',
+            label=_('IP Address'),
+            doc=_("Hosts IP Address.")
         )
     )
 
@@ -1190,42 +1990,40 @@ class dhcphost_add(Command):
         )
         return dict(result=result['result'], value=cn)
 
+# @register()
+# class dhcphost_del_cmd(Command):
+#     has_output = output.standard_entry
+#     __doc__ = _('Delete a DHCP host.')
+#     msg_summary = _('Deleted DHCP host "%(value)s"')
 
-@register()
-class dhcphost_del(Command):
-    has_output = output.standard_entry
-    __doc__ = _('Delete a DHCP host.')
-    msg_summary = _('Deleted DHCP host "%(value)s"')
+#     takes_args = (
+#         Str(
+#             'hostname',
+#             cli_name='hostname',
+#             label=_('Hostname'),
+#             doc=_("Hostname.")
+#         ),
+#         Str(
+#             'macaddress',
+#             normalizer=lambda value: value.upper(),
+#             pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
+#             pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
+#                             'each H is a hexadecimal character.'),
+#             cli_name='macaddress',
+#             label=_('MAC Address'),
+#             doc=_("MAC address.")
+#         )
+#     )
 
-    takes_args = (
-        Str(
-            'hostname',
-            cli_name='hostname',
-            label=_('Hostname'),
-            doc=_("Hostname.")
-        ),
-        Str(
-            'macaddress',
-            normalizer=lambda value: value.upper(),
-            pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
-            pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
-                            'each H is a hexadecimal character.'),
-            cli_name='macaddress',
-            label=_('MAC Address'),
-            doc=_("MAC address.")
-        )
-    )
-
-    def execute(self, *args, **kw):
-        hostname = args[0]
-        macaddress = args[1]
-        cn = u'{hostname}-{macaddress}'.format(
-            hostname=hostname,
-            macaddress=macaddress.replace(':', '')
-        )
-        result = api.Command['dhcphost_del_dhcpschema'](cn)
-        return dict(result=result['result'], value=cn)
-
+#     def execute(self, *args, **kw):
+#         hostname = args[0]
+#         macaddress = args[1]
+#         cn = u'{hostname}-{macaddress}'.format(
+#             hostname=hostname,
+#             macaddress=macaddress.replace(':', '')
+#         )
+#         result = api.Command['dhcphost_del_dhcpschema'](cn)
+#         return dict(result=result['result'], value=cn)
 
 ###############################################################################
 
@@ -1236,66 +2034,66 @@ from . import host
 def host_add_dhcphost(self, ldap, dn, entry_attrs, *keys, **options):
     if 'macaddress' in entry_attrs:
         for addr in entry_attrs['macaddress']:
-            api.Command['dhcphost_add'](entry_attrs['fqdn'][0], addr)
+            api.Command['dhcphost_add_cmd'](entry_attrs['fqdn'][0], addr)
     return dn
 
 host.host_add.register_post_callback(host_add_dhcphost)
 
 
-def host_mod_dhcphost(self, ldap, dn, entry_attrs, *keys, **options):
-    if 'macaddress' not in options:
-        return dn
+# def host_mod_dhcphost(self, ldap, dn, entry_attrs, *keys, **options):
+#     if 'macaddress' not in options:
+#         return dn
 
-    if options['macaddress'] is None:
-        macaddresses = []
-    else:
-        macaddresses = list(options['macaddress'])
+#     if options['macaddress'] is None:
+#         macaddresses = []
+#     else:
+#         macaddresses = list(options['macaddress'])
 
-    filter = ldap.make_filter(
-        {
-            'cn': entry_attrs['fqdn'][0]
-        },
-        exact=False,
-        leading_wildcard=False,
-        trailing_wildcard=True
-    )
+#     filter = ldap.make_filter(
+#         {
+#             'cn': entry_attrs['fqdn'][0]
+#         },
+#         exact=False,
+#         leading_wildcard=False,
+#         trailing_wildcard=True
+#     )
 
-    entries = []
-    try:
-        entries = ldap.get_entries(
-            DN(container_dn, api.env.basedn),
-            ldap.SCOPE_SUBTREE,
-            filter
-        )
-    except errors.NotFound:
-        pass
+#     entries = []
+#     try:
+#         entries = ldap.get_entries(
+#             DN(container_dhcp_dn, dhcp_dn),
+#             ldap.SCOPE_SUBTREE,
+#             filter
+#         )
+#     except errors.NotFound:
+#         pass
 
-    for entry in entries:
-        entry_macaddr = entry['dhcpHWAddress'][0].replace('ethernet ', '')
-        if entry_macaddr not in macaddresses:
-            api.Command['dhcphost_del'](entry_attrs['fqdn'][0], entry_macaddr)
-        if entry_macaddr in macaddresses:
-            macaddresses.remove(entry_macaddr)
+#     for entry in entries:
+#         entry_macaddr = entry['dhcpHWAddress'][0].replace('ethernet ', '')
+#         if entry_macaddr not in macaddresses:
+#             api.Command['dhcphost_del'](entry_attrs['fqdn'][0], entry_macaddr)
+#         if entry_macaddr in macaddresses:
+#             macaddresses.remove(entry_macaddr)
 
-    for new_macaddr in macaddresses:
-        api.Command['dhcphost_add'](entry_attrs['fqdn'][0], new_macaddr)
+#     for new_macaddr in macaddresses:
+#         api.Command['dhcphost_add'](entry_attrs['fqdn'][0], new_macaddr)
 
-    return dn
+#     return dn
 
-host.host_mod.register_post_callback(host_mod_dhcphost)
+# host.host_mod.register_post_callback(host_mod_dhcphost)
 
 
-def host_del_dhcphost(self, ldap, dn, *keys, **options):
+# def host_del_dhcphost(self, ldap, dn, *keys, **options):
 
-    entry = ldap.get_entry(dn)
+#     entry = ldap.get_entry(dn)
 
-    if 'macaddress' in entry:
-        for addr in entry['macaddress']:
-            try:
-                api.Command['dhcphost_del'](entry['fqdn'][0], addr)
-            except:
-                pass
+#     if 'macaddress' in entry:
+#         for addr in entry['macaddress']:
+#             try:
+#                 api.Command['dhcphost_del_cmd'](entry['fqdn'][0], addr)
+#             except:
+#                 pass
 
-    return dn
+#     return dn
 
-host.host_del.register_pre_callback(host_del_dhcphost)
+# host.host_del.register_pre_callback(host_del_dhcphost)

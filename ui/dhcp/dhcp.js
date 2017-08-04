@@ -218,7 +218,7 @@ define(
         var make_dhcpsubnet_spec = function() {
             return {
                 name: 'dhcpsubnet',
-                facet_groups: ['settings', 'dhcppoolfacetgroup'],
+                facet_groups: ['settings', 'dhcppoolfacetgroup', 'dhcpgroupfacetgroup', 'dhcphostfacetgroup'],
                 facets: [
                     {
                         $type: 'search',
@@ -284,6 +284,37 @@ define(
                             },
                             'dhcpcomments'
                         ]
+                    },
+                    {
+                        $type: 'nested_search',
+                        facet_group: 'dhcpgroupfacetgroup',
+                        nested_entity: 'dhcpgroup',
+                        search_all_entries: true,
+                        label: 'DHCP Groups',
+                        tab_label: 'DHCP Groups',
+                        name: 'dhcpgroups',
+                        columns: [
+                            {
+                                name: 'cn'
+                            },
+                            'dhcpcomments'
+                        ]
+                    },
+                    {
+                        $type: 'nested_search',
+                        facet_group: 'dhcphostfacetgroup',
+                        nested_entity: 'dhcphost',
+                        search_all_entries: true,
+                        label: 'DHCP Hosts',
+                        tab_label: 'DHCP Hosts',
+                        name: 'dhcphostss',
+                        columns: [
+                            {
+                                name: 'cn'
+                            },
+                            'dhcphwaddress',
+                            'dhcpcomments'
+                        ]
                     }
                 ],
                 adder_dialog: {
@@ -311,6 +342,7 @@ define(
         var make_dhcppool_spec = function() {
             return {
                 name: 'dhcppool',
+                facet_groups: ['settings', 'dhcphostfacetgroup'],
                 containing_entity: 'dhcpsubnet',
                 facets: [
                     {
@@ -372,6 +404,22 @@ define(
                                 ]
                             }
                         ]
+                    },
+                    {
+                        $type: 'nested_search',
+                        facet_group: 'dhcphostfacetgroup',
+                        nested_entity: 'dhcphost',
+                        search_all_entries: true,
+                        label: 'DHCP Hosts',
+                        tab_label: 'DHCP Hosts',
+                        name: 'dhcphost',
+                        columns: [
+                            {
+                                name: 'cn'
+                            },
+                            'dhcphwaddress',
+                            'dhcpcomments'
+                        ]
                     }
                 ],
                 adder_dialog: {
@@ -401,6 +449,273 @@ define(
         };
         exp.dhcppool_entity_spec = make_dhcppool_spec();
 
+
+//// dhcgroup /////////////////////////////////////////////////////////////////
+
+
+        var make_dhcpgroup_spec = function() {
+            return {
+                name: 'dhcpgroup',
+                facet_groups: ['settings', 'dhcphostfacetgroup'],
+                containing_entity: 'dhcpsubnet',
+                facets: [
+                    {
+                        $type: 'search',
+                        tab_label: 'DHCP Groups',
+                        columns: [
+                            'cn',
+                        ]
+                    },
+                    {
+                        $type: 'details',
+                        sections: [
+                            {
+                                name: 'options',
+                                label: 'Options',
+                                fields: [
+                                    {
+                                        name: 'router',
+                                        flags: ['w_if_no_aci'],
+                                        validators: [ 'ip_v4_address' ]
+                                    },
+                                    {
+                                        name: 'domainname',
+                                        flags: ['w_if_no_aci']
+                                    },
+                                    {
+                                        $type: 'multivalued',
+                                        name: 'domainnameservers',
+                                        flags: ['w_if_no_aci']
+                                    },
+                                    {
+                                        $type: 'multivalued',
+                                        name: 'domainsearch',
+                                        flags: ['w_if_no_aci']
+                                    },
+                                    {
+                                        name: 'defaultleasetime',
+                                        measurement_unit: 'seconds',
+                                        flags: ['w_if_no_aci']
+                                    },
+                                    {
+                                        name: 'maxleasetime',
+                                        measurement_unit: 'seconds',
+                                        flags: ['w_if_no_aci']
+                                    }
+                                ]
+                            },
+                            {
+                                name: 'dhcpparameters',
+                                label: 'DHCP Parameters',
+                                fields: [
+                                    {
+                                        name: 'cn'
+                                    },
+                                    {
+                                        $type: 'multivalued',
+                                        name: 'dhcpstatements'
+                                    },
+                                    {
+                                        $type: 'multivalued',
+                                        name: 'dhcpoption'
+                                    },
+                                    {
+                                        $type: 'textarea',
+                                        name: 'dhcpcomments'
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        $type: 'nested_search',
+                        facet_group: 'dhcphostfacetgroup',
+                        nested_entity: 'dhcphost',
+                        search_all_entries: true,
+                        label: 'DHCP Hosts',
+                        tab_label: 'DHCP Hosts',
+                        name: 'dhcphost',
+                        columns: [
+                            {
+                                name: 'cn'
+                            },
+                            'dhcphwaddress',
+                            'dhcpcomments'
+                        ]
+                    }
+                ],
+                standard_association_facets: true,
+                adder_dialog: {
+                    $factory: IPA.dhcp.dhcpgroup_adder_dialog,
+                    fields: [
+                        {
+                            name: 'cn'
+                        },
+                        {
+                            name: 'domainname',
+                            flags: ['w_if_no_aci']
+                        },
+                        {
+                            $type: 'multivalued',
+                            name: 'domainnameservers',
+                            flags: ['w_if_no_aci']
+                        },
+                        {
+                            $type: 'multivalued',
+                            name: 'domainsearch',
+                            flags: ['w_if_no_aci']
+                        },
+                        {
+                            $type: 'textarea',
+                            name: 'dhcpcomments'
+                        }
+                    ]
+                }
+            };
+        };
+        exp.dhcpgroup_entity_spec = make_dhcpgroup_spec();
+
+//// dhcpsharednetwork ///////////////////////////////////////////////////////////////
+
+
+        var make_dhcpsharednetwork_spec = function() {
+            return {
+                name: 'dhcpsharednetwork',
+                facets: [
+                    {
+                        $type: 'search',
+                        columns: [
+                            'cn',
+                        ]
+                    },
+                    {
+                        $type: 'details',
+                        sections: [
+                            {
+                                name: 'settings',
+                                fields: [
+                                    {
+                                        $type: 'multivalued',
+                                        name: 'dhcpstatements'
+                                    },
+                                    {
+                                        $type: 'multivalued',
+                                        name: 'dhcpoption'
+                                    },
+                                    {
+                                        $type: 'textarea',
+                                        name: 'dhcpcomments'
+                                    }
+                                ]
+                            }
+                        ],
+                    }
+                ],
+                adder_dialog: {
+                    fields: [
+                        {
+                            $type: 'entity_select',
+                            name: 'cn',
+                            other_entity: 'host',
+                            other_field: 'fqdn',
+                            required: true
+                        }
+                    ]
+                }
+            };
+        };
+        exp.dhcpsharednetwork_entity_spec = make_dhcpsharednetwork_spec();
+
+//// dhcphost /////////////////////////////////////////////////////////////////
+
+        var make_dhcphost_spec = function() {
+            return {
+                name: 'dhcphost',
+                facet_groups: ['settings'],
+                containing_entity: 'dhcpgroup',
+                facets: [
+                    {
+                        $type: 'search',
+                        columns: [
+                            'cn',
+                        ]
+                    },
+                    {
+                        $type: 'details',
+                        sections: [
+                             {
+                                name: 'options',
+                                label: 'Options',
+                                fields: [
+                                    {
+                                        name: 'cn',
+                                        read_only: true
+                                    },
+                                    {
+                                        name: 'macaddress',
+                                        flags: ['w_if_no_aci']
+                                    },
+                                    {
+                                        name: 'ipaddress',
+                                        flags: ['w_if_no_aci'],
+                                        validators: [ 'ip_v4_address' ]
+                                    },
+                                ]
+                            },
+                            {
+                                name: 'settings',
+                                label: 'DHCP Parameters',
+                                fields: [
+                                    {
+                                        $type: 'multivalued',
+                                        name: 'dhcpstatements'
+                                    },
+                                    {
+                                        $type: 'multivalued',
+                                        name: 'dhcpoption'
+                                    },
+                                    {
+                                        $type: 'textarea',
+                                        name: 'dhcpcomments'
+                                    }
+                                ]
+                            }
+                        ],
+                    }
+                ],
+                adder_dialog: {
+                    fields: [
+                        {
+                            name: 'cn',
+                            flags: ['w_if_no_aci'],
+                            required: true
+                        },
+                        {
+                            $type: 'entity_select',
+                            name: 'fqdn',
+                            other_entity: 'host',
+                            other_field: 'fqdn',
+                            required: true
+                        },
+                        {
+                            name: 'macaddress',
+                            flags: ['w_if_no_aci'],
+                            required: true
+                        },
+                        {
+                            name: 'ipaddress',
+                            flags: ['w_if_no_aci'],
+                            validators: [ 'ip_v4_address' ]
+                        },
+                        {
+                            $type: 'textarea',
+                            name: 'dhcpcomments'
+                        }
+                    ]
+                }
+            };
+        };
+        exp.dhcphost_entity_spec = make_dhcphost_spec();
 
 //// dhcpserver ///////////////////////////////////////////////////////////////
 
@@ -453,6 +768,57 @@ define(
         };
         exp.dhcpserver_entity_spec = make_dhcpserver_spec();
 
+//// dhcpfailoverpeer ///////////////////////////////////////////////////////////////
+
+
+        var make_dhcpfailoverpeer_spec = function() {
+            return {
+                name: 'dhcpfailoverpeer',
+                facets: [
+                    {
+                        $type: 'search',
+                        columns: [
+                            'cn',
+                        ]
+                    },
+                    {
+                        $type: 'details',
+                        sections: [
+                            {
+                                name: 'settings',
+                                fields: [
+                                    {
+                                        $type: 'multivalued',
+                                        name: 'dhcpstatements'
+                                    },
+                                    {
+                                        $type: 'multivalued',
+                                        name: 'dhcpoption'
+                                    },
+                                    {
+                                        $type: 'textarea',
+                                        name: 'dhcpcomments'
+                                    }
+                                ]
+                            }
+                        ],
+                    }
+                ],
+                adder_dialog: {
+                    fields: [
+                        {
+                            $type: 'entity_select',
+                            name: 'cn',
+                            other_entity: 'host',
+                            other_field: 'fqdn',
+                            required: true
+                        }
+                    ]
+                }
+            };
+        };
+        exp.dhcpfailoverpeer_entity_spec = make_dhcpfailoverpeer_spec();
+
 
 //// exp.register /////////////////////////////////////////////////////////////
 
@@ -466,7 +832,11 @@ define(
             e.register({type: 'dhcpservice', spec: exp.dhcpservice_entity_spec});
             e.register({type: 'dhcpsubnet', spec: exp.dhcpsubnet_entity_spec});
             e.register({type: 'dhcppool', spec: exp.dhcppool_entity_spec});
+            e.register({type: 'dhcpgroup', spec: exp.dhcpgroup_entity_spec});
+            e.register({type: 'dhcpsharednetwork', spec: exp.dhcpsharednetwork_entity_spec});
+            e.register({type: 'dhcphost', spec: exp.dhcphost_entity_spec});
             e.register({type: 'dhcpserver', spec: exp.dhcpserver_entity_spec});
+            e.register({type: 'dhcpfailoverpeer', spec: exp.dhcpfailoverpeer_entity_spec});
         }
 
 
@@ -487,13 +857,34 @@ define(
                     children: [
                         {
                             entity: 'dhcppool',
+                            lable: 'Pool',
                             hidden: true
+                        },
+                        {
+                            entity: 'dhcpgroup',
+                            label: 'Group',
+                            hidden: true,
+                            children: [
+                                {
+                                    entity: 'dhcphost',
+                                    label: 'Host',
+                                    hidden: true
+                                }
+                            ]
                         }
                     ]
                 },
                 {
+                    entity: 'dhcpsharednetwork',
+                    label: 'Shared Network'
+                },
+                {
                     entity: 'dhcpserver',
                     label: 'Servers'
+                },
+                {
+                    entity: 'dhcpfailoverpeer',
+                    label: 'Failoverpeer'
                 }
             ]
         }
