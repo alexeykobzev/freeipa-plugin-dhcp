@@ -582,37 +582,37 @@ class dhcpfailoverpeer(LDAPObject):
             label=_('DHCP Fail Over Secondary Port'),
         ),
         Str(
-            'dhcpfailoverresponsedelay',
+            'dhcpfailoverresponsedelay?',
             cli_name='fail_over_response_delay',
             label=_('DHCP Fail Over Response Delay'),
         ),
         Str(
-            'dhcpfailoverunackedupdates',
+            'dhcpfailoverunackedupdates?',
             cli_name='fail_over_unacked_updates',
             label=_('DHCP Fail Over Unacked Updates'),
         ),
         Str(
-            'dhcpmaxclientleadtime',
+            'dhcpmaxclientleadtime?',
             cli_name='fail_over_max_client_lead_time',
             label=_('DHCP Fail Over Max Client Lead Time'),
         ),
         Str(
-            'dhcpfailoversplit',
+            'dhcpfailoversplit?',
             cli_name='fail_over_split',
             label=_('DHCP Fail Over Split'),
         ),
         Str(
-            'dhcphashbucketassignment',
+            'dhcphashbucketassignment?',
             cli_name='fail_over_hash_bucket_assignment',
             label=_('DHCP Fail Over Hash Bucket Assignment'),
         ),
         Str(
-            'dhcpfailoverloadbalancetime',
+            'dhcpfailoverloadbalancetime?',
             cli_name='fail_over_load_balance_time',
             label=_('DHCP Fail Over Load Balance Time'),
         ),
         Str(
-            'dhcpcomments',
+            'dhcpcomments?',
             cli_name='fail_over_comments',
             label=_('DHCP Fail Over Comments'),
         ),
@@ -1768,6 +1768,35 @@ class dhcpserver(LDAPObject):
             cli_name='dhcpcomments',
             label=_('Comments'),
             doc=_('DHCP comments.')
+        ),
+        Str('dhcplocatordn?',
+            cli_name='server_locator_dn',
+            label=_('DHCP Server Locator DN'),
+            default_from=lambda: DN(container_dhcp_dn, dhcp_dn),
+        ),
+        Str('dhcpversion?',
+            cli_name='server_version',
+            label=_('DHCP Server Version'),
+        ),
+        Str('dhcpimplementation?',
+            cli_name='server_implementation',
+            label=_('DHCP Server implementation'),
+        ),
+        Str('dhcphashbucketassignment?',
+            cli_name='server_hash_bucket_assignment',
+            label=_('DHCP Server Hash bucket assignment'),
+        ),
+        Str('dhcpdelayedserviceparameter?',
+            cli_name='server_delayed_service_parameter',
+            label=_('DHCP Server Delayed Service Parameter'),
+        ),
+        Str('dhcpmaxclientleadtime?',
+            cli_name='server_max_client_lead_time',
+            label=_('DHCP Server Max Client Lead Time'),
+        ),
+        Str('dhcpfailoverendpointstate?',
+            cli_name='server_fail_over_endpoint_state',
+            label=_('DHCP Server Fail Over Endpoint State'),
         )
     )
 
@@ -2119,7 +2148,7 @@ class dhcphost_del_cmd(Command):
 #### dhcphost_group ###############################################################
 @register()
 class dhcpgrouphost(dhcphost):
-    parent_object = 'dhcpgroup'
+    parent_object = 'dhcpsubnetgroup'
     container_dn = container_dhcp_dn
     object_name = _('DHCP host')
     object_name_plural = _('DHCP hosts')
@@ -2163,55 +2192,6 @@ class dhcpgrouphost_del(LDAPDelete):
     NO_CLI = True
     __doc__ = _('Delete a DHCP host.')
     msg_summary = _('Deleted DHCP host "%(value)s"')
-
-#### dhcphost_group ###############################################################
-@register()
-class dhcpsubnetgrouphost(dhcphost):
-    parent_object = 'dhcpsubnetgroup'
-    container_dn = container_dhcp_dn
-    object_name = _('DHCP host')
-    object_name_plural = _('DHCP hosts')
-    object_class = ['dhcphost', 'top']
-    default_attributes = ['cn']
-    label = _('DHCP Hosts')
-    label_singular = _('DHCP Host')
-
-    search_attributes = [ 'cn', 'dhcphwaddress' ]
-
-@register()
-class dhcpsubnetgrouphost_find(LDAPSearch):
-    __doc__ = _('Search for a DHCP server.')
-    msg_summary = ngettext(
-        '%(count)d DHCP server matched',
-        '%(count)d DHCP servers matched', 0
-    )
-
-@register()
-class dhcpsubnetgrouphost_show(LDAPRetrieve):
-    __doc__ = _('Display a DHCP host.')
-
-    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
-        assert isinstance(dn, DN)
-        entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
-        return dn
-
-@register()
-class dhcpsubnetgrouphost_add(LDAPCreate):
-    __doc__ = _('Create a new DHCP host.')
-    msg_summary = _('Created DHCP host "%(value)s"')
-
-
-@register()
-class dhcpsubnetgrouphost_mod(LDAPUpdate):
-    __doc__ = _('Modify a DHCP host.')
-    msg_summary = _('Modified a DHCP host.')
-
-@register()
-class dhcpsubnetgrouphost_del(LDAPDelete):
-    NO_CLI = True
-    __doc__ = _('Delete a DHCP host.')
-    msg_summary = _('Deleted DHCP host "%(value)s"')
-
 
 #### dhcphost_subnet ###############################################################
 

@@ -741,7 +741,42 @@ define(
                         $type: 'details',
                         sections: [
                             {
+                                name: 'options',
+                                label: 'Options',
+                                fields: [
+                                    {
+                                        name: 'cn',
+                                        read_only: true
+                                    },
+                                    {
+                                        name: 'dhcpdelayedserviceparameter'
+                                    },
+                                    {
+                                        name: 'dhcpversion',
+                                        flags: ['w_if_no_aci']
+                                    },
+                                    {
+                                        name: 'dhcphashbucketassignment'
+                                    },
+                                    {
+                                        name: 'dhcpimplementation'
+                                    },
+                                    {
+                                        name: 'dhcpmaxclientleadtime',
+                                        measurement_unit: 'seconds',
+                                        flags: ['w_if_no_aci']
+                                    },
+                                    {
+                                        name: 'dhcpfailoverendpointstate'
+                                    },
+                                    {
+                                        name: 'dhcphashbucketassignment'
+                                    },
+                                ]
+                            },
+                            {
                                 name: 'settings',
+                                label: 'DHCP Parameters',
                                 fields: [
                                     {
                                         $type: 'multivalued',
