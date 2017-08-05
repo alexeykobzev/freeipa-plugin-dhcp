@@ -288,11 +288,11 @@ define(
                     {
                         $type: 'nested_search',
                         facet_group: 'dhcpgroupfacetgroup',
-                        nested_entity: 'dhcpgroup',
+                        nested_entity: 'dhcpsubnetgroup',
                         search_all_entries: true,
                         label: 'DHCP Groups',
                         tab_label: 'DHCP Groups',
-                        name: 'dhcpgroups',
+                        name: 'dhcpsubnetgroups',
                         columns: [
                             {
                                 name: 'cn'
@@ -303,11 +303,11 @@ define(
                     {
                         $type: 'nested_search',
                         facet_group: 'dhcphostfacetgroup',
-                        nested_entity: 'dhcphost',
+                        nested_entity: 'dhcpsubnethost',
                         search_all_entries: true,
                         label: 'DHCP Hosts',
                         tab_label: 'DHCP Hosts',
-                        name: 'dhcphostss',
+                        name: 'dhcpsubnethost',
                         columns: [
                             {
                                 name: 'cn'
@@ -342,7 +342,7 @@ define(
         var make_dhcppool_spec = function() {
             return {
                 name: 'dhcppool',
-                facet_groups: ['settings', 'dhcphostfacetgroup'],
+                facet_groups: ['settings', 'dhcppoolhostfacetgroup'],
                 containing_entity: 'dhcpsubnet',
                 facets: [
                     {
@@ -407,12 +407,12 @@ define(
                     },
                     {
                         $type: 'nested_search',
-                        facet_group: 'dhcphostfacetgroup',
-                        nested_entity: 'dhcphost',
+                        facet_group: 'dhcppoolhostfacetgroup',
+                        nested_entity: 'dhcppoolhost',
                         search_all_entries: true,
                         label: 'DHCP Hosts',
                         tab_label: 'DHCP Hosts',
-                        name: 'dhcphost',
+                        name: 'dhcppoolhosts',
                         columns: [
                             {
                                 name: 'cn'
@@ -453,11 +453,11 @@ define(
 //// dhcgroup /////////////////////////////////////////////////////////////////
 
 
-        var make_dhcpgroup_spec = function() {
+        var make_dhcpgroup_spec = function(element_name,containing_entity) {
             return {
-                name: 'dhcpgroup',
-                facet_groups: ['settings', 'dhcphostfacetgroup'],
-                containing_entity: 'dhcpsubnet',
+                name: element_name,
+                facet_groups: ['settings', element_name + 'hostfacetgroup'],
+                containing_entity: containing_entity,
                 facets: [
                     {
                         $type: 'search',
@@ -529,12 +529,12 @@ define(
                     },
                     {
                         $type: 'nested_search',
-                        facet_group: 'dhcphostfacetgroup',
-                        nested_entity: 'dhcphost',
+                        facet_group: element_name + 'hostfacetgroup',
+                        nested_entity: element_name + 'host',
                         search_all_entries: true,
                         label: 'DHCP Hosts',
                         tab_label: 'DHCP Hosts',
-                        name: 'dhcphost',
+                        name: element_name + 'hosts',
                         columns: [
                             {
                                 name: 'cn'
@@ -573,7 +573,10 @@ define(
                 }
             };
         };
-        exp.dhcpgroup_entity_spec = make_dhcpgroup_spec();
+        exp.dhcpgroup_entity_spec = make_dhcpgroup_spec('dhcpgroup', '');
+        exp.dhcpsubnetgroup_entity_spec = make_dhcpgroup_spec('dhcpsubnetgroup', 'dhcpsubnet');
+        exp.dhcpgroupgroup_entity_spec = make_dhcpgroup_spec('dhcpgroupgroup', 'dhcpgroup');
+        exp.dhcppoolgroup_entity_spec = make_dhcpgroup_spec('dhcppoolgroup', 'dhcppool');
 
 //// dhcpsharednetwork ///////////////////////////////////////////////////////////////
 
@@ -628,11 +631,11 @@ define(
 
 //// dhcphost /////////////////////////////////////////////////////////////////
 
-        var make_dhcphost_spec = function() {
+        var make_dhcphost_spec = function(element_name,containing_entity) {
             return {
-                name: 'dhcphost',
+                name: element_name,
                 facet_groups: ['settings'],
-                containing_entity: 'dhcpgroup',
+                containing_entity: containing_entity,
                 facets: [
                     {
                         $type: 'search',
@@ -715,7 +718,11 @@ define(
                 }
             };
         };
-        exp.dhcphost_entity_spec = make_dhcphost_spec();
+        exp.dhcphost_entity_spec = make_dhcphost_spec('dhcphost', '');
+        exp.dhcpgrouphost_entity_spec = make_dhcphost_spec('dhcpgrouphost', 'dhcpgroup');
+        exp.dhcpsubnethost_entity_spec = make_dhcphost_spec('dhcpsubnethost', 'dhcpsubnet');
+        exp.dhcpsubnetgrouphost_entity_spec = make_dhcphost_spec('dhcpsubnetgrouphost', 'dhcpsubnetgroup');
+        exp.dhcppoolhost_entity_spec = make_dhcphost_spec('dhcppoolhost', 'dhcppool');
 
 //// dhcpserver ///////////////////////////////////////////////////////////////
 
@@ -833,8 +840,14 @@ define(
             e.register({type: 'dhcpsubnet', spec: exp.dhcpsubnet_entity_spec});
             e.register({type: 'dhcppool', spec: exp.dhcppool_entity_spec});
             e.register({type: 'dhcpgroup', spec: exp.dhcpgroup_entity_spec});
+            e.register({type: 'dhcpsubnetgroup', spec: exp.dhcpsubnetgroup_entity_spec});
+            e.register({type: 'dhcpgrouproup', spec: exp.dhcpgroupgroup_entity_spec});
             e.register({type: 'dhcpsharednetwork', spec: exp.dhcpsharednetwork_entity_spec});
             e.register({type: 'dhcphost', spec: exp.dhcphost_entity_spec});
+            e.register({type: 'dhcpgrouphost', spec: exp.dhcpgrouphost_entity_spec});
+            e.register({type: 'dhcpsubnethost', spec: exp.dhcpsubnethost_entity_spec});
+            e.register({type: 'dhcpsubnetgrouphost', spec: exp.dhcpsubnetgrouphost_entity_spec});
+            e.register({type: 'dhcppoolhost', spec: exp.dhcppoolhost_entity_spec});
             e.register({type: 'dhcpserver', spec: exp.dhcpserver_entity_spec});
             e.register({type: 'dhcpfailoverpeer', spec: exp.dhcpfailoverpeer_entity_spec});
         }
@@ -843,56 +856,88 @@ define(
 //// menu spec ////////////////////////////////////////////////////////////////
 
 
-        exp.dhcp_menu_spec = {
-            name: 'dhcp',
-            label: 'DHCP',
-            children: [
-                {
-                    entity: 'dhcpservice',
-                    label: 'Configuration'
-                },
-                {
-                    entity: 'dhcpsubnet',
-                    label: 'Subnets',
+        var make_dhcp_menu_spec = function(menu_name, menu_lable, menu_entity) {
+            return {
+                   name: menu_name,
+                    label: menu_lable,
                     children: [
                         {
-                            entity: 'dhcppool',
-                            lable: 'Pool',
-                            hidden: true
+                            entity: 'dhcpservice',
+                            label: 'Configuration'
                         },
                         {
-                            entity: 'dhcpgroup',
-                            label: 'Group',
-                            hidden: true,
+                            entity: 'dhcpsubnet',
+                            label: 'Subnets',
                             children: [
                                 {
-                                    entity: 'dhcphost',
+                                    entity: 'dhcppool',
+                                    lable: 'Pool',
+                                    hidden: true,
+                                    children: [
+                                        {
+                                            entity: 'dhcppoolhost',
+                                            label: 'Host',
+                                            hidden: true
+                                        }
+                                    ]
+                                },
+                                {
+                                    entity: 'dhcpsubnetgroup',
+                                    label: 'Group',
+                                    hidden: true,
+                                    children: [
+                                        {
+                                            entity: 'dhcpsubnetgrouphost',
+                                            label: 'Host',
+                                            hidden: true
+                                        }
+                                    ]
+                                },
+                                {
+                                    entity: 'dhcpsubnethost',
                                     label: 'Host',
                                     hidden: true
                                 }
                             ]
+                        },
+                        {
+                            entity: 'dhcphost',
+                            label: 'Hosts'
+                        },
+                        {
+                            entity: 'dhcpgroup',
+                            label: 'Groups',
+                            children: [
+                                {
+                                    entity: 'dhcpgrouphost',
+                                    label: 'Host',
+                                    hidden: true
+                                }
+                            ]
+                        },
+                        {
+                            entity: 'dhcpsharednetwork',
+                            label: 'Shared Network'
+                        },
+                        {
+                            entity: 'dhcpserver',
+                            label: 'Servers'
+                        },
+                        {
+                            entity: 'dhcpfailoverpeer',
+                            label: 'Failoverpeer'
                         }
                     ]
-                },
-                {
-                    entity: 'dhcpsharednetwork',
-                    label: 'Shared Network'
-                },
-                {
-                    entity: 'dhcpserver',
-                    label: 'Servers'
-                },
-                {
-                    entity: 'dhcpfailoverpeer',
-                    label: 'Failoverpeer'
                 }
-            ]
-        }
+            }
+        exp.dhcp_v4_menu_spec = make_dhcp_menu_spec('dhcpv4','DHCP IPv4');
+        exp.dhcp_v6_menu_spec = make_dhcp_menu_spec('dhcpv6','DHCP IPv6');
 
         exp.add_menu_items = function() {
             network_services_item = menu.query({name: 'network_services'});
             if (network_services_item.length > 0) {
-                menu.add_item( exp.dhcp_menu_spec, 'network_services' );
+                menu.add_item( exp.dhcp_v4_menu_spec, 'network_services' );
+                menu.add_item( exp.dhcp_v6_menu_spec, 'network_services' );
             }
         };
 

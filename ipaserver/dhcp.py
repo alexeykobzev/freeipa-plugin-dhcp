@@ -1167,7 +1167,6 @@ class dhcppool_is_valid(Command):
 
 @register()
 class dhcpgroup(LDAPObject):
-    parent_object = 'dhcpsubnet'
     container_dn = container_dhcp_dn
     object_name = _('DHCP group')
     object_name_plural = _('DHCP groups')
@@ -1602,6 +1601,101 @@ class dhcpgroup_del(LDAPDelete):
     msg_summary = _('Deleted DHCP group "%(value)s"')
 
 
+#### dhcpsubnetgroup #################################################################
+
+@register()
+class dhcpsubnetgroup(dhcpgroup):
+    parent_object = 'dhcpsubnet'
+    container_dn = container_dhcp_dn
+    object_name = _('DHCP group')
+    object_name_plural = _('DHCP groups')
+    object_class = ['dhcpgroup', 'top']
+    default_attributes = ['cn']
+    label = _('DHCP Groups')
+    label_singular = _('DHCP Group')
+
+@register()
+class dhcpsubnetgroup_find(LDAPSearch):
+    __doc__ = _('Search for a DHCP group.')
+    msg_summary = ngettext(
+        '%(count)d DHCP group matched',
+        '%(count)d DHCP groups matched', 0
+    )
+
+@register()
+class dhcpsubnetgroup_show(LDAPRetrieve):
+    __doc__ = _('Display a DHCP group.')
+
+
+    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
+        assert isinstance(dn, DN)
+        entry_attrs = dhcpgroup.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
+        return dn
+
+
+#### dhcpgroupgroup #################################################################
+
+@register()
+class dhcpgroupgroup(dhcpgroup):
+    parent_object = 'dhcpgroup'
+    container_dn = container_dhcp_dn
+    object_name = _('DHCP group')
+    object_name_plural = _('DHCP groups')
+    object_class = ['dhcpgroup', 'top']
+    default_attributes = ['cn']
+    label = _('DHCP Groups')
+    label_singular = _('DHCP Group')
+
+@register()
+class dhcpgroupgroup_find(LDAPSearch):
+    __doc__ = _('Search for a DHCP group.')
+    msg_summary = ngettext(
+        '%(count)d DHCP group matched',
+        '%(count)d DHCP groups matched', 0
+    )
+
+@register()
+class dhcpgroupgroup_show(LDAPRetrieve):
+    __doc__ = _('Display a DHCP group.')
+
+
+    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
+        assert isinstance(dn, DN)
+        entry_attrs = dhcpgroup.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
+        return dn
+
+#### dhcppoolgroup #################################################################
+
+@register()
+class dhcppoolgroup(dhcpgroup):
+    parent_object = 'dhcppool'
+    container_dn = container_dhcp_dn
+    object_name = _('DHCP group')
+    object_name_plural = _('DHCP groups')
+    object_class = ['dhcpgroup', 'top']
+    default_attributes = ['cn']
+    label = _('DHCP Groups')
+    label_singular = _('DHCP Group')
+
+@register()
+class dhcppoolgroup_find(LDAPSearch):
+    __doc__ = _('Search for a DHCP group.')
+    msg_summary = ngettext(
+        '%(count)d DHCP group matched',
+        '%(count)d DHCP groups matched', 0
+    )
+
+@register()
+class dhcppoolgroup_show(LDAPRetrieve):
+    __doc__ = _('Display a DHCP group.')
+
+
+    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
+        assert isinstance(dn, DN)
+        entry_attrs = dhcpgroup.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
+        return dn
+
+
 #### dhcpserver ###############################################################
 
 
@@ -1749,14 +1843,11 @@ class dhcpserver_del(LDAPDelete):
 
         return dn
 
-
 #### dhcphost ###############################################################
-
-
 
 @register()
 class dhcphost(LDAPObject):
-    parent_object = 'dhcpgroup'
+#    parent_object = 'dhcpgroup'
     container_dn = container_dhcp_dn
     object_name = _('DHCP host')
     object_name_plural = _('DHCP hosts')
@@ -2024,6 +2115,202 @@ class dhcphost_del_cmd(Command):
         )
         result = api.Command['dhcphost_del_dhcpschema'](cn)
         return dict(result=result['result'], value=cn)
+
+#### dhcphost_group ###############################################################
+@register()
+class dhcpgrouphost(dhcphost):
+    parent_object = 'dhcpgroup'
+    container_dn = container_dhcp_dn
+    object_name = _('DHCP host')
+    object_name_plural = _('DHCP hosts')
+    object_class = ['dhcphost', 'top']
+    default_attributes = ['cn']
+    label = _('DHCP Hosts')
+    label_singular = _('DHCP Host')
+
+    search_attributes = [ 'cn', 'dhcphwaddress' ]
+
+@register()
+class dhcpgrouphost_find(LDAPSearch):
+    __doc__ = _('Search for a DHCP server.')
+    msg_summary = ngettext(
+        '%(count)d DHCP server matched',
+        '%(count)d DHCP servers matched', 0
+    )
+
+@register()
+class dhcpgrouphost_show(LDAPRetrieve):
+    __doc__ = _('Display a DHCP host.')
+
+    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
+        assert isinstance(dn, DN)
+        entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
+        return dn
+
+@register()
+class dhcpgrouphost_add(LDAPCreate):
+    __doc__ = _('Create a new DHCP host.')
+    msg_summary = _('Created DHCP host "%(value)s"')
+
+
+@register()
+class dhcpgrouphost_mod(LDAPUpdate):
+    __doc__ = _('Modify a DHCP host.')
+    msg_summary = _('Modified a DHCP host.')
+
+@register()
+class dhcpgrouphost_del(LDAPDelete):
+    NO_CLI = True
+    __doc__ = _('Delete a DHCP host.')
+    msg_summary = _('Deleted DHCP host "%(value)s"')
+
+#### dhcphost_group ###############################################################
+@register()
+class dhcpsubnetgrouphost(dhcphost):
+    parent_object = 'dhcpsubnetgroup'
+    container_dn = container_dhcp_dn
+    object_name = _('DHCP host')
+    object_name_plural = _('DHCP hosts')
+    object_class = ['dhcphost', 'top']
+    default_attributes = ['cn']
+    label = _('DHCP Hosts')
+    label_singular = _('DHCP Host')
+
+    search_attributes = [ 'cn', 'dhcphwaddress' ]
+
+@register()
+class dhcpsubnetgrouphost_find(LDAPSearch):
+    __doc__ = _('Search for a DHCP server.')
+    msg_summary = ngettext(
+        '%(count)d DHCP server matched',
+        '%(count)d DHCP servers matched', 0
+    )
+
+@register()
+class dhcpsubnetgrouphost_show(LDAPRetrieve):
+    __doc__ = _('Display a DHCP host.')
+
+    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
+        assert isinstance(dn, DN)
+        entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
+        return dn
+
+@register()
+class dhcpsubnetgrouphost_add(LDAPCreate):
+    __doc__ = _('Create a new DHCP host.')
+    msg_summary = _('Created DHCP host "%(value)s"')
+
+
+@register()
+class dhcpsubnetgrouphost_mod(LDAPUpdate):
+    __doc__ = _('Modify a DHCP host.')
+    msg_summary = _('Modified a DHCP host.')
+
+@register()
+class dhcpsubnetgrouphost_del(LDAPDelete):
+    NO_CLI = True
+    __doc__ = _('Delete a DHCP host.')
+    msg_summary = _('Deleted DHCP host "%(value)s"')
+
+
+#### dhcphost_subnet ###############################################################
+
+@register()
+class dhcpsubnethost(dhcphost):
+    parent_object = 'dhcpsubnet'
+    container_dn = container_dhcp_dn
+    object_name = _('DHCP host')
+    object_name_plural = _('DHCP hosts')
+    object_class = ['dhcphost', 'top']
+    default_attributes = ['cn']
+    label = _('DHCP Hosts')
+    label_singular = _('DHCP Host')
+
+    search_attributes = [ 'cn', 'dhcphwaddress' ]
+
+@register()
+class dhcpsubnethost_find(LDAPSearch):
+    __doc__ = _('Search for a DHCP server.')
+    msg_summary = ngettext(
+        '%(count)d DHCP server matched',
+        '%(count)d DHCP servers matched', 0
+    )
+
+@register()
+class dhcpsubnethost_show(LDAPRetrieve):
+    __doc__ = _('Display a DHCP host.')
+
+    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
+        assert isinstance(dn, DN)
+        entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
+        return dn
+
+@register()
+class dhcpsubnethost_add(LDAPCreate):
+    __doc__ = _('Create a new DHCP host.')
+    msg_summary = _('Created DHCP host "%(value)s"')
+
+@register()
+class dhcpsubnethost_mod(LDAPUpdate):
+    __doc__ = _('Modify a DHCP host.')
+    msg_summary = _('Modified a DHCP host.')
+
+@register()
+class dhcpsubnethost_del(LDAPDelete):
+    NO_CLI = True
+    __doc__ = _('Delete a DHCP host.')
+    msg_summary = _('Deleted DHCP host "%(value)s"')
+
+
+#### dhcphost_pool ###############################################################
+
+@register()
+class dhcppoolhost(dhcphost):
+    parent_object = 'dhcppool'
+    container_dn = container_dhcp_dn
+    object_name = _('DHCP host')
+    object_name_plural = _('DHCP hosts')
+    object_class = ['dhcphost', 'top']
+    default_attributes = ['cn']
+    label = _('DHCP Hosts')
+    label_singular = _('DHCP Host')
+
+    search_attributes = [ 'cn', 'dhcphwaddress' ]
+
+@register()
+class dhcppoolhost_find(LDAPSearch):
+    __doc__ = _('Search for a DHCP server.')
+    msg_summary = ngettext(
+        '%(count)d DHCP server matched',
+        '%(count)d DHCP servers matched', 0
+    )
+
+@register()
+class dhcppoolhost_show(LDAPRetrieve):
+    __doc__ = _('Display a DHCP host.')
+
+    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
+        assert isinstance(dn, DN)
+        entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
+        return dn
+
+@register()
+class dhcppoolhost_add(LDAPCreate):
+    __doc__ = _('Create a new DHCP host.')
+    msg_summary = _('Created DHCP host "%(value)s"')
+
+
+@register()
+class dhcppoolhost_mod(LDAPUpdate):
+    __doc__ = _('Modify a DHCP host.')
+    msg_summary = _('Modified a DHCP host.')
+
+@register()
+class dhcppoolhost_del(LDAPDelete):
+    NO_CLI = True
+    __doc__ = _('Delete a DHCP host.')
+    msg_summary = _('Deleted DHCP host "%(value)s"')
+
 
 ###############################################################################
 
