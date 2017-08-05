@@ -752,8 +752,7 @@ define(
                                         name: 'dhcpdelayedserviceparameter'
                                     },
                                     {
-                                        name: 'dhcpversion',
-                                        flags: ['w_if_no_aci']
+                                        name: 'dhcpversion'
                                     },
                                     {
                                         name: 'dhcphashbucketassignment'
