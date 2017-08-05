@@ -1615,7 +1615,7 @@ class dhcpsubnetgroup(dhcpgroup):
     label_singular = _('DHCP Group')
 
 @register()
-class dhcpsubnetgroup_find(LDAPSearch):
+class dhcpsubnetgroup_find(dhcpgroup_find):
     __doc__ = _('Search for a DHCP group.')
     msg_summary = ngettext(
         '%(count)d DHCP group matched',
@@ -1623,14 +1623,23 @@ class dhcpsubnetgroup_find(LDAPSearch):
     )
 
 @register()
-class dhcpsubnetgroup_show(LDAPRetrieve):
+class dhcpsubnetgroup_show(dhcpgroup_show):
     __doc__ = _('Display a DHCP group.')
 
+@register()
+class dhcpsubnetgroup_add(dhcpgroup_add):
+    __doc__ = _('Create a new DHCP group.')
+    msg_summary = _('Created DHCP group "%(value)s"')
 
-    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
-        assert isinstance(dn, DN)
-        entry_attrs = dhcpgroup.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
-        return dn
+@register()
+class dhcpsubnetgroup_mod(dhcpgroup_mod):
+    __doc__ = _('Modify a DHCP group.')
+    msg_summary = _('Modified a DHCP group.')
+
+@register()
+class dhcpsubnetgroup_del(dhcpgroup_del):
+    __doc__ = _('Delete a DHCP group.')
+    msg_summary = _('Deleted DHCP group "%(value)s"')
 
 
 #### dhcpgroupgroup #################################################################
@@ -1647,7 +1656,7 @@ class dhcpgroupgroup(dhcpgroup):
     label_singular = _('DHCP Group')
 
 @register()
-class dhcpgroupgroup_find(LDAPSearch):
+class dhcpgroupgroup_find(dhcpgroup_find):
     __doc__ = _('Search for a DHCP group.')
     msg_summary = ngettext(
         '%(count)d DHCP group matched',
@@ -1655,14 +1664,24 @@ class dhcpgroupgroup_find(LDAPSearch):
     )
 
 @register()
-class dhcpgroupgroup_show(LDAPRetrieve):
+class dhcpgroupgroup_show(dhcpgroup_show):
     __doc__ = _('Display a DHCP group.')
 
+@register()
+class dhcpgroupgroup_add(dhcpgroup_add):
+    __doc__ = _('Create a new DHCP group.')
+    msg_summary = _('Created DHCP group "%(value)s"')
 
-    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
-        assert isinstance(dn, DN)
-        entry_attrs = dhcpgroup.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
-        return dn
+@register()
+class dhcpgroupgroup_mod(dhcpgroup_mod):
+    __doc__ = _('Modify a DHCP group.')
+    msg_summary = _('Modified a DHCP group.')
+
+@register()
+class dhcpgroupgroup_del(dhcpgroup_del):
+    __doc__ = _('Delete a DHCP group.')
+    msg_summary = _('Deleted DHCP group "%(value)s"')
+
 
 #### dhcppoolgroup #################################################################
 
@@ -1678,7 +1697,7 @@ class dhcppoolgroup(dhcpgroup):
     label_singular = _('DHCP Group')
 
 @register()
-class dhcppoolgroup_find(LDAPSearch):
+class dhcppoolgroup_find(dhcpgroup_find):
     __doc__ = _('Search for a DHCP group.')
     msg_summary = ngettext(
         '%(count)d DHCP group matched',
@@ -1686,14 +1705,23 @@ class dhcppoolgroup_find(LDAPSearch):
     )
 
 @register()
-class dhcppoolgroup_show(LDAPRetrieve):
+class dhcppoolgroup_show(dhcpgroup_show):
     __doc__ = _('Display a DHCP group.')
 
+@register()
+class dhcppoolgroup_add(dhcpgroup_add):
+    __doc__ = _('Create a new DHCP group.')
+    msg_summary = _('Created DHCP group "%(value)s"')
 
-    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
-        assert isinstance(dn, DN)
-        entry_attrs = dhcpgroup.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
-        return dn
+@register()
+class dhcppoolgroup_mod(dhcpgroup_mod):
+    __doc__ = _('Modify a DHCP group.')
+    msg_summary = _('Modified a DHCP group.')
+
+@register()
+class dhcppoolgroup_del(dhcpgroup_del):
+    __doc__ = _('Delete a DHCP group.')
+    msg_summary = _('Deleted DHCP group "%(value)s"')
 
 
 #### dhcpserver ###############################################################
@@ -2160,7 +2188,7 @@ class dhcpgrouphost(dhcphost):
     search_attributes = [ 'cn', 'dhcphwaddress' ]
 
 @register()
-class dhcpgrouphost_find(LDAPSearch):
+class dhcpgrouphost_find(dhcphost_find):
     __doc__ = _('Search for a DHCP server.')
     msg_summary = ngettext(
         '%(count)d DHCP server matched',
@@ -2168,27 +2196,22 @@ class dhcpgrouphost_find(LDAPSearch):
     )
 
 @register()
-class dhcpgrouphost_show(LDAPRetrieve):
+class dhcpgrouphost_show(dhcphost_show):
     __doc__ = _('Display a DHCP host.')
 
-    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
-        assert isinstance(dn, DN)
-        entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
-        return dn
-
 @register()
-class dhcpgrouphost_add(LDAPCreate):
+class dhcpgrouphost_add(dhcphost_add):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
 
 
 @register()
-class dhcpgrouphost_mod(LDAPUpdate):
+class dhcpgrouphost_mod(dhcphost_mod):
     __doc__ = _('Modify a DHCP host.')
     msg_summary = _('Modified a DHCP host.')
 
 @register()
-class dhcpgrouphost_del(LDAPDelete):
+class dhcpgrouphost_del(dhcphost_del):
     NO_CLI = True
     __doc__ = _('Delete a DHCP host.')
     msg_summary = _('Deleted DHCP host "%(value)s"')
@@ -2209,7 +2232,7 @@ class dhcpsubnetgrouphost(dhcphost):
     search_attributes = [ 'cn', 'dhcphwaddress' ]
 
 @register()
-class dhcpsubnetgrouphost_find(LDAPSearch):
+class dhcpsubnetgrouphost_find(dhcphost_find):
     __doc__ = _('Search for a DHCP server.')
     msg_summary = ngettext(
         '%(count)d DHCP server matched',
@@ -2217,27 +2240,22 @@ class dhcpsubnetgrouphost_find(LDAPSearch):
     )
 
 @register()
-class dhcpsubnetgrouphost_show(LDAPRetrieve):
+class dhcpsubnetgrouphost_show(dhcphost_show):
     __doc__ = _('Display a DHCP host.')
 
-    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
-        assert isinstance(dn, DN)
-        entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
-        return dn
-
 @register()
-class dhcpsubnetgrouphost_add(LDAPCreate):
+class dhcpsubnetgrouphost_add(dhcphost_add):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
 
 
 @register()
-class dhcpsubnetgrouphost_mod(LDAPUpdate):
+class dhcpsubnetgrouphost_mod(dhcphost_mod):
     __doc__ = _('Modify a DHCP host.')
     msg_summary = _('Modified a DHCP host.')
 
 @register()
-class dhcpsubnetgrouphost_del(LDAPDelete):
+class dhcpsubnetgrouphost_del(dhcphost_del):
     NO_CLI = True
     __doc__ = _('Delete a DHCP host.')
     msg_summary = _('Deleted DHCP host "%(value)s"')
@@ -2258,7 +2276,7 @@ class dhcpsubnethost(dhcphost):
     search_attributes = [ 'cn', 'dhcphwaddress' ]
 
 @register()
-class dhcpsubnethost_find(LDAPSearch):
+class dhcpsubnethost_find(dhcphost_find):
     __doc__ = _('Search for a DHCP server.')
     msg_summary = ngettext(
         '%(count)d DHCP server matched',
@@ -2266,26 +2284,21 @@ class dhcpsubnethost_find(LDAPSearch):
     )
 
 @register()
-class dhcpsubnethost_show(LDAPRetrieve):
+class dhcpsubnethost_show(dhcphost_show):
     __doc__ = _('Display a DHCP host.')
 
-    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
-        assert isinstance(dn, DN)
-        entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
-        return dn
-
 @register()
-class dhcpsubnethost_add(LDAPCreate):
+class dhcpsubnethost_add(dhcphost_add):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
 
 @register()
-class dhcpsubnethost_mod(LDAPUpdate):
+class dhcpsubnethost_mod(dhcphost_mod):
     __doc__ = _('Modify a DHCP host.')
     msg_summary = _('Modified a DHCP host.')
 
 @register()
-class dhcpsubnethost_del(LDAPDelete):
+class dhcpsubnethost_del(dhcphost_del):
     NO_CLI = True
     __doc__ = _('Delete a DHCP host.')
     msg_summary = _('Deleted DHCP host "%(value)s"')
@@ -2307,7 +2320,7 @@ class dhcppoolhost(dhcphost):
     search_attributes = [ 'cn', 'dhcphwaddress' ]
 
 @register()
-class dhcppoolhost_find(LDAPSearch):
+class dhcppoolhost_find(dhcphost_find):
     __doc__ = _('Search for a DHCP server.')
     msg_summary = ngettext(
         '%(count)d DHCP server matched',
@@ -2315,27 +2328,22 @@ class dhcppoolhost_find(LDAPSearch):
     )
 
 @register()
-class dhcppoolhost_show(LDAPRetrieve):
+class dhcppoolhost_show(dhcphost_show):
     __doc__ = _('Display a DHCP host.')
 
-    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
-        assert isinstance(dn, DN)
-        entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
-        return dn
-
 @register()
-class dhcppoolhost_add(LDAPCreate):
+class dhcppoolhost_add(dhcphost_add):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
 
 
 @register()
-class dhcppoolhost_mod(LDAPUpdate):
+class dhcppoolhost_mod(dhcphost_mod):
     __doc__ = _('Modify a DHCP host.')
     msg_summary = _('Modified a DHCP host.')
 
 @register()
-class dhcppoolhost_del(LDAPDelete):
+class dhcppoolhost_del(dhcphost_del):
     NO_CLI = True
     __doc__ = _('Delete a DHCP host.')
     msg_summary = _('Deleted DHCP host "%(value)s"')
