@@ -239,6 +239,17 @@ define(
                                         name: 'router',
                                         flags: ['w_if_no_aci'],
                                         validators: [ 'ip_v4_address' ]
+                                    },
+                                    {
+                                        name: 'dhcprange',
+                                        validators: [
+                                            {
+                                                $type: 'dhcprange',
+                                            },
+                                            {
+                                                $type: 'dhcprange_subnet',
+                                            },
+                                        ]
                                     }
                                 ]
                             },
@@ -324,6 +335,17 @@ define(
                             name: 'networkaddr',
                             label: 'Subnet/Prefix',
                             validators: [ 'network' ]
+                        },
+                        {
+                            name: 'dhcprange',
+                            validators: [
+                                {
+                                    $type: 'dhcprange',
+                                },
+                                {
+                                    $type: 'dhcprange_subnet',
+                                },
+                            ]
                         },
                         {
                             $type: 'textarea',

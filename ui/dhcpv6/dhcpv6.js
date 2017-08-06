@@ -25,10 +25,10 @@ define(
 //// Validators ///////////////////////////////////////////////////////////////
 
 
-        IPA.dhcpv6range_validator = function(spec) {
+        IPA.dhcprange6_validator = function(spec) {
 
             spec = spec || {};
-            spec.message = spec.message || 'Range must be of the form x.x.x.x y.y.y.y, where x.x.x.x is the first IP address in the pool and y.y.y.y is the last IP address in the pool.';
+            spec.message = spec.message || 'Range must be of the form xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx yyyy:yyyy:yyyy:yyyy:yyyy:yyyy:yyyy:yyyy, where xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx is the first IP address in the pool and yyy:yyyy:yyyy:yyyy:yyyy:yyyy:yyyy:yyyy is the last IP address in the pool.';
             var that = IPA.validator(spec);
 
             that.validate = function(value) {
@@ -44,24 +44,26 @@ define(
                 var start = NET.ip_address(components[0]);
                 var end = NET.ip_address(components[1]);
 
-                if (!start.valid || start.type != 'v6-quads' || !end.valid || end.type != 'v6-quads') {
+                if (!start.valid || start.type != 'v6' || !end.valid || end.type != 'v6') {
                     return that.false_result();
                 }
 
                 return that.true_result();
             };
 
-            that.dhcpv6range_validate = that.validate;
+            that.dhcprange6_validate = that.validate;
             return that;
         };
 
 
-        IPA.dhcpv6range_subnet_validator = function(spec) {
+        IPA.dhcprange6_subnet_validator = function(spec) {
             spec = spec || {};
-            spec.message = spec.message || 'Invalid IP range.';
+            spec.message = spec.message || 'Invalid IPv6 range.';
             var that = IPA.validator(spec);
 
             that.validate = function(value, context) {
+                that.address_type = 'IPv6';
+
                 if (context.container.rangeIsValid) {
                     return that.true_result();
                 }
@@ -69,7 +71,7 @@ define(
                 return that.false_result();
             }
 
-            that.dhcpv6range_subnet_validate = that.validate;
+            that.dhcprange6_subnet_validate = that.validate;
             return that;
         };
 
@@ -80,42 +82,44 @@ define(
         IPA.dhcpv6.dhcpv6pool_adder_dialog = function(spec) {
             spec = spec || {};
             var that = IPA.entity_adder_dialog(spec);
+            
+            that.address_type = 'IPv6';
 
-            that.previous_dhcpv6range = [];
+            that.previous_dhcprange6 = [];
 
             that.rangeIsValid = false;
-            that.invalidRangeMessage = "Invalid IP range."
+            that.invalidRangeMessage = "Invalid IPv6 range."
 
             that.create_content = function() {
                 that.entity_adder_dialog_create_content();
-                var dhcpv6range_widget = that.fields.get_field('dhcpv6range').widget;
-                dhcpv6range_widget.value_changed.attach(that.dhcpv6range_changed);
+                var dhcprange6_widget = that.fields.get_field('dhcprange6').widget;
+                dhcprange6_widget.value_changed.attach(that.dhcprange6_changed);
             };
 
-            that.dhcpv6range_changed = function() {
+            that.dhcprange6_changed = function() {
 
-                var dhcpv6range_widget = that.fields.get_field('dhcpv6range').widget;
-                var dhcpv6range = dhcpv6range_widget.get_value();
+                var dhcprange6_widget = that.fields.get_field('dhcprange6').widget;
+                var dhcprange6 = dhcprange6_widget.get_value();
                 var name_widget = that.fields.get_field('cn').widget;
                 var name = name_widget.get_value();
 
                 if (name.length == 0) {
-                    name_widget.update(dhcpv6range);
+                    name_widget.update(dhcprange6);
                 }
 
-                if (name.length > 0 && name[0] == that.previous_dhcpv6range) {
-                    name_widget.update(dhcpv6range);
+                if (name.length > 0 && name[0] == that.previous_dhcprange6) {
+                    name_widget.update(dhcprange6);
                 }
 
-                that.previous_dhcpv6range = dhcpv6range;
+                that.previous_dhcprange6 = dhcprange6;
 
-                var firstValidationResult = that.fields.get_field('dhcpv6range').validators[0].validate(that.fields.get_field('dhcpv6range').get_value()[0])
+                var firstValidationResult = that.fields.get_field('dhcprange6').validators[0].validate(that.fields.get_field('dhcprange6').get_value()[0])
 
                 if (firstValidationResult.valid) {
                     setValidFlagCommand = rpc.command({
                         entity: 'dhcpv6pool',
                         method: 'is_valid',
-                        args: that.pkey_prefix.concat([dhcpv6range]),
+                        args: that.pkey_prefix.concat([dhcprange6]),
                         options: {},
                         retry: false,
                         on_success: that.setValidFlag
@@ -224,7 +228,6 @@ define(
                         $type: 'search',
                         columns: [
                             'cn',
-                            'dhcpv6netmask',
                             'dhcpcomments'
                         ]
                     },
@@ -239,6 +242,17 @@ define(
                                         name: 'router',
                                         flags: ['w_if_no_aci'],
                                         validators: [ 'ip_v6_address' ]
+                                    },
+                                    {
+                                        name: 'dhcprange6',
+                                        validators: [
+                                            {
+                                                $type: 'dhcprange6',
+                                            },
+                                            {
+                                                $type: 'dhcprange6_subnet',
+                                            },
+                                        ]
                                     }
                                 ]
                             },
@@ -376,7 +390,7 @@ define(
                                         name: 'cn'
                                     },
                                     {
-                                        name: 'dhcpv6range',
+                                        name: 'dhcprange6',
                                         read_only: true
                                     },
                                     {
@@ -418,13 +432,13 @@ define(
                     $factory: IPA.dhcpv6.dhcpv6pool_adder_dialog,
                     fields: [
                         {
-                            name: 'dhcpv6range',
+                            name: 'dhcprange6',
                             validators: [
                                 {
-                                    $type: 'dhcpv6range',
+                                    $type: 'dhcprange6',
                                 },
                                 {
-                                    $type: 'dhcpv6range_subnet',
+                                    $type: 'dhcprange6_subnet',
                                 },
                             ]
                         },
@@ -860,8 +874,8 @@ define(
             var dhcpv6 = 'dhcpv6'
 
             var v = reg.validator;
-            v.register('dhcpv6range', IPA.dhcpv6range_validator);
-            v.register('dhcpv6range_subnet', IPA.dhcpv6range_subnet_validator);
+            v.register('dhcprange6', IPA.dhcprange6_validator);
+            v.register('dhcprange6_subnet', IPA.dhcprange6_subnet_validator);
 
             var e = reg.entity;
             e.register({type: dhcpv6 +'service', spec: exp.dhcpv6service_entity_spec});

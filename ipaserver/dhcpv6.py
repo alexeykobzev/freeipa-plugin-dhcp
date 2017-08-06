@@ -143,7 +143,7 @@ class dhcpv6subnet_add(dhcpsubnet_add):
 
     def pre_callback(self, ldap, dn, entry_attrs, attrs_list, *keys, **options):
         assert isinstance(dn, DN)
-        ip = IPNetwork('{0}/{1}'.format(keys[-1], options['dhcpv6netmask']))
+        ip = IPNetwork('{0}'.format(keys[-1]))
         dhcpOptions = []
         dhcpOptions.append('subnet-mask {0}'.format(ip.netmask))
         dhcpOptions.append('broadcast-address {0}'.format(ip.broadcast))
@@ -172,7 +172,7 @@ class dhcpv6subnet_add_cidr(Command):
 
     def execute(self, *args, **kw):
         ip = IPNetwork(args[-1])
-        cn = unicode(ip.network)
+        cn = unicode( str(ip) )
         dhcpv6netmask = ip.prefixlen
         result = api.Command['dhcpv6subnet_add'](cn, dhcpv6netmask=dhcpv6netmask)
         return dict(result=result['result'], value=cn)
@@ -312,6 +312,74 @@ class dhcpv6pool(dhcppool):
     label = _('DHCP IPv6 Pools')
     label_singular = _('DHCP IPv6 Pool')
 
+    takes_params = (
+        Str(
+            'cn',
+            cli_name='name',
+            label=_('Name'),
+            doc=_('DHCP pool name.'),
+            primary_key=True
+        ),
+        Str(
+            'dhcprange6',
+            cli_name='range',
+            label=_('Range'),
+            doc=_('DHCP range.')
+        ),
+        Str(
+            'dhcppermitlist*',
+            cli_name='permitlist',
+            label=_('Permit List'),
+            doc=_('DHCP permit list.')
+        ),
+        Str(
+            'dhcpstatements*',
+            cli_name='dhcpstatements',
+            label=_('DHCP Statements'),
+            doc=_('DHCP statements.')
+        ),
+        Str(
+            'dhcpoption*',
+            cli_name='dhcpoptions',
+            label=_('DHCP Options'),
+            doc=_('DHCP options.')
+        ),
+        Str(
+            'dhcpcomments?',
+            cli_name='dhcpcomments',
+            label=_('Comments'),
+            doc=_('DHCP comments.')
+        ),
+        Int(
+            'defaultleasetime?',
+            cli_name='defaultleasetime',
+            label=_('Default Lease Time'),
+            doc=_('Default lease time.'),
+            flags=['virtual_attribute']
+        ),
+        Int(
+            'maxleasetime?',
+            cli_name='maxleasetime',
+            label=_('Maximum Lease Time'),
+            doc=_('Maximum lease time.'),
+            flags=['virtual_attribute']
+        ),
+        Bool(
+            'permitknownclients?',
+            cli_name='permitknownclients',
+            label=_('Permit Known Clients'),
+            doc=_('Permit known clients.'),
+            flags=['virtual_attribute']
+        ),
+        Bool(
+            'permitunknownclients?',
+            cli_name='permitunknownclients',
+            label=_('Permit Unknown Clients'),
+            doc=_('Permit unknown clients.'),
+            flags=['virtual_attribute']
+        ),
+    )
+
 @register()
 class dhcpv6pool_add(dhcppool_add):
     __doc__ = _('Create a new DHCP IPv6 pool.')
@@ -339,6 +407,66 @@ class dhcpv6pool_mod(dhcppool_mod):
 class dhcpv6pool_del(dhcppool_del):
     __doc__ = _('Delete a DHCP IPv6 pool.')
     msg_summary = _('Deleted DHCP IPv6 pool "%(value)s"')
+
+
+@register()
+class dhcpv6pool_is_valid(Command):
+    NO_CLI = True
+    has_output = output.standard_boolean
+    msg_summary = _('"%(value)s"')
+
+    takes_args = (
+        Str(
+            'dhcpsubnetcn',
+            cli_name='subnet',
+            label=_('Subnet'),
+            doc=_('DHCP subnet.')
+        ),
+        Str(
+            'dhcprange6+',
+            cli_name='range',
+            label=_('Range'),
+            doc=_('DHCP range.')
+        )
+    )
+
+    def execute(self, *args, **kw):
+
+        # Run some basic sanity checks on a DHCP pool IP range to make sure it
+        # fits into its parent DHCP subnet. This method looks up the parent
+        # subnet given the necessary LDAP keys because that's what works best
+        # with the GUI.
+
+        dhcpsubnetcn = args[0]
+        dhcprange = args[1][0]
+
+        ldap = self.api.Backend.ldap2
+        dn = DN(
+            ('cn', dhcpsubnetcn),
+            container_dhcpv6_dn,
+            dhcpv6_dn
+        )
+        try:
+            entry = ldap.get_entry(dn)
+        except:
+            return dict(result=False, value=u'No such subnet.')
+
+        subnetIP = IPNetwork( entry['cn'][0] )
+
+        (rangeStart, rangeEnd) = dhcprange.split(" ")
+        rangeStartIP = IPNetwork("{0}/128".format(rangeStart))
+        rangeEndIP = IPNetwork("{0}/128".format(rangeEnd))
+
+        if rangeStartIP > rangeEndIP:
+            return dict(result=False, value=u'First IPv6 must come before last IPv6!')
+
+        if rangeStartIP < subnetIP[0] or rangeStartIP > subnetIP[-1]:
+            return dict(result=False, value=u'{0} is outside parent subnet {1}. Addresses in this pool must come from the range {2}-{3}.'.format(rangeStartIP.ip, subnetIP.cidr, subnetIP[0], subnetIP[-1]))
+
+        if rangeEndIP < subnetIP[0] or rangeEndIP > subnetIP[-1]:
+            return dict(result=False, value=u'{0} is outside parent subnet {1}. Addresses in this pool must come from the range {2}-{3}.'.format(rangeEndIP.ip, subnetIP.cidr, subnetIP[0], subnetIP[-1]))
+
+        return dict(result=True, value=u'Valid IPv6 range.')
 
 
 #### dhcpgroup #################################################################
