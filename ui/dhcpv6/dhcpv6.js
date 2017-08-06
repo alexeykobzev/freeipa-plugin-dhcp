@@ -253,7 +253,12 @@ define(
                                                 $type: 'dhcprange6_subnet',
                                             },
                                         ]
-                                    }
+                                    },
+                                    {
+                                        $type: 'multivalued',
+                                        flags: ['w_if_no_aci'],
+                                        name: 'domainnameserver'
+                                    },
                                 ]
                             },
                             {

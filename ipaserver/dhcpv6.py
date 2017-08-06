@@ -103,6 +103,12 @@ class dhcpv6subnet(dhcpsubnet):
             doc=_('DHCP IPv6 range.')
         ),
         Str(
+            'domainnameserver*',
+            cli_name='domainnameserver',
+            label=_('Domain Name Server'),
+            doc=_('Domain Name Servers.')
+        ),
+        Str(
             'dhcpstatements*',
             cli_name='dhcpstatements',
             label=_('DHCP IPv6 Statements'),
@@ -134,6 +140,24 @@ class dhcpv6subnet(dhcpsubnet):
             flags=['virtual_attribute']
         )
    )
+
+
+    @staticmethod
+    def extract_virtual_params(ldap, dn, entry_attrs, keys, options):
+
+        dhcpOptions = entry_attrs.get('dhcpoption', [])
+
+        for option in dhcpOptions:
+            if option.startswith('routers '):
+                (o, v) = option.split(' ', 1)
+                entry_attrs['router'] = v
+
+            elif option.startswith('dhcp6.name-servers '):
+                (o, v) = option.split(' ', 1)
+                entry_attrs['domainnameserver'] = v.split(', ')
+
+        return entry_attrs
+
 
 @register()
 class dhcpv6subnet_add(dhcpsubnet_add):
@@ -190,10 +214,58 @@ class dhcpv6subnet_find(dhcpsubnet_find):
 class dhcpv6subnet_show(dhcpsubnet_show):
     __doc__ = _('Display a DHCP IPv6 subnet.')
 
+    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
+        assert isinstance(dn, DN)
+        entry_attrs = dhcpv6subnet.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
+        return dn
+
 @register()
 class dhcpv6subnet_mod(dhcpsubnet_mod):
     __doc__ = _('Modify a DHCP IPv6 subnet.')
     msg_summary = _('Modified a DHCP IPv6 subnet.')
+
+
+    def pre_callback(self, ldap, dn, entry_attrs, attrs_list, *keys, **options):
+        assert isinstance(dn, DN)
+
+        entry = ldap.get_entry(dn)
+
+        if 'dhcpoption' in entry_attrs:
+            dhcpOptions = entry_attrs.get('dhcpoption', [])
+        else:
+            dhcpOptions = entry.get('dhcpoption', [])
+
+        if 'router' in options:
+            option = 'routers {0}'.format(options['router'])
+            foundOption = False
+            for i, s in enumerate(dhcpOptions):
+                if s.startswith('routers '):
+                    foundOption = True
+                    dhcpOptions[i] = option
+                    break
+            if not foundOption:
+                dhcpOptions.append(option)
+       
+        if 'domainnameserver' in options:
+            option = 'dhcp6.name-servers ' + ', '.join( s for s in options['domainnameserver'])
+            foundOption = False
+            for i, s in enumerate(dhcpOptions):
+                if s.startswith('dhcp6.name-servers '):
+                    foundOption = True
+                    dhcpOptions[i] = option
+                    break
+            if not foundOption:
+                dhcpOptions.append(option)
+
+        entry_attrs['dhcpoption'] = dhcpOptions
+
+        return dn
+
+
+    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
+        assert isinstance(dn, DN)
+        entry_attrs = dhcpv6subnet.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
+        return dn
 
 @register()
 class dhcpv6subnet_del(dhcpsubnet_del):
@@ -751,6 +823,7 @@ class dhcpv6host(dhcphost):
         for statements in dhcpStatements:
             if statements.startswith('fixed-address6 '):
                 (o, v) = statements.split(' ', 1)
+                entry_attrs['ipaddress6'] = v
                 entry_attrs['ipaddress6'] = v
             elif statements.startswith('ddns-hostname '):
                 (o, v) = statements.split(' ', 1)

@@ -392,7 +392,13 @@ class dhcpsubnet(LDAPObject):
             label=_('Router'),
             doc=_('Router.'),
             flags=['virtual_attribute']
-        )
+        ),
+        Str(
+            'domainnameserver*',
+            cli_name='domainnameserver',
+            label=_('Domain Name Server'),
+            doc=_('Domain Name Servers.')
+        ),
     )
 
 
@@ -405,6 +411,10 @@ class dhcpsubnet(LDAPObject):
             if option.startswith('routers '):
                 (o, v) = option.split(' ', 1)
                 entry_attrs['router'] = v
+
+            elif option.startswith('domain-name-servers '):
+                (o, v) = option.split(' ', 1)
+                entry_attrs['domainnameserver'] = v.split(', ')
 
         return entry_attrs
 
@@ -494,6 +504,17 @@ class dhcpsubnet_mod(LDAPUpdate):
             foundOption = False
             for i, s in enumerate(dhcpOptions):
                 if s.startswith('routers '):
+                    foundOption = True
+                    dhcpOptions[i] = option
+                    break
+            if not foundOption:
+                dhcpOptions.append(option)
+       
+        if 'domainnameserver' in options:
+            option = 'domain-name-servers ' + ', '.join( s for s in options['domainnameserver'])
+            foundOption = False
+            for i, s in enumerate(dhcpOptions):
+                if s.startswith('domain-name-servers '):
                     foundOption = True
                     dhcpOptions[i] = option
                     break
