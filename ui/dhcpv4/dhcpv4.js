@@ -687,12 +687,8 @@ define(
                     }
                 ],
                 adder_dialog: {
+                    method: 'add_dialog',
                     fields: [
-                        {
-                            name: 'cn',
-                            flags: ['w_if_no_aci'],
-                            required: true
-                        },
                         {
                             $type: 'entity_select',
                             name: 'fqdn',

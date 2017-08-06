@@ -369,6 +369,12 @@ class dhcpsubnet(LDAPObject):
             doc=_('DHCP statements.')
         ),
         Str(
+            'dhcppermitlist*',
+            cli_name='dhcppermitlist',
+            label=_('DHCP permit list'),
+            doc=_('DHCP permit list.')
+        ),
+        Str(
             'dhcpoption*',
             cli_name='dhcpoptions',
             label=_('DHCP Options'),
@@ -1940,7 +1946,7 @@ class dhcphost(LDAPObject):
 
     takes_params = (
         Str(
-            'cn',
+            'cn?',
             cli_name='cn',
             label=_('Canonical Name'),
             doc=_('Canonical name.'),
@@ -2029,52 +2035,49 @@ class dhcphost_add(LDAPCreate):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
 
-    def pre_callback(self, ldap, dn, entry_attrs, attrs_list, *keys, **options):
-        assert isinstance(dn, DN)
 
-        if 'fqdn' in options:
-            hostname = options['fqdn']
-            
-        if 'macaddress' in options:
-            macaddress = options['macaddress']
+@register()
+class dhcphost_add_dialog(Command):
 
-        if 'ipaddress' in options:
-            ipaddress = options['ipaddress']
+   takes_args = (
+        Str(
+            'fqdn',
+            cli_name='fqdn',
+            label=_('Hostname'),
+            doc=_("Hostname.")
+        ),
+        Str(
+            'macaddress',
+            normalizer=lambda value: value.upper(),
+            pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
+            pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
+                            'each H is a hexadecimal character.'),
+            cli_name='macaddress',
+            label=_('MAC Address'),
+            doc=_("MAC address.")
+        ),
+        Str(
+            'ipaddress',
+            cli_name='ipaddress',
+            label=_('IP Address'),
+            doc=_("Hosts IP Address.")
+        )
+    )
 
-        if 'dhcpStatements' in entry_attrs:
-             entryDHCPStatements = entry_attrs['dhcpStatements']
-        else:
-             entryDHCPStatements = []
-
-        entryDHCPStatements.append(u'ddns-hostname {0}'.format(hostname))
-        entryDHCPStatements.append(u'fixed-address {0}'.format(ipaddress))
-
-        entry_attrs['dhcpstatements'] = entryDHCPStatements
-
-        if 'dhcpoption' in entry_attrs:
-            entryDHCPOptions = entry_attrs['dhcpoption']
-        else:
-            entryDHCPOptions = []
-
-        entryDHCPOptions.append(u'host-name "{0}"'.format(hostname))
-
-
-        macaddress = '{macaddress}'.format(macaddress=macaddress).replace('u','').replace('(','').replace(')','').replace('\'','').replace(',','')
-        entry_attrs['dhcpoption'] = entryDHCPOptions
-        entry_attrs['dhcphwaddress'] = 'ethernet {0}'.format(macaddress)
-
-        #entry_attrs['cn'] = '{hostname}-{macaddress}'.format(hostname=hostname,macaddress=macaddress.replace(':', '')) 
-
-        #self.pre_common_callback(ldap, dn, entry_attrs, attrs_list, *keys, **options)
-
-        return dn
-
-    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
-        assert isinstance(dn, DN)
-        entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
-
-        # self.post_common_callback(ldap, dn, entry_attrs, *keys, **options)
-        return dn
+#     def execute(self, *args, **kw):
+#         hostname = args[0]
+#         macaddress = args[1]
+#         cn = u'{hostname}-{macaddress}'.format(
+#             hostname=hostname,
+#             macaddress=macaddress.replace(':', '')
+#         )
+#         result = api.Command['dhcphost_add_dhcpschema'](
+#             cn,
+#             dhcphwaddress=u'ethernet {0}'.format(macaddress),
+#             dhcpstatements=[u'fixed-address {0}'.format(hostname)],
+#             dhcpoption=[u'host-name "{0}"'.format(hostname)]
+#         )
+#         return dict(result=result['result'], value=cn)
 
 @register()
 class dhcphost_mod(LDAPUpdate):

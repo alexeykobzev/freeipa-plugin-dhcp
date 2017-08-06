@@ -34,7 +34,7 @@ define(
             that.validate = function(value) {
                 if (IPA.is_empty(value)) return that.true_result();
 
-                that.address_type = 'IPv4';
+                that.address_type = 'IPv6';
 
                 var components = value.split(" ");
                 if (components.length != 2) {
@@ -44,7 +44,7 @@ define(
                 var start = NET.ip_address(components[0]);
                 var end = NET.ip_address(components[1]);
 
-                if (!start.valid || start.type != 'v4-quads' || !end.valid || end.type != 'v4-quads') {
+                if (!start.valid || start.type != 'v6-quads' || !end.valid || end.type != 'v6-quads') {
                     return that.false_result();
                 }
 
@@ -238,7 +238,7 @@ define(
                                     {
                                         name: 'router',
                                         flags: ['w_if_no_aci'],
-                                        validators: [ 'ip_v4_address' ]
+                                        validators: [ 'ip_v6_address' ]
                                     }
                                 ]
                             },
@@ -248,10 +248,6 @@ define(
                                 fields: [
                                     {
                                         name: 'cn',
-                                        read_only: true
-                                    },
-                                    {
-                                        name: 'dhcpv6netmask',
                                         read_only: true
                                     },
                                     {
