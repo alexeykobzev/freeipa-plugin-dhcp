@@ -685,6 +685,93 @@ class dhcpv6host(dhcphost):
     label = _('DHCP IPv6 Hosts')
     label_singular = _('DHCP IPv6 Host')
 
+    takes_params = (
+        Str(
+            'cn?',
+            cli_name='cn',
+            label=_('Canonical Name'),
+            doc=_('Canonical name.'),
+            primary_key=True
+        ),
+        Str(
+            'fqdn',
+            cli_name='fqdn',
+            label=_('Host Name'),
+            doc=_('Host name.'),
+            flags=['virtual_attribute']
+        ),
+        Str('macaddress*',
+            normalizer=lambda value: value.upper(),
+            pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
+            pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
+                            'each H is a hexadecimal character.'),
+            label=_('MAC address'),
+            doc=_('Hardware MAC address(es) on this host'),
+            flags=['virtual_attribute']
+        ),
+        Str(
+            'ipaddress6?',
+            cli_name='ipaddress6',
+            label=_('Host IPv6 Address'),
+            doc=_('Host IPv6 Address.'),
+            flags=['virtual_attribute']
+        ),
+        Str(
+            'hostname?',
+            cli_name='hostname',
+            label=_('Host name'),
+            doc=_('Host name.'),
+            flags=['virtual_attribute']
+        ),
+        Str(
+            'dhcpclientid?',
+            cli_name='dhcpclientid',
+            label=_('Client Identifier'),
+            doc=_('Client Identifier.')
+        ),
+        Str(
+            'dhcpstatements*',
+            cli_name='dhcpstatements',
+            label=_('DHCP Statements'),
+            doc=_('DHCP statements.')
+        ),
+        Str(
+            'dhcpoption*',
+            cli_name='dhcpoptions',
+            label=_('DHCP Options'),
+            doc=_('DHCP options.')
+        ),
+    )
+
+    @staticmethod
+    def extract_virtual_params(ldap, dn, entry_attrs, keys, options):
+
+        dhcpStatements = entry_attrs.get('dhcpstatements', [])
+
+        for statements in dhcpStatements:
+            if statements.startswith('fixed-address6 '):
+                (o, v) = statements.split(' ', 1)
+                entry_attrs['ipaddress6'] = v
+            elif statements.startswith('ddns-hostname '):
+                (o, v) = statements.split(' ', 1)
+                entry_attrs['hostname'] = v.replace('"', '')
+
+        dhcpHWaddress = entry_attrs.get('dhcphwaddress', [])
+
+        for hwaddress in dhcpHWaddress:
+            if hwaddress.startswith('ethernet '):
+                (o, v) = hwaddress.split(' ', 1)
+                entry_attrs['macaddress'] = v.replace('"', '')
+
+        dhcpOptions = entry_attrs.get('dhcpoption', [])
+
+        for option in dhcpOptions:
+            if option.startswith('host-name '):
+                (o, v) = option.split(' ', 1)
+                entry_attrs['hostname'] = v.replace('"', '')
+
+        return entry_attrs
+
 @register()
 class dhcpv6host_find(dhcphost_find):
     __doc__ = _('Search for a DHCP IPv6 host.')
@@ -697,6 +784,18 @@ class dhcpv6host_find(dhcphost_find):
 class dhcpv6host_show(dhcphost_show):
     __doc__ = _('Display a DHCP IPv6 host.')
 
+    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
+        assert isinstance(dn, DN)
+        entry_attrs = dhcpv6host.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
+        return dn
+
+@register()
+class dhcpv6host_add_dhcpschema(LDAPCreate):
+    NO_CLI = True
+    __doc__ = _('Create a new DHCP host.')
+    msg_summary = _('Created DHCP host "%(value)s"')
+
+
 @register()
 class dhcpv6host_add(dhcphost_add):
     __doc__ = _('Create a new DHCP IPv6 host.')
@@ -708,15 +807,110 @@ class dhcpv6host_mod(dhcphost_mod):
     __doc__ = _('Modify a DHCP IPv6 host.')
     msg_summary = _('Modified a DHCP IPv6 host.')
 
+    def pre_callback(self, ldap, dn, entry_attrs, attrs_list, *keys, **options):
+        assert isinstance(dn, DN)
+
+        entry = ldap.get_entry(dn)
+
+        if 'dhcpstatements' in entry_attrs:
+            dhcpStatements = entry_attrs.get('dhcpstatements', [])
+        else:
+            dhcpStatements = entry.get('dhcpstatements', [])
+
+        if 'hoatname' in options:
+            option = 'ddns-hostname "{0}"'.format(options['hostname'])
+            foundOption = False
+            for i, s in enumerate(dhcpOptions):
+                if s.startswith('ddns-hostname '):
+                    foundOption = True
+                    dhcpOptions[i] = option
+                    break
+            if not foundOption:
+                dhcpOptions.append(option)
+
+        entry_attrs['dhcpStatements'] = dhcpStatements
+
+        if 'dhcpoption' in entry_attrs:
+            dhcpOptions = entry_attrs.get('dhcpoption', [])
+        else:
+            dhcpOptions = entry.get('dhcpoption', [])
+
+        if 'hoatname' in options:
+            option = 'host-name "{0}"'.format(options['hostname'])
+            foundOption = False
+            for i, s in enumerate(dhcpOptions):
+                if s.startswith('host-name '):
+                    foundOption = True
+                    dhcpOptions[i] = option
+                    break
+            if not foundOption:
+                dhcpOptions.append(option)
+
+        entry_attrs['dhcpoption'] = dhcpOptions
+
+        return dn
+
+    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
+        assert isinstance(dn, DN)
+        entry_attrs = dhcpv6host.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
+        return dn
+
 
 @register()
 class dhcpv6host_del(dhcphost_del):
     __doc__ = _('Delete a DHCP IPv6 host.')
     msg_summary = _('Deleted DHCP IPv6 host "%(value)s"')
 
+
+@register()
+class dhcpv6host_add_cmd(Command):
+    has_output = output.standard_entry
+    __doc__ = _('Create a new DHCP host.')
+    msg_summary = _('Created DHCP host "%(value)s"')
+
+    takes_args = (
+        Str(
+            'hostname',
+            cli_name='hostname',
+            label=_('Hostname'),
+            doc=_("Hostname.")
+        ),
+        Str(
+            'macaddress',
+            normalizer=lambda value: value.upper(),
+            pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
+            pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
+                            'each H is a hexadecimal character.'),
+            cli_name='macaddress',
+            label=_('MAC Address'),
+            doc=_("MAC address.")
+        ),
+        Str(
+            'ipaddress6',
+            cli_name='ipaddress6',
+            label=_('IPv6 Address'),
+            doc=_("Hosts IPv6 Address.")
+        )
+    )
+
+    def execute(self, *args, **kw):
+        hostname = args[0]
+        macaddress = args[1]
+        cn = u'{hostname}-{macaddress}'.format(
+            hostname=hostname,
+            macaddress=macaddress.replace(':', '')
+        )
+        result = api.Command['dhcphost_add_dhcpschema'](
+            cn,
+            dhcphwaddress=u'ethernet {0}'.format(macaddress),
+            dhcpstatements=[u'fixed-address6 {0}'.format(hostname), u'ddnshostname "{0}"'.format(hostname)],
+            dhcpoption=[u'host-name "{0}"'.format(hostname)]
+        )
+        return dict(result=result['result'], value=cn)
+
 #### dhcphost_group ###############################################################
 @register()
-class dhcpv6grouphost(dhcpgrouphost):
+class dhcpv6grouphost(dhcpv6host):
     parent_object = 'dhcpv6subnetgroup'
     container_dn = container_dhcpv6_dn
     object_name = _('DHCP IPv6 host')
@@ -728,8 +922,9 @@ class dhcpv6grouphost(dhcpgrouphost):
 
     search_attributes = [ 'cn', 'dhcphwaddress' ]
 
+
 @register()
-class dhcpv6grouphost_find(dhcpgrouphost_find):
+class dhcpv6grouphost_find(dhcpv6host_find):
     __doc__ = _('Search for a DHCP IPv6 server.')
     msg_summary = ngettext(
         '%(count)d DHCP IPv6 server matched',
@@ -737,22 +932,22 @@ class dhcpv6grouphost_find(dhcpgrouphost_find):
     )
 
 @register()
-class dhcpv6grouphost_show(dhcpgrouphost_show):
+class dhcpv6grouphost_show(dhcpv6host_show):
     __doc__ = _('Display a DHCP IPv6 host.')
 
 @register()
-class dhcpv6grouphost_add(dhcpgrouphost_add):
+class dhcpv6grouphost_add(dhcpv6host_add):
     __doc__ = _('Create a new DHCP IPv6 host.')
     msg_summary = _('Created DHCP IPv6 host "%(value)s"')
 
 
 @register()
-class dhcpv6grouphost_mod(dhcpgrouphost_mod):
+class dhcpv6grouphost_mod(dhcpv6host_mod):
     __doc__ = _('Modify a DHCP IPv6 host.')
     msg_summary = _('Modified a DHCP IPv6 host.')
 
 @register()
-class dhcpv6grouphost_del(dhcpgrouphost_del):
+class dhcpv6grouphost_del(dhcpv6host_del):
     NO_CLI = True
     __doc__ = _('Delete a DHCP IPv6 host.')
     msg_summary = _('Deleted DHCP IPv6 host "%(value)s"')
@@ -760,7 +955,7 @@ class dhcpv6grouphost_del(dhcpgrouphost_del):
 
 #### dhcphost_group ###############################################################
 @register()
-class dhcpv6subnetgrouphost(dhcpsubnetgrouphost):
+class dhcpv6subnetgrouphost(dhcpv6host):
     parent_object = 'dhcpv6subnetgroup'
     container_dn = container_dhcpv6_dn
     object_name = _('DHCP IPv6 host')
@@ -773,7 +968,7 @@ class dhcpv6subnetgrouphost(dhcpsubnetgrouphost):
     search_attributes = [ 'cn', 'dhcphwaddress' ]
 
 @register()
-class dhcpv6subnetgrouphost_find(dhcpsubnetgrouphost_find):
+class dhcpv6subnetgrouphost_find(dhcpv6host_find):
     __doc__ = _('Search for a DHCP IPv6 server.')
     msg_summary = ngettext(
         '%(count)d DHCP IPv6 server matched',
@@ -781,22 +976,22 @@ class dhcpv6subnetgrouphost_find(dhcpsubnetgrouphost_find):
     )
 
 @register()
-class dhcpv6subnetgrouphost_show(dhcpsubnetgrouphost_show):
+class dhcpv6subnetgrouphost_show(dhcpv6host_show):
     __doc__ = _('Display a DHCP IPv6 host.')
 
 @register()
-class dhcpv6subnetgrouphost_add(dhcpsubnetgrouphost_add):
+class dhcpv6subnetgrouphost_add(dhcpv6host_add):
     __doc__ = _('Create a new DHCP IPv6 host.')
     msg_summary = _('Created DHCP IPv6 host "%(value)s"')
 
 
 @register()
-class dhcpv6subnetgrouphost_mod(dhcpsubnetgrouphost_mod):
+class dhcpv6subnetgrouphost_mod(dhcpv6host_mod):
     __doc__ = _('Modify a DHCP IPv6 host.')
     msg_summary = _('Modified a DHCP IPv6 host.')
 
 @register()
-class dhcpv6subnetgrouphost_del(dhcpsubnetgrouphost_del):
+class dhcpv6subnetgrouphost_del(dhcpv6host_del):
     NO_CLI = True
     __doc__ = _('Delete a DHCP IPv6 host.')
     msg_summary = _('Deleted DHCP IPv6 host "%(value)s"')
@@ -804,7 +999,7 @@ class dhcpv6subnetgrouphost_del(dhcpsubnetgrouphost_del):
 #### dhcphost_subnet ###############################################################
 
 @register()
-class dhcpv6subnethost(dhcpsubnethost):
+class dhcpv6subnethost(dhcpv6host):
     parent_object = 'dhcpv6subnet'
     container_dn = container_dhcpv6_dn
     object_name = _('DHCP IPv6 host')
@@ -817,7 +1012,7 @@ class dhcpv6subnethost(dhcpsubnethost):
     search_attributes = [ 'cn', 'dhcphwaddress' ]
 
 @register()
-class dhcpv6subnethost_find(dhcpsubnethost_find):
+class dhcpv6subnethost_find(dhcpv6host_find):
     __doc__ = _('Search for a DHCP IPv6 server.')
     msg_summary = ngettext(
         '%(count)d DHCP IPv6 server matched',
@@ -825,21 +1020,21 @@ class dhcpv6subnethost_find(dhcpsubnethost_find):
     )
 
 @register()
-class dhcpv6subnethost_show(dhcpsubnethost_show):
+class dhcpv6subnethost_show(dhcpv6host_show):
     __doc__ = _('Display a DHCP IPv6 host.')
 
 @register()
-class dhcpv6subnethost_add(dhcpsubnethost_add):
+class dhcpv6subnethost_add(dhcpv6host_add):
     __doc__ = _('Create a new DHCP IPv6 host.')
     msg_summary = _('Created DHCP IPv6 host "%(value)s"')
 
 @register()
-class dhcpv6subnethost_mod(dhcpsubnethost_mod):
+class dhcpv6subnethost_mod(dhcpv6host_mod):
     __doc__ = _('Modify a DHCP IPv6 host.')
     msg_summary = _('Modified a DHCP IPv6 host.')
 
 @register()
-class dhcpv6subnethost_del(dhcpsubnethost_del):
+class dhcpv6subnethost_del(dhcpv6host_del):
     NO_CLI = True
     __doc__ = _('Delete a DHCP IPv6 host.')
     msg_summary = _('Deleted DHCP IPv6 host "%(value)s"')
@@ -848,7 +1043,7 @@ class dhcpv6subnethost_del(dhcpsubnethost_del):
 #### dhcphost_pool ###############################################################
 
 @register()
-class dhcpv6poolhost(dhcppoolhost):
+class dhcpv6poolhost(dhcpv6host):
     parent_object = 'dhcpv6pool'
     container_dn = container_dhcpv6_dn
     object_name = _('DHCP IPv6 host')
@@ -861,7 +1056,7 @@ class dhcpv6poolhost(dhcppoolhost):
     search_attributes = [ 'cn', 'dhcphwaddress' ]
 
 @register()
-class dhcpv6poolhost_find(dhcppoolhost_find):
+class dhcpv6poolhost_find(dhcpv6host_find):
     __doc__ = _('Search for a DHCP IPv6 server.')
     msg_summary = ngettext(
         '%(count)d DHCP IPv6 server matched',
@@ -869,22 +1064,22 @@ class dhcpv6poolhost_find(dhcppoolhost_find):
     )
 
 @register()
-class dhcpv6poolhost_show(dhcppoolhost_show):
+class dhcpv6poolhost_show(dhcpv6host_show):
     __doc__ = _('Display a DHCP IPv6 host.')
 
 @register()
-class dhcpv6poolhost_add(dhcppoolhost_add):
+class dhcpv6poolhost_add(dhcpv6host_add):
     __doc__ = _('Create a new DHCP IPv6 host.')
     msg_summary = _('Created DHCP IPv6 host "%(value)s"')
 
 
 @register()
-class dhcpv6poolhost_mod(dhcppoolhost_mod):
+class dhcpv6poolhost_mod(dhcpv6host_mod):
     __doc__ = _('Modify a DHCP IPv6 host.')
     msg_summary = _('Modified a DHCP IPv6 host.')
 
 @register()
-class dhcpv6poolhost_del(dhcppoolhost_del):
+class dhcpv6poolhost_del(dhcpv6host_del):
     NO_CLI = True
     __doc__ = _('Delete a DHCP IPv6 host.')
     msg_summary = _('Deleted DHCP IPv6 host "%(value)s"')

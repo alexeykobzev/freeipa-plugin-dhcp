@@ -1969,14 +1969,39 @@ class dhcphost(LDAPObject):
             flags=['virtual_attribute']
         ),
         Str(
-            'ipaddress',
+            'ipaddress?',
             cli_name='ipaddress',
             label=_('Host IP Address'),
             doc=_('Host IP Address.'),
             flags=['virtual_attribute']
-        )
+        ),
+        Str(
+            'hostname?',
+            cli_name='hostname',
+            label=_('Host name'),
+            doc=_('Host name.'),
+            flags=['virtual_attribute']
+        ),
+        Str(
+            'dhcpclientid?',
+            cli_name='dhcpclientid',
+            label=_('Client Identifier'),
+            doc=_('Client Identifier.')
+        ),
+        Str(
+            'dhcpstatements*',
+            cli_name='dhcpstatements',
+            label=_('DHCP Statements'),
+            doc=_('DHCP statements.')
+        ),
+        Str(
+            'dhcpoption*',
+            cli_name='dhcpoptions',
+            label=_('DHCP Options'),
+            doc=_('DHCP options.')
+        ),
     )
-    
+
     @staticmethod
     def extract_virtual_params(ldap, dn, entry_attrs, keys, options):
 
@@ -1985,7 +2010,10 @@ class dhcphost(LDAPObject):
         for statements in dhcpStatements:
             if statements.startswith('fixed-address '):
                 (o, v) = statements.split(' ', 1)
-                entry_attrs['ipaddress'] = v.replace('"', '')
+                entry_attrs['ipaddress'] = v
+            elif statements.startswith('ddns-hostname '):
+                (o, v) = statements.split(' ', 1)
+                entry_attrs['hostname'] = v.replace('"', '')
 
         dhcpHWaddress = entry_attrs.get('dhcphwaddress', [])
 
@@ -1993,6 +2021,13 @@ class dhcphost(LDAPObject):
             if hwaddress.startswith('ethernet '):
                 (o, v) = hwaddress.split(' ', 1)
                 entry_attrs['macaddress'] = v.replace('"', '')
+
+        dhcpOptions = entry_attrs.get('dhcpoption', [])
+
+        for option in dhcpOptions:
+            if option.startswith('host-name '):
+                (o, v) = option.split(' ', 1)
+                entry_attrs['hostname'] = v.replace('"', '')
 
         return entry_attrs
 
@@ -2136,7 +2171,7 @@ class dhcphost_add_cmd(Command):
         result = api.Command['dhcphost_add_dhcpschema'](
             cn,
             dhcphwaddress=u'ethernet {0}'.format(macaddress),
-            dhcpstatements=[u'fixed-address {0}'.format(hostname)],
+            dhcpstatements=[u'fixed-address {0}'.format(hostname), u'ddnshostname "{0}"'.format(hostname)],
             dhcpoption=[u'host-name "{0}"'.format(hostname)]
         )
         return dict(result=result['result'], value=cn)

@@ -677,6 +677,10 @@ define(
                                         read_only: true
                                     },
                                     {
+                                        name: 'hostname',
+                                        flags: ['w_if_no_aci']
+                                    },
+                                    {
                                         name: 'macaddress',
                                         flags: ['w_if_no_aci']
                                     },
@@ -684,6 +688,9 @@ define(
                                         name: 'ipaddress',
                                         flags: ['w_if_no_aci'],
                                         validators: [ 'ip_v4_address' ]
+                                    },
+                                    {
+                                        name: 'dhcpclientid'
                                     },
                                 ]
                             },

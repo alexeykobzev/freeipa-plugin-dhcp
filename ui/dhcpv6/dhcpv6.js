@@ -661,13 +661,20 @@ define(
                                         read_only: true
                                     },
                                     {
+                                        name: 'hostname',
+                                        flags: ['w_if_no_aci']
+                                    },
+                                    {
                                         name: 'macaddress',
                                         flags: ['w_if_no_aci']
                                     },
                                     {
-                                        name: 'ipaddress',
+                                        name: 'ipaddress6',
                                         flags: ['w_if_no_aci'],
                                         validators: [ 'ip_v6_address' ]
+                                    },
+                                    {
+                                        name: 'dhcpclientid'
                                     },
                                 ]
                             },
@@ -712,7 +719,7 @@ define(
                             required: true
                         },
                         {
-                            name: 'ipaddress',
+                            name: 'ipaddress6',
                             flags: ['w_if_no_aci'],
                             validators: [ 'ip_v6_address' ]
                         },
