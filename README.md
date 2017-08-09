@@ -1,6 +1,7 @@
 # IPA-dhcp
 
 :warning: **Don’t use this project it's still in development**
+:warning: **This project is not (jet) backward compatible with the older versiont**
 
 
 
