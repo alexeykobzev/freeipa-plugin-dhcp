@@ -1,4 +1,5 @@
 # Copyright © 2016 Jeffery Harrell <jefferyharrell@gmail.com>
+# Copyright © 2017 Edward Heuveling <cabeljunky@gmail.com>
 # See file 'LICENSE' for use and warranty information.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -14,8 +15,44 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#### Indexing properties ######################################################
+
+dn: cn=dhcpHWAddress,cn=index,cn=userRoot,cn=ldbm database,cn=plugins,cn=config
+add: objectClass:top
+add: objectClass:nsIndex
+add: cn:dhcpHWAddress
+add: nsSystemIndex:false
+add: nsIndexType:eq
+
+dn: cn=dhcpClassData,cn=index,cn=userRoot,cn=ldbm database,cn=plugins,cn=config
+add: objectClass:top
+add: objectClass:nsIndex
+add: cn:dhcpClassData
+add: nsSystemIndex:false
+add: nsIndexType:eq
+
+#### Server base objects ######################################################
+
 dn: cn=dhcp,$SUFFIX
 add: objectClass: top
+add: objectClass: dhcpService
+add: dhcpStatements: authoritative
+add: dhcpStatements: default-lease-time 43200
+add: dhcpStatements: max-lease-time 86400
+add: dhcpStatements: one-lease-per-client on
+
+dn: cn=v4,cn=dhcp,$SUFFIX
+add: objectclass: nsContainer
+add: objectclass: top
+add: objectClass: dhcpService
+add: dhcpStatements: authoritative
+add: dhcpStatements: default-lease-time 43200
+add: dhcpStatements: max-lease-time 86400
+add: dhcpStatements: one-lease-per-client on
+
+dn: cn=v6,cn=dhcp,$SUFFIX
+add: objectclass: nsContainer
+add: objectclass: top
 add: objectClass: dhcpService
 add: dhcpStatements: authoritative
 add: dhcpStatements: default-lease-time 43200
@@ -25,10 +62,46 @@ add: dhcpStatements: one-lease-per-client on
 #### Managed permissions ######################################################
 
 dn: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
-add: objectClass: top
 add: objectClass: groupofnames
 add: objectClass: nestedgroup
+add: objectClass: top
 only: description: DHCP Administrators
+
+dn: cn=DHCP Servers,cn=privileges,cn=pbac,$SUFFIX
+add: objectClass: groupofnames
+add: objectClass: nestedgroup
+add: objectClass: top
+only: description: DHCP Servers
+
+dn: cn=Read DHCP configuration,cn=permissions,cn=pbac,$SUFFIX
+add: objectClass: groupofnames
+add: objectClass: nestedgroup
+add: objectClass: top
+add: member: cn=DHCP Servers,cn=privileges,cn=pbac,$SUFFIX
+add: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
+only: description: Read DHCP configuration
+
+dn: cn=Read DHCP leases,cn=permissions,cn=pbac,$SUFFIX
+add: objectClass: groupofnames
+add: objectClass: nestedgroup
+add: objectClass: top
+add: member: cn=DHCP Servers,cn=privileges,cn=pbac,$SUFFIX
+add: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
+only: description: Read DHCP leases
+
+dn: cn=Write DHCP configuration,cn=permissions,cn=pbac,$SUFFIX
+add: objectClass: groupofnames
+add: objectClass: nestedgroup
+add: objectClass: top
+add: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
+only: description: Write DHCP configuration
+
+dn: cn=Write DHCP leases,cn=permissions,cn=pbac,$SUFFIX
+add: objectClass: groupofnames
+add: objectClass: nestedgroup
+add: objectClass: top
+add: member: cn=DHCP Servers,cn=privileges,cn=pbac,$SUFFIX
+only: description: Write DHCP leases
 
 ###############################################################################
 

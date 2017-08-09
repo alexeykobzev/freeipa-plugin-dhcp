@@ -1,6 +1,8 @@
 # IPA-dhcp
 
 :warning: **Don’t use this project it's still in development**
+:warning: **This project is not (jet) backward compatible with the older versiont**
+:warning: **If you want to use the DHCPv6 via LDAP you need the ISC DHCP version 4.3.3, older version lack the support for "dhcpSubnet6, dhcpPool6, and dhcpRange6" classes.**
 
 
 
