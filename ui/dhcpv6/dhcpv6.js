@@ -32,23 +32,41 @@ define(
             var that = IPA.validator(spec);
 
             that.validate = function(value) {
-                if (IPA.is_empty(value)) return that.true_result();
+                if (IPA.is_empty(value)) 
+                    return that.true_result();
 
                 that.address_type = 'IPv6';
 
                 var components = value.split(" ");
-                if (components.length != 2) {
+                var components2 = value.split("/");
+                if ( (components.length != 2) && (components2.length != 2) ){
                     return that.false_result();
                 }
+                else if ( (components.length == 2) && (components2.length != 2) ){
+                    var start = NET.ip_address(components[0]);
+                    var end = NET.ip_address(components[1]);
 
-                var start = NET.ip_address(components[0]);
-                var end = NET.ip_address(components[1]);
+                    if (!start.valid || start.type != 'v6' || !end.valid || end.type != 'v6') {
+                        return that.false_result();
+                    }
 
-                if (!start.valid || start.type != 'v6' || !end.valid || end.type != 'v6') {
-                    return that.false_result();
+                    return that.true_result();
                 }
+                else if ( (components.length != 2) && (components2.length == 2) ){ 
+                    var address_part = NET.ip_address(components2[0]);
+                    var mask = components2[1];
 
-                return that.true_result();
+                    if (!address_part.valid || address_part.type != 'v6' || !mask.match(/^[1-9]\d*$/) || mask < 8 || mask > 128 ) {
+                        return that.false_result();
+                    }
+
+                    return that.true_result();
+
+                }
+                else{
+                    return that.false_result();
+                };
+
             };
 
             that.dhcprange6_validate = that.validate;
@@ -248,16 +266,14 @@ define(
                                         validators: [
                                             {
                                                 $type: 'dhcprange6',
-                                            },
-                                            {
-                                                $type: 'dhcprange6_subnet',
-                                            },
+                                            }
                                         ]
                                     },
                                     {
                                         $type: 'multivalued',
                                         flags: ['w_if_no_aci'],
-                                        name: 'domainnameserver'
+                                        name: 'domainnameservers',
+                                        validators: [ 'ip_v6_address' ]
                                     },
                                 ]
                             },
@@ -395,6 +411,7 @@ define(
                                         name: 'cn'
                                     },
                                     {
+                                        $type: 'multivalued',
                                         name: 'dhcprange6',
                                         read_only: true
                                     },
@@ -496,7 +513,8 @@ define(
                                     {
                                         $type: 'multivalued',
                                         name: 'domainnameservers',
-                                        flags: ['w_if_no_aci']
+                                        flags: ['w_if_no_aci'],
+                                        validators: [ 'ip_v6_address' ]
                                     },
                                     {
                                         $type: 'multivalued',
@@ -569,7 +587,8 @@ define(
                         {
                             $type: 'multivalued',
                             name: 'domainnameservers',
-                            flags: ['w_if_no_aci']
+                            flags: ['w_if_no_aci'],
+                            validators: [ 'ip_v6_address' ]
                         },
                         {
                             $type: 'multivalued',

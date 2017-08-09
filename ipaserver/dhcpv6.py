@@ -37,7 +37,7 @@ from ipapython.dnsutil import DNSName
 from netaddr import *
 
 from dhcpv4 import *
-
+from dhcpcommon import *
 
 #### Constants ################################################################
 
@@ -46,6 +46,10 @@ dhcpv6_dn = '{0}'.format(api.env.basedn)
 service_dhcpv6_dn = 'cn=v6'
 container_dhcpv6_dn = DN(('cn', 'v6'), 'cn=dhcp')
 register = Registry()
+
+dhcp_version = 6
+dhcp_set_version( dhcp_version )
+#modify_dhcp = modify_dhcp( 6 )
 
 @register()
 class dhcpv6service(dhcpservice):
@@ -103,10 +107,11 @@ class dhcpv6subnet(dhcpsubnet):
             doc=_('DHCP IPv6 range.')
         ),
         Str(
-            'domainnameserver*',
-            cli_name='domainnameserver',
+            'domainnameservers*',
+            cli_name='domainnameservers',
             label=_('Domain Name Server'),
-            doc=_('Domain Name Servers.')
+            doc=_('Domain Name Servers.'),
+            flags=['virtual_attribute']
         ),
         Str(
             'dhcpstatements*',
@@ -151,10 +156,12 @@ class dhcpv6subnet(dhcpsubnet):
             if option.startswith('routers '):
                 (o, v) = option.split(' ', 1)
                 entry_attrs['router'] = v
-
             elif option.startswith('dhcp6.name-servers '):
                 (o, v) = option.split(' ', 1)
-                entry_attrs['domainnameserver'] = v.split(', ')
+                entry_attrs['domainnameservers'] = v.split(', ')
+            elif option.startswith('domain-search '):
+                (o, v) = option.split(' ', 1)
+                entry_attrs['domainsearch'] = v.replace('"', '').split(', ')
 
         return entry_attrs
 
@@ -169,8 +176,8 @@ class dhcpv6subnet_add(dhcpsubnet_add):
         assert isinstance(dn, DN)
         ip = IPNetwork('{0}'.format(keys[-1]))
         dhcpOptions = []
-        dhcpOptions.append('subnet-mask {0}'.format(ip.netmask))
-        dhcpOptions.append('broadcast-address {0}'.format(ip.broadcast))
+        #dhcpOptions.append('subnet-mask {0}'.format(ip.netmask))
+        #dhcpOptions.append('broadcast-address {0}'.format(ip.broadcast))
         entry_attrs['dhcpoption'] = dhcpOptions
         return dn
 
@@ -230,33 +237,22 @@ class dhcpv6subnet_mod(dhcpsubnet_mod):
 
         entry = ldap.get_entry(dn)
 
+        if 'dhcpstatements' in entry_attrs:
+            dhcpStatements = entry_attrs.get('dhcpstatements', [])
+        else:         
+            dhcpStatements = entry.get('dhcpstatements', [])
+
         if 'dhcpoption' in entry_attrs:
             dhcpOptions = entry_attrs.get('dhcpoption', [])
         else:
             dhcpOptions = entry.get('dhcpoption', [])
 
-        if 'router' in options:
-            option = 'routers {0}'.format(options['router'])
-            foundOption = False
-            for i, s in enumerate(dhcpOptions):
-                if s.startswith('routers '):
-                    foundOption = True
-                    dhcpOptions[i] = option
-                    break
-            if not foundOption:
-                dhcpOptions.append(option)
-       
-        if 'domainnameserver' in options:
-            option = 'dhcp6.name-servers ' + ', '.join( s for s in options['domainnameserver'])
-            foundOption = False
-            for i, s in enumerate(dhcpOptions):
-                if s.startswith('dhcp6.name-servers '):
-                    foundOption = True
-                    dhcpOptions[i] = option
-                    break
-            if not foundOption:
-                dhcpOptions.append(option)
+        dhcp_modify_router( dhcp_version, options, dhcpOptions )
+        dhcp_modify_domainname( dhcp_version, options, dhcpOptions, dhcpStatements )
+        dhcp_modify_domainserver( dhcp_version, options, dhcpOptions )
+        dhcp_modify_domainsearch( dhcp_version, options, dhcpOptions )
 
+        entry_attrs['dhcpstatements'] = dhcpStatements
         entry_attrs['dhcpoption'] = dhcpOptions
 
         return dn
@@ -393,7 +389,7 @@ class dhcpv6pool(dhcppool):
             primary_key=True
         ),
         Str(
-            'dhcprange6',
+            'dhcprange6+',
             cli_name='range',
             label=_('Range'),
             doc=_('DHCP range.')
@@ -456,6 +452,7 @@ class dhcpv6pool(dhcppool):
 class dhcpv6pool_add(dhcppool_add):
     __doc__ = _('Create a new DHCP IPv6 pool.')
     msg_summary = _('Created DHCP IPv6 pool "%(value)s"')
+
 
 @register()
 class dhcpv6pool_find(dhcppool_find):
@@ -890,35 +887,14 @@ class dhcpv6host_mod(dhcphost_mod):
         else:
             dhcpStatements = entry.get('dhcpstatements', [])
 
-        if 'hoatname' in options:
-            option = 'ddns-hostname "{0}"'.format(options['hostname'])
-            foundOption = False
-            for i, s in enumerate(dhcpOptions):
-                if s.startswith('ddns-hostname '):
-                    foundOption = True
-                    dhcpOptions[i] = option
-                    break
-            if not foundOption:
-                dhcpOptions.append(option)
-
-        entry_attrs['dhcpStatements'] = dhcpStatements
-
         if 'dhcpoption' in entry_attrs:
             dhcpOptions = entry_attrs.get('dhcpoption', [])
         else:
             dhcpOptions = entry.get('dhcpoption', [])
 
-        if 'hoatname' in options:
-            option = 'host-name "{0}"'.format(options['hostname'])
-            foundOption = False
-            for i, s in enumerate(dhcpOptions):
-                if s.startswith('host-name '):
-                    foundOption = True
-                    dhcpOptions[i] = option
-                    break
-            if not foundOption:
-                dhcpOptions.append(option)
+        dhcp_modify_hostname( dhcp_version, options, dhcpOptions, dhcpStatements )
 
+        entry_attrs['dhcpStatements'] = dhcpStatements
         entry_attrs['dhcpoption'] = dhcpOptions
 
         return dn

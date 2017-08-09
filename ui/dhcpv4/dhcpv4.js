@@ -254,7 +254,8 @@ define(
                                     {
                                         $type: 'multivalued',
                                         flags: ['w_if_no_aci'],
-                                        name: 'domainnameserver'
+                                        name: 'domainnameserver',
+                                        validators: [ 'ip_v4_address' ]
                                     },
                                 ]
                             },
