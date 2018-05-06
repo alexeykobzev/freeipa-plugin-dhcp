@@ -36,7 +36,7 @@ from ipapython.dn import DN
 from ipapython.dnsutil import DNSName
 from netaddr import *
 
-from dhcpcommon import *
+from ipaserver.plugins.dhcpcommon import *
 
 #### Constants ################################################################
 
@@ -1781,7 +1781,7 @@ class dhcpserver_del(LDAPDelete):
 
         try:
             dhcpsecondarydns.remove(dn)
-        except AttributeError, ValueError:
+        except( AttributeError, ValueError):
             pass
 
         dhcpservice['dhcpsecondarydn'] = dhcpsecondarydns
