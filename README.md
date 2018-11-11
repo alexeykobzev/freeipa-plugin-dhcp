@@ -256,3 +256,10 @@ dn: cn=System: Read DHCP Configuration,cn=permissions,cn=pbac,dc=example,dc=com
 In the config config file from dhcp you need to add the following linew
 ldap-username     uid=dhcp,cn=sysaccounts,cn=etc,dc=example,dc=com
 ldap-password     "GVDHGVskhdbuyvKJDBjdvjbjhBDVSjhvjgVDSHVKvJDSG&2DGdsg7";
+
+
+### More info
+
+https://www.freeipa.org/page/DHCP_Integration_Design
+https://bitbucket.org/Firstyear/freeipa-dhcp
+https://source.isc.org/cgi-bin/gitweb.cgi?p=dhcp.git;a=tree;f=contrib/ldap
