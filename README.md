@@ -51,7 +51,8 @@ to get what you need (assuming you're using Red Hat Enterprise Linux or CentOS; 
 
 ```
 ldap-server "ipa.example.com";
-ldap-port 389;
+ldap-port 636;
+ldpa-ssl on;
 ldap-base-dn "cn=dhcp,dc=example,dc=com";
 ldap-method static;
 ldap-debug-file "/var/log/dhcp-ldap-startup.log";
@@ -119,7 +120,8 @@ So for production, make your `dhcpd.conf` look like this:
 
 ```
 ldap-server "ipa.example.com";
-ldap-port 389;
+ldap-port 636;
+ldpa-ssl on;
 ldap-base-dn "cn=dhcp,dc=example,dc=com";
 ldap-method dynamic;
 ldap-debug-file "/var/log/dhcp-ldap-startup.log";
@@ -169,3 +171,88 @@ I'm not using groups or classes, so I haven't added any support for them. It's r
 ### Failover
 
 If I'm not mistaken, there's _no_ special LDAP support for DHCP failover in ISC DHCP 4.2.5, meaning it would all have to be configured using `dhcpStatements` and such. I haven't taken the time to do this, though I probably will eventually.
+
+### Special user account
+
+Add a ldap account so that the dhcp service can authenticate with a password.
+
+ldapmodify -D "cn=directory manager" -W -p 389 -h ipa.dc=example,dc=com -a 
+dn: uid=dhcp,cn=sysaccounts,cn=etc,dc=example,dc=com
+cn: uid=dhcp,cn=sysaccounts,cn=etc,dc=example,dc=com
+memberprincipal: cn=dhcp server,cn=roles,cn=accounts,dc=example,dc=com
+memberprincipal: cn=DHCP Server,cn=privileges,cn=pbac,dc=example,dc=com
+memberprincipal: cn=System: Read Permissions,cn=permissions,cn=pbac,dc=example,dc=com
+memberprincipal: cn=System: Read Privileges,cn=permissions,cn=pbac,dc=example,dc=com
+memberprincipal: cn=SystemRead DHCP Enteries,cn=permissions,cn=pbac,dc=example,dc=com
+objectClass: account
+objectClass: simplesecurityobject
+objectClass: top
+objectClass: groupOfPrincipals
+uid: dhcp
+userPassword: SecretPassword!!
+
+
+To modify the read privelage you need to change the following object to this:
+# Entry 1: cn=System: Read DHCP Configuration,cn=permissions,cn=pbac,dc=r...
+dn: cn=System: Read DHCP Configuration,cn=permissions,cn=pbac,dc=example,dc=com
+ cn: System: Read DHCP Configuration
+ ipapermbindruletype: permission
+ ipapermdefaultattr: dhcpstatements
+ ipapermdefaultattr: cn
+ ipapermdefaultattr: objectclass
+ ipapermdefaultattr: dhcpoption
+ ipapermdefaultattr: dhcprange
+ ipapermdefaultattr: dhcpcomments
+ ipapermdefaultattr: dhcppermitlist
+ ipapermdefaultattr: dhcpsecondarydn
+ ipapermdefaultattr: dhcpservicedn
+ ipapermdefaultattr: dhcpprimarydn
+ ipapermdefaultattr: dhcphwaddress
+ ipapermdefaultattr: dhcpnetmask
+ ipapermincludedattr: objectclass
+ ipapermincludedattr: cn
+ ipapermincludedattr: description
+ ipapermincludedattr: dhcpStatements
+ ipapermincludedattr: dhcpOption
+ ipapermincludedattr: dhcpHWAddress
+ ipapermincludedattr: createtimestamp
+ ipapermincludedattr: entryusn
+ ipapermincludedattr: dhcpServiceDN
+ ipapermincludedattr: dhcpPrimaryDN
+ ipapermincludedattr: modifytimestamp
+ ipapermincludedattr: *
+ ipapermincludedattr: dhcpKeyDN
+ ipapermincludedattr: dhcpImplementation
+ ipapermincludedattr: dhcpFailOverEndpointState
+ ipapermincludedattr: dhcpOptionsDN
+ ipapermincludedattr: dhcpDelayedServiceParameter
+ ipapermincludedattr: dhcpVersion
+ ipapermincludedattr: dhcpHashBucketAssignment
+ ipapermincludedattr: dhcpServerDN
+ ipapermincludedattr: dhcpClassesDN
+ ipapermincludedattr: dhcpSecondaryDN
+ ipapermincludedattr: dhcpSharedNetworkDN
+ ipapermincludedattr: dhcpLocatorDN
+ ipapermincludedattr: dhcpZoneDN
+ ipapermincludedattr: dhcpHostDN
+ ipapermincludedattr: dhcpMaxClientLeadTime
+ ipapermincludedattr: dhcpGroupDN
+ ipapermincludedattr: dhcpSubnetDN
+ ipapermincludedattr: dhcpComments
+ ipapermincludedattr: dhcpFailOverPeerDN
+ ipapermissiontype: SYSTEM
+ ipapermissiontype: V2
+ ipapermissiontype: MANAGED
+ ipapermlocation: dc=red-home,dc=nl
+ ipapermright: read
+ ipapermright: compare
+ ipapermright: search
+ ipapermtarget: cn*,cn=dhcp,dc=example,dc=com
+ objectclass: top
+ objectclass: groupofnames
+ objectclass: ipapermission
+ objectclass: ipapermissionv2
+ 
+In the config config file from dhcp you need to add the following linew
+ldap-username     uid=dhcp,cn=sysaccounts,cn=etc,dc=example,dc=com
+ldap-password     "GVDHGVskhdbuyvKJDBjdvjbjhBDVSjhvjgVDSHVKvJDSG&2DGdsg7";
