@@ -197,14 +197,15 @@ Modify your base DN accordingly and fill in a reasonable $DHCPD_PASSWORD.
 
 This example works on the assumption, that your base DN is ```dc=example,dc=com```. Depending on how your server is configured, this could for example also be ```dc=ipa,dc=example,dc=com```. If in doubt, use an LDAP client and investigate your DIT.
 
-Hint: jxplorer, a graphical FOSS LDAP editor, has proven to be very helpful in that regards (https://jxplorer.org)
+Hint: JXplorer, a graphical FOSS LDAP editor, has proven to be very helpful in that regards (https://jxplorer.org)
 
 2. add the user to LDAP DIT:
 
 ```
 ldapmodify -D "cn=directory manager" -W -p 389 -h $IPASERVER_IP -a -f dhcpdaccount.ldif
 ```
-3. ajust your DHCPd configuration
+
+3. adjust your DHCP daemon configuration
 to query your LDAP server using the newly created account:
 
 ```

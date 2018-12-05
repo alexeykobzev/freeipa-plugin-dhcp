@@ -67,7 +67,7 @@ class dhcpservice(LDAPObject):
             'ipapermlocation': dhcp_dn,
             'ipapermtarget': DN(service_dhcp_dn, dhcp_dn),
             'replaces_global_anonymous_aci': True,
-            'ipapermbindruletype': 'anonymous',
+            'ipapermbindruletype': 'permission',
             'ipapermright': {'read', 'search', 'compare'},
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
@@ -76,7 +76,14 @@ class dhcpservice(LDAPObject):
                 'dhcprange', 'dhcppermitlist',
                 'dhcpservicedn',
                 'dhcphwaddress',
-                'dhcpstatements', 'dhcpoption', 'dhcpcomments'
+                'dhcpstatements', 'dhcpoption', 'dhcpcomments',
+		'modifytimestamp', 'dhcpkeydn', 'dhcpimplementation',
+		'dhcpfailoverendpointstate', 'dhcpoptionsdn',
+		'dhcpdelayedserviceparameter', 'dhcpversion',
+		'dhcphashbucketassignment', 'dhcpserverdn',
+		'dhcpclassesdn', 'dhcpsharednetworkdn', 'dhcplocatordn', 
+		'dhcpzonedn', 'dhcphostdn', 'dhcpmaxclientleadtime',
+		'dhcpgroupdn', 'dhcpsubnetdn', 'dhcpfailoverpeerdn'
             },
         },
         'System: Write DHCP Configuration': {
