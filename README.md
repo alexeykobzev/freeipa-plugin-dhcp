@@ -1,7 +1,7 @@
 # IPA-dhcp
 
-:warning: **Don’t use, this project it's still in development**
-:warning: **This project is not (jet) backward compatible with the original version**
+:warning: ***Don’t use, this project it's still in development***  
+:warning: ***This project is not (jet) backward compatible with the original version***
 
 
 This is a rudimentary plugin that adds DHCP functionality to [FreeIPA](http://www.freeipa.org).
@@ -44,7 +44,43 @@ Once you've configured the plugin how you like, either via the IPA command line 
 yum install -y dhcp
 ```
 
-to get what you need (assuming you're using Red Hat Enterprise Linux or CentOS; details will differ if you're on Fedora). Once the server is installed, edit the file `/etc/dhcp/dhcpd.conf` and make it look like this:
+to get what you need (assuming you're using Red Hat Enterprise Linux or CentOS; details will differ if you're on Fedora).
+
+Once this is done, add a dedicated DHCPd account to FreeIPA and give it the required privileges to read DHCP configuration:
+
+1. create a ```dhcpdaccount.ldif``` file:
+
+```
+dn: uid=dhcp,cn=sysaccounts,cn=etc,dc=example,dc=com
+cn: uid=dhcp,cn=sysaccounts,cn=etc,dc=example,dc=com
+memberprincipal: cn=dhcp server,cn=roles,cn=accounts,dc=example,dc=com
+memberprincipal: cn=DHCP Server,cn=privileges,cn=pbac,dc=example,dc=com
+memberprincipal: cn=System: Read Permissions,cn=permissions,cn=pbac,dc=example,dc=com
+memberprincipal: cn=System: Read Privileges,cn=permissions,cn=pbac,dc=example,dc=com
+memberprincipal: cn=System: Read DHCP Enteries,cn=permissions,cn=pbac,dc=example,dc=com
+objectClass: account
+objectClass: simpleSecurityObject
+objectClass: top
+objectClass: groupOfPrincipals
+uid: dhcp
+userPassword: $DHCPD_PASSWORD
+```
+
+Modify your base DN accordingly and fill in a reasonable $DHCPD_PASSWORD. 
+
+:warning: beware that **whitespaces** at the end of the lines in LDIF files will produced errors/unexpected results!
+
+This example works on the assumption, that your base DN is ```dc=example,dc=com```. Depending on how your server is configured, this could for example also be ```dc=ipa,dc=example,dc=com```. If in doubt, use an LDAP client and investigate your DIT.
+
+Hint: JXplorer, a graphical FOSS LDAP editor, has proven to be very helpful in that regards (https://jxplorer.org)
+
+2. add the user to LDAP DIT:
+
+```
+ldapmodify -D "cn=directory manager" -W -p 389 -h $IPASERVER_IP -a -f dhcpdaccount.ldif
+```
+
+Once the server is installed and the service account has been created, edit the file `/etc/dhcp/dhcpd.conf` and make it look like this:
 
 ```
 ldap-server "ipa.example.com";
@@ -52,6 +88,8 @@ ldap-port 636;
 ldpa-ssl on;
 ldap-base-dn "cn=dhcp,dc=example,dc=com";
 ldap-method static;
+ldap-username uid=dhcp,cn=sysaccounts,cn=etc,dc=example,dc=com
+ldap-password "$DHCPD_PASSWORD";
 ldap-debug-file "/var/log/dhcp-ldap-startup.log";
 ```
 
@@ -121,6 +159,8 @@ ldap-port 636;
 ldpa-ssl on;
 ldap-base-dn "cn=dhcp,dc=example,dc=com";
 ldap-method dynamic;
+ldap-username uid=dhcp,cn=sysaccounts,cn=etc,dc=example,dc=com
+ldap-password "$DHCPD_PASSWORD";
 ldap-debug-file "/var/log/dhcp-ldap-startup.log";
 ```
 
@@ -168,50 +208,6 @@ I'm not using groups or classes, so I haven't added any support for them. It's r
 ### Failover
 
 If I'm not mistaken, there's _no_ special LDAP support for DHCP failover in ISC DHCP 4.2.5, meaning it would all have to be configured using `dhcpStatements` and such. I haven't taken the time to do this, though I probably will eventually.
-
-### Special user account
-
-The DHCP daemon needs to connect to the LDAP server in order to retrieve its configuration. In order to do so, create a special user account for the DHCP daemon like this:
-
-1. create a dhcpdaccount.ldif:
-
-```
-dn: uid=dhcp,cn=sysaccounts,cn=etc,dc=example,dc=com
-cn: uid=dhcp,cn=sysaccounts,cn=etc,dc=example,dc=com
-memberprincipal: cn=dhcp server,cn=roles,cn=accounts,dc=example,dc=com
-memberprincipal: cn=DHCP Server,cn=privileges,cn=pbac,dc=example,dc=com
-memberprincipal: cn=System: Read Permissions,cn=permissions,cn=pbac,dc=example,dc=com
-memberprincipal: cn=System: Read Privileges,cn=permissions,cn=pbac,dc=example,dc=com
-memberprincipal: cn=System: Read DHCP Enteries,cn=permissions,cn=pbac,dc=example,dc=com
-objectClass: account
-objectClass: simpleSecurityObject
-objectClass: top
-objectClass: groupOfPrincipals
-uid: dhcp
-userPassword: $DHCPD_PASSWORD
-```
-
-Modify your base DN accordingly and fill in a reasonable $DHCPD_PASSWORD. 
-
-:warning: beware that **whitespaces** at the end of the lines in LDIF files will produced errors/unexpected results!
-
-This example works on the assumption, that your base DN is ```dc=example,dc=com```. Depending on how your server is configured, this could for example also be ```dc=ipa,dc=example,dc=com```. If in doubt, use an LDAP client and investigate your DIT.
-
-Hint: JXplorer, a graphical FOSS LDAP editor, has proven to be very helpful in that regards (https://jxplorer.org)
-
-2. add the user to LDAP DIT:
-
-```
-ldapmodify -D "cn=directory manager" -W -p 389 -h $IPASERVER_IP -a -f dhcpdaccount.ldif
-```
-
-3. adjust your DHCP daemon configuration
-to query your LDAP server using the newly created account:
-
-```
-ldap-username     uid=dhcp,cn=sysaccounts,cn=etc,dc=example,dc=com
-ldap-password     "$DHCPD_PASSWORD";
-```
 
 ### More info
 
