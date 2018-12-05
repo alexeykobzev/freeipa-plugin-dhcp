@@ -75,7 +75,7 @@ class dhcpservice(LDAPObject):
                 'dhcpnetmask',
                 'dhcprange', 'dhcppermitlist',
                 'dhcpservicedn',
-                'dhcpHWAddress',
+                'dhcphwaddress',
                 'dhcpstatements', 'dhcpoption', 'dhcpcomments'
             },
         },
