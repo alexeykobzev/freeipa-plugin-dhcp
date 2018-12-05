@@ -1,7 +1,7 @@
 # IPA-dhcp
 
 :warning: ***Don’t use, this project it's still in development***  
-:warning: ***This project is not (jet) backward compatible with the original version***
+:warning: ***This project is not (yet) backward compatible with the original version***
 
 
 This is a rudimentary plugin that adds DHCP functionality to [FreeIPA](http://www.freeipa.org).
@@ -46,7 +46,7 @@ yum install -y dhcp
 
 to get what you need (assuming you're using Red Hat Enterprise Linux or CentOS; details will differ if you're on Fedora).
 
-Once this is done, add a dedicated DHCPd account to FreeIPA and give it the required privileges to read DHCP configuration:
+Once this is done, add a dedicated DHCPd account to FreeIPA and grant it some privileges for reading the DHCP configuration:
 
 1. create a ```dhcpdaccount.ldif``` file:
 
@@ -68,9 +68,9 @@ userPassword: $DHCPD_PASSWORD
 
 Modify your base DN accordingly and fill in a reasonable $DHCPD_PASSWORD. 
 
-:warning: beware that **whitespaces** at the end of the lines in LDIF files will produced errors/unexpected results!
+:warning: beware that **whitespaces** at the end of lines in LDIF files will produced errors/unexpected results!
 
-This example works on the assumption, that your base DN is ```dc=example,dc=com```. Depending on how your server is configured, this could for example also be ```dc=ipa,dc=example,dc=com```. If in doubt, use an LDAP client and investigate your DIT.
+This example assumes your base DN is ```dc=example,dc=com```. Depending on how your server is configured, this could for example also be ```dc=ipa,dc=example,dc=com```. If in doubt, use an LDAP client and investigate your DIT.
 
 Hint: JXplorer, a graphical FOSS LDAP editor, has proven to be very helpful in that regards (https://jxplorer.org)
 
