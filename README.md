@@ -63,7 +63,6 @@ objectClass: simpleSecurityObject
 objectClass: top
 objectClass: groupOfPrincipals
 uid: dhcp
-userPassword: $DHCPD_PASSWORD
 ```
 
 Modify your base DN accordingly and fill in a reasonable $DHCPD_PASSWORD. 
@@ -77,7 +76,13 @@ Hint: JXplorer, a graphical FOSS LDAP editor, has proven to be very helpful in t
 2. add the user to LDAP DIT:
 
 ```
-ldapmodify -D "cn=directory manager" -W -p 389 -h $IPASERVER_IP -a -f dhcpdaccount.ldif
+ldapmodify -D "cn=Directory Manager" -W -p 389 -h $IPASERVER_IP -a -f dhcpdaccount.ldif
+```
+
+3. set a decent password for the newly created system account:
+
+```
+ldappasswd -x -S -W -D "cn=Directory Manager" uid=dhcp,cn=sysaccounts,cn=etc,dc=example,dc=com
 ```
 
 Once the server is installed and the service account has been created, edit the file `/etc/dhcp/dhcpd.conf` and make it look like this:
@@ -211,6 +216,6 @@ If I'm not mistaken, there's _no_ special LDAP support for DHCP failover in ISC 
 
 ### More info
 
-https://www.freeipa.org/page/DHCP_Integration_Design
-https://bitbucket.org/Firstyear/freeipa-dhcp
-https://source.isc.org/cgi-bin/gitweb.cgi?p=dhcp.git;a=tree;f=contrib/ldap
+* https://www.freeipa.org/page/DHCP_Integration_Design
+* https://bitbucket.org/Firstyear/freeipa-dhcp
+* https://source.isc.org/cgi-bin/gitweb.cgi?p=dhcp.git;a=tree;f=contrib/ldap
