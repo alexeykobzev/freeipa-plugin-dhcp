@@ -7,7 +7,7 @@ services:
 matrix:
   include:
     - language: python
-    - language: javascript
+    - language: node_js # This isn't a node program, but this is the only JavaScript check. It'll probably break.
     - language: shell
 
 # Leverage FreeIPA container freeipa/freeipa-server:centos-7 https://hub.docker.com/r/freeipa/freeipa-server/
