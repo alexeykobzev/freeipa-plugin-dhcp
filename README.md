@@ -1,19 +1,16 @@
 # IPA-dhcp
 
-:warning: **Don’t use this project it's still in development**
-:warning: **This project is not (jet) backward compatible with the older versiont**
-:warning: **If you want to use the DHCPv6 via LDAP you need the ISC DHCP version 4.3.3, older version lack the support for "dhcpSubnet6, dhcpPool6, and dhcpRange6" classes.**
-
-
-
-
-
-
+:warning: ***Don’t use, this project it's still in development***  
+:warning: ***This project is not (yet) backward compatible with the original version***
 
 
 This is a rudimentary plugin that adds DHCP functionality to [FreeIPA](http://www.freeipa.org).
 
 This plugin can be used in one of two ways. If you want, you can install [ISC DHCP](https://www.isc.org/downloads/dhcp/) on your FreeIPA server itself and let your FreeIPA server act as a DHCP server; this approximately mirrors the way FreeIPA can run ISC BIND and act as a DNS server. Or if you prefer you can run ISC DHCP on another, separate server and point it at your FreeIPA server via an anonymous LDAP binding. Both methods are really exactly the same; the only difference is where you install and run the ISC DHCP software.
+
+This is a forked version of the original (unfinished) plugin, completing a lot of features and most notably adding DHCPv6 support. 
+
+:warning: For DHCPv6 to work, you need ICP DHCPd version 4.3.3 or newer.
 
 ## Pictures
 
@@ -47,7 +44,48 @@ Once you've configured the plugin how you like, either via the IPA command line 
 yum install -y dhcp
 ```
 
-to get what you need (assuming you're using Red Hat Enterprise Linux or CentOS; details will differ if you're on Fedora). Once the server is installed, edit the file `/etc/dhcp/dhcpd.conf` and make it look like this:
+to get what you need (assuming you're using Red Hat Enterprise Linux or CentOS; details will differ if you're on Fedora).
+
+Once this is done, add a dedicated DHCPd account to FreeIPA and grant it some privileges for reading the DHCP configuration:
+
+1. create a ```dhcpdaccount.ldif``` file:
+
+```
+dn: uid=dhcp,cn=sysaccounts,cn=etc,dc=example,dc=com
+cn: uid=dhcp,cn=sysaccounts,cn=etc,dc=example,dc=com
+memberprincipal: cn=dhcp server,cn=roles,cn=accounts,dc=example,dc=com
+memberprincipal: cn=DHCP Server,cn=privileges,cn=pbac,dc=example,dc=com
+memberprincipal: cn=System: Read Permissions,cn=permissions,cn=pbac,dc=example,dc=com
+memberprincipal: cn=System: Read Privileges,cn=permissions,cn=pbac,dc=example,dc=com
+memberprincipal: cn=System: Read DHCP Enteries,cn=permissions,cn=pbac,dc=example,dc=com
+objectClass: account
+objectClass: simpleSecurityObject
+objectClass: top
+objectClass: groupOfPrincipals
+uid: dhcp
+```
+
+Modify your base DN accordingly and fill in a reasonable $DHCPD_PASSWORD. 
+
+:warning: beware that **whitespaces** at the end of lines in LDIF files will produced errors/unexpected results!
+
+This example assumes your base DN is ```dc=example,dc=com```. Depending on how your server is configured, this could for example also be ```dc=ipa,dc=example,dc=com```. If in doubt, use an LDAP client and investigate your DIT.
+
+Hint: JXplorer, a graphical FOSS LDAP editor, has proven to be very helpful in that regards (https://jxplorer.org)
+
+2. add the user to LDAP DIT:
+
+```
+ldapmodify -D "cn=Directory Manager" -W -p 389 -h $IPASERVER_IP -a -f dhcpdaccount.ldif
+```
+
+3. set a decent password for the newly created system account:
+
+```
+ldappasswd -x -S -W -D "cn=Directory Manager" uid=dhcp,cn=sysaccounts,cn=etc,dc=example,dc=com
+```
+
+Once the server is installed and the service account has been created, edit the file `/etc/dhcp/dhcpd.conf` and make it look like this:
 
 ```
 ldap-server "ipa.example.com";
@@ -55,6 +93,8 @@ ldap-port 636;
 ldpa-ssl on;
 ldap-base-dn "cn=dhcp,dc=example,dc=com";
 ldap-method static;
+ldap-username uid=dhcp,cn=sysaccounts,cn=etc,dc=example,dc=com
+ldap-password "$DHCPD_PASSWORD";
 ldap-debug-file "/var/log/dhcp-ldap-startup.log";
 ```
 
@@ -124,6 +164,8 @@ ldap-port 636;
 ldpa-ssl on;
 ldap-base-dn "cn=dhcp,dc=example,dc=com";
 ldap-method dynamic;
+ldap-username uid=dhcp,cn=sysaccounts,cn=etc,dc=example,dc=com
+ldap-password "$DHCPD_PASSWORD";
 ldap-debug-file "/var/log/dhcp-ldap-startup.log";
 ```
 
@@ -172,94 +214,8 @@ I'm not using groups or classes, so I haven't added any support for them. It's r
 
 If I'm not mistaken, there's _no_ special LDAP support for DHCP failover in ISC DHCP 4.2.5, meaning it would all have to be configured using `dhcpStatements` and such. I haven't taken the time to do this, though I probably will eventually.
 
-### Special user account
-
-Add a ldap account so that the dhcp service can authenticate with a password.
-
-ldapmodify -D "cn=directory manager" -W -p 389 -h ipa.dc=example,dc=com -a 
-dn: uid=dhcp,cn=sysaccounts,cn=etc,dc=example,dc=com
-cn: uid=dhcp,cn=sysaccounts,cn=etc,dc=example,dc=com
-memberprincipal: cn=dhcp server,cn=roles,cn=accounts,dc=example,dc=com
-memberprincipal: cn=DHCP Server,cn=privileges,cn=pbac,dc=example,dc=com
-memberprincipal: cn=System: Read Permissions,cn=permissions,cn=pbac,dc=example,dc=com
-memberprincipal: cn=System: Read Privileges,cn=permissions,cn=pbac,dc=example,dc=com
-memberprincipal: cn=SystemRead DHCP Enteries,cn=permissions,cn=pbac,dc=example,dc=com
-objectClass: account
-objectClass: simplesecurityobject
-objectClass: top
-objectClass: groupOfPrincipals
-uid: dhcp
-userPassword: SecretPassword!!
-
-
-To modify the read privelage you need to change the following object to this:
-# Entry 1: cn=System: Read DHCP Configuration,cn=permissions,cn=pbac,dc=r...
-dn: cn=System: Read DHCP Configuration,cn=permissions,cn=pbac,dc=example,dc=com
- cn: System: Read DHCP Configuration
- ipapermbindruletype: permission
- ipapermdefaultattr: dhcpstatements
- ipapermdefaultattr: cn
- ipapermdefaultattr: objectclass
- ipapermdefaultattr: dhcpoption
- ipapermdefaultattr: dhcprange
- ipapermdefaultattr: dhcpcomments
- ipapermdefaultattr: dhcppermitlist
- ipapermdefaultattr: dhcpsecondarydn
- ipapermdefaultattr: dhcpservicedn
- ipapermdefaultattr: dhcpprimarydn
- ipapermdefaultattr: dhcphwaddress
- ipapermdefaultattr: dhcpnetmask
- ipapermincludedattr: objectclass
- ipapermincludedattr: cn
- ipapermincludedattr: description
- ipapermincludedattr: dhcpStatements
- ipapermincludedattr: dhcpOption
- ipapermincludedattr: dhcpHWAddress
- ipapermincludedattr: createtimestamp
- ipapermincludedattr: entryusn
- ipapermincludedattr: dhcpServiceDN
- ipapermincludedattr: dhcpPrimaryDN
- ipapermincludedattr: modifytimestamp
- ipapermincludedattr: *
- ipapermincludedattr: dhcpKeyDN
- ipapermincludedattr: dhcpImplementation
- ipapermincludedattr: dhcpFailOverEndpointState
- ipapermincludedattr: dhcpOptionsDN
- ipapermincludedattr: dhcpDelayedServiceParameter
- ipapermincludedattr: dhcpVersion
- ipapermincludedattr: dhcpHashBucketAssignment
- ipapermincludedattr: dhcpServerDN
- ipapermincludedattr: dhcpClassesDN
- ipapermincludedattr: dhcpSecondaryDN
- ipapermincludedattr: dhcpSharedNetworkDN
- ipapermincludedattr: dhcpLocatorDN
- ipapermincludedattr: dhcpZoneDN
- ipapermincludedattr: dhcpHostDN
- ipapermincludedattr: dhcpMaxClientLeadTime
- ipapermincludedattr: dhcpGroupDN
- ipapermincludedattr: dhcpSubnetDN
- ipapermincludedattr: dhcpComments
- ipapermincludedattr: dhcpFailOverPeerDN
- ipapermissiontype: SYSTEM
- ipapermissiontype: V2
- ipapermissiontype: MANAGED
- ipapermlocation: dc=red-home,dc=nl
- ipapermright: read
- ipapermright: compare
- ipapermright: search
- ipapermtarget: cn*,cn=dhcp,dc=example,dc=com
- objectclass: top
- objectclass: groupofnames
- objectclass: ipapermission
- objectclass: ipapermissionv2
- 
-In the config config file from dhcp you need to add the following linew
-ldap-username     uid=dhcp,cn=sysaccounts,cn=etc,dc=example,dc=com
-ldap-password     "GVDHGVskhdbuyvKJDBjdvjbjhBDVSjhvjgVDSHVKvJDSG&2DGdsg7";
-
-
 ### More info
 
-https://www.freeipa.org/page/DHCP_Integration_Design
-https://bitbucket.org/Firstyear/freeipa-dhcp
-https://source.isc.org/cgi-bin/gitweb.cgi?p=dhcp.git;a=tree;f=contrib/ldap
+* https://www.freeipa.org/page/DHCP_Integration_Design
+* https://bitbucket.org/Firstyear/freeipa-dhcp
+* https://source.isc.org/cgi-bin/gitweb.cgi?p=dhcp.git;a=tree;f=contrib/ldap

@@ -1,0 +1,23 @@
+# Using Docker for this one
+services:
+  - docker
+
+# We want to scan all languages included in the repo.
+# This will probably break, or also find a ton of vulnerabilites in FreeIPA itself...
+matrix:
+  include:
+    - language: python
+    - language: node_js # This isn't a node program, but this is the only JavaScript check. It'll probably break.
+    - language: shell
+
+# Leverage FreeIPA container freeipa/freeipa-server:centos-7 https://hub.docker.com/r/freeipa/freeipa-server/
+before_install:
+  - docker pull freeipa/freeipa-server:centos-7
+  - mkdir /tmp/ipa
+  - docker run --name freeipa-server-container -ti -h ipa.example.test --read-only -v /tmp/ipa:/data freeipa/freeipa-server:centos-7
+
+script:
+  - install.sh
+
+after_success:
+  - bash <(curl -s https://copilot.blackducksoftware.com/ci/travis/scripts/upload)
