@@ -36,8 +36,8 @@ from ipapython.dn import DN
 from ipapython.dnsutil import DNSName
 from netaddr import *
 
-from dhcpv4 import *
-from dhcpcommon import *
+from ipaserver.plugins.dhcpv4 import *
+from ipaserver.plugins.dhcpcommon import *
 
 #### Constants ################################################################
 

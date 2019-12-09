@@ -58,6 +58,7 @@ memberprincipal: cn=DHCP Server,cn=privileges,cn=pbac,dc=example,dc=com
 memberprincipal: cn=System: Read Permissions,cn=permissions,cn=pbac,dc=example,dc=com
 memberprincipal: cn=System: Read Privileges,cn=permissions,cn=pbac,dc=example,dc=com
 memberprincipal: cn=System: Read DHCP Enteries,cn=permissions,cn=pbac,dc=example,dc=com
+userPassword: "slkjdsjry4370ft20gw6t2364t3dqt726tqth34t297"
 objectClass: account
 objectClass: simpleSecurityObject
 objectClass: top

@@ -110,7 +110,7 @@ def dhcp_modify_domainname( dhcp_version, options, dhcpOptions, dhcpStatements )
     if option_item in options:
         option_value = '{0}"{1}"'.format(start_with_options, options[option_item])
         statement_value = '{0}"{1}"'.format(start_with_statements, options[option_item])
-        dhcp_modify_options_statements( option_value, statement_value, dhcpOptions, dhcpStatements, start_with_options, start_with_statements )
+        dhcp_modify_options_statements( option_value, statement_value, dhcpOptions, dhcpStatements, start_with_options, start_with_stateatements )
 
 def dhcp_modify_hostname( dhcp_version, options, dhcpOptions, dhcpStatements ):
     if dhcp_version == 4 :
@@ -124,7 +124,7 @@ def dhcp_modify_hostname( dhcp_version, options, dhcpOptions, dhcpStatements ):
     if option_item in options:
         option_value = '{0}"{1}"'.format(start_with_options, options[option_item])
         statement_value = '{0}"{1}"'.format(start_with_statements, options[option_item])
-        dhcp_modify_options_statements( option_value, statement_value, dhcpOptions, dhcpStatements, start_with_options, start_with_statements )
+        dhcp_modify_options_statements( option_value, statement_value, dhcpOptions, dhcpStatements, start_with_options, start_with_stateatements )
 
 #######################################################################################################
 ##                                general

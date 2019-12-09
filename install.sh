@@ -50,7 +50,7 @@ done
 
 ###############################################################################
 
-IPALIB_DEST=/usr/lib/python2.7/site-packages/ipaserver/plugins/
+IPALIB_DEST=/usr/lib/python3.6/site-packages/ipaserver/plugins/
 
 echo ''
 echo 'Installing IPASERVER plugins...'

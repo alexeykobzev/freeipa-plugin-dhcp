@@ -36,7 +36,7 @@ from ipapython.dn import DN
 from ipapython.dnsutil import DNSName
 from netaddr import *
 
-from dhcpcommon import *
+from ipaserver.plugins.dhcpcommon import *
 
 #### Constants ################################################################
 
@@ -67,7 +67,7 @@ class dhcpservice(LDAPObject):
             'ipapermlocation': dhcp_dn,
             'ipapermtarget': DN(service_dhcp_dn, dhcp_dn),
             'replaces_global_anonymous_aci': True,
-            'ipapermbindruletype': 'permission',
+            'ipapermbindruletype': 'anonymous',
             'ipapermright': {'read', 'search', 'compare'},
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
@@ -77,13 +77,13 @@ class dhcpservice(LDAPObject):
                 'dhcpservicedn',
                 'dhcphwaddress',
                 'dhcpstatements', 'dhcpoption', 'dhcpcomments',
-		'modifytimestamp', 'dhcpkeydn', 'dhcpimplementation',
-		'dhcpfailoverendpointstate', 'dhcpoptionsdn',
-		'dhcpdelayedserviceparameter', 'dhcpversion',
-		'dhcphashbucketassignment', 'dhcpserverdn',
-		'dhcpclassesdn', 'dhcpsharednetworkdn', 'dhcplocatordn', 
-		'dhcpzonedn', 'dhcphostdn', 'dhcpmaxclientleadtime',
-		'dhcpgroupdn', 'dhcpsubnetdn', 'dhcpfailoverpeerdn'
+                'modifytimestamp', 'dhcpkeydn', 'dhcpimplementation',
+                'dhcpfailoverendpointstate', 'dhcpoptionsdn',
+                'dhcpdelayedserviceparameter', 'dhcpversion',
+                'dhcphashbucketassignment', 'dhcpserverdn',
+                'dhcpclassesdn', 'dhcpsharednetworkdn', 'dhcplocatordn',
+                'dhcpzonedn', 'dhcphostdn', 'dhcpmaxclientleadtime',
+                'dhcpgroupdn', 'dhcpsubnetdn', 'dhcpfailoverpeerdn'
             },
         },
         'System: Write DHCP Configuration': {
@@ -975,7 +975,7 @@ class dhcppool_add(LDAPCreate):
             for i, s in enumerate(entryDHCPStatements):
                 if s.startswith('max-lease-time'):
                     foundStatement = True
-                    maxDHCPStatements[i] = 'max-lease-time {0}'.format(maxLeaseTime)
+                    entryDHCPStatements[i] = 'max-lease-time {0}'.format(maxLeaseTime)
                     break
             if foundStatement is False:
                 entryDHCPStatements.append('max-lease-time {0}'.format(maxLeaseTime))
@@ -1375,7 +1375,7 @@ class dhcpgroup_add(LDAPCreate):
             for i, s in enumerate(entryDHCPStatements):
                 if s.startswith('max-lease-time'):
                     foundStatement = True
-                    maxDHCPStatements[i] = 'max-lease-time {0}'.format(maxLeaseTime)
+                    entryDHCPStatements[i] = 'max-lease-time {0}'.format(maxLeaseTime)
                     break
             if foundStatement is False:
                 entryDHCPStatements.append('max-lease-time {0}'.format(maxLeaseTime))
@@ -1386,7 +1386,7 @@ class dhcpgroup_add(LDAPCreate):
         if 'dhcpoption' in entry_attrs:
             dhcpOptions = entry_attrs.get('dhcpoption', [])
         else:
-            dhcpOptions = entry.get('dhcpoption', [])
+            dhcpOptions = []
 
         if 'domainname' in options:
             option = 'domain-name "{0}"'.format(options['domainname'])
@@ -1788,7 +1788,7 @@ class dhcpserver_del(LDAPDelete):
 
         try:
             dhcpsecondarydns.remove(dn)
-        except AttributeError, ValueError:
+        except AttributeError as ValueError:
             pass
 
         dhcpservice['dhcpsecondarydn'] = dhcpsecondarydns
