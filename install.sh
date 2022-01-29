@@ -67,7 +67,7 @@ echo ''
 echo 'Installing UI plugins...'
 
 for plugin in ${UI_PLUGINS[@]}; do
-    PLUGIN_FILES=$( ls ${SCRIPTPATH}/ui/${plugin} )
+    PLUGIN_FILES=$( ls ${SCRIPTPATH}/plugin/ui/${plugin} )
     for file in ${PLUGIN_FILES[@]}; do
         ${INSTALL} -v -o root -g root -m 755 -d ${UI_DEST}/${plugin}
         ${INSTALL} -v -o root -g root -m 644 -t ${UI_DEST}/${plugin} ${SCRIPTPATH}/plugin/ui/${plugin}/${file}
