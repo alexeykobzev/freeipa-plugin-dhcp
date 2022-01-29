@@ -478,7 +478,7 @@ dn: cn=DHCP Servers,cn=privileges,cn=pbac,$SUFFIX
 add: objectClass: groupofnames
 add: objectClass: nestedgroup
 add: objectClass: top
-cn: DHCP Servers
+add: cn: DHCP Servers
 only: description: DHCP Servers
 add: memberOf: cn=System: Read DHCP leases,cn=permissions,cn=pbac,$SUFFIX
 
