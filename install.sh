@@ -19,10 +19,10 @@
 ###############################################################################
 
 SCRIPTPATH=$(dirname $(realpath $0))
-SCHEMATA=( 89dhcp.ldif )
-UPDATES=( 89dhcp.update )
+SCHEMATA=( 89-dhcp.ldif )
+UPDATES=( 89-dhcp.update )
 IPASERVER_PLUGINS=( dhcpv4.py dhcpv6.py dhcpcommon.py )
-UI_PLUGINS=( dhcpv4 dhcpv6 )
+UI_PLUGINS=( dhcpv4.js dhcpv6.js )
 
 ###############################################################################
 
@@ -34,7 +34,7 @@ echo ''
 echo 'Installing schemata...'
 
 for schema in ${SCHEMATA[@]}; do
-    ${INSTALL} -v -o root -g root -m 644 ${SCRIPTPATH}/schema/${schema} ${SCHEMA_DEST}
+    ${INSTALL} -v -o root -g root -m 644 ${SCRIPTPATH}/plugin/schema/${schema} ${SCHEMA_DEST}
 done
 
 ###############################################################################
@@ -45,7 +45,7 @@ echo ''
 echo 'Installing update files...'
 
 for update in ${UPDATES[@]}; do
-    ${INSTALL} -v -o root -g root -m 644 ${SCRIPTPATH}/update/${update} ${UPDATE_DEST}
+    ${INSTALL} -v -o root -g root -m 644 ${SCRIPTPATH}/plugin/update/${update} ${UPDATE_DEST}
 done
 
 ###############################################################################
@@ -56,7 +56,7 @@ echo ''
 echo 'Installing IPASERVER plugins...'
 
 for plugin in ${IPASERVER_PLUGINS[@]}; do
-	    ${INSTALL} -v -o root -g root -m 644 ${SCRIPTPATH}/ipaserver/${plugin} ${IPALIB_DEST}
+	    ${INSTALL} -v -o root -g root -m 644 ${SCRIPTPATH}/plugin/ipaserver/${plugin} ${IPALIB_DEST}
 done
 
 ###############################################################################
@@ -70,7 +70,7 @@ for plugin in ${UI_PLUGINS[@]}; do
     PLUGIN_FILES=$( ls ${SCRIPTPATH}/ui/${plugin} )
     for file in ${PLUGIN_FILES[@]}; do
         ${INSTALL} -v -o root -g root -m 755 -d ${UI_DEST}/${plugin}
-        ${INSTALL} -v -o root -g root -m 644 -t ${UI_DEST}/${plugin} ${SCRIPTPATH}/ui/${plugin}/${file}
+        ${INSTALL} -v -o root -g root -m 644 -t ${UI_DEST}/${plugin} ${SCRIPTPATH}/plugin/ui/${plugin}/${file}
     done
 done
 

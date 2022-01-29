@@ -215,6 +215,17 @@ I'm not using groups or classes, so I haven't added any support for them. It's r
 
 If I'm not mistaken, there's _no_ special LDAP support for DHCP failover in ISC DHCP 4.2.5, meaning it would all have to be configured using `dhcpStatements` and such. I haven't taken the time to do this, though I probably will eventually.
 
+# Build RPM
+```bash
+sudo dnf -y install rpm-build rpmdevtools
+rpmdev-setuptree
+git clone https://github.com/abbra/freeipa-user-trust-attributes.git
+cd freeipa-user-trust-attributes
+git archive --prefix freeipa-user-trust-attributes-plugin-0.0.1/ -o freeipa-user-trust-attributes-plugin-0.0.1.tar.gz HEAD
+rpmbuild -ta freeipa-user-trust-attributes-plugin-0.0.1.tar.gz
+```
+The packages will be in ~/rpmbuild/RPMS/noarch/
+
 ### More info
 
 * https://www.freeipa.org/page/DHCP_Integration_Design
