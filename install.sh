@@ -22,7 +22,7 @@ SCRIPTPATH=$(dirname $(realpath $0))
 SCHEMATA=( 89-dhcp.ldif )
 UPDATES=( 89-dhcp.update )
 IPASERVER_PLUGINS=( dhcpv4.py dhcpv6.py dhcpcommon.py )
-UI_PLUGINS=( dhcpv4.js dhcpv6.js )
+UI_PLUGINS=( dhcpv4 dhcpv6 )
 
 ###############################################################################
 
