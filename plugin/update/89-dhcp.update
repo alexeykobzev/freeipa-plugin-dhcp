@@ -18,470 +18,469 @@
 #### Indexing properties ######################################################
 
 dn: cn=dhcpHWAddress,cn=index,cn=userRoot,cn=ldbm database,cn=plugins,cn=config
-add: objectClass:top
-add: objectClass:nsIndex
-add: cn:dhcpHWAddress
-add: nsSystemIndex:false
-add: nsIndexType:eq
+default: objectClass:top
+default: objectClass:nsIndex
+default: cn:dhcpHWAddress
+default: nsSystemIndex:false
+default: nsIndexType:eq
 
 dn: cn=dhcpClassData,cn=index,cn=userRoot,cn=ldbm database,cn=plugins,cn=config
-add: objectClass:top
-add: objectClass:nsIndex
-add: cn:dhcpClassData
-add: nsSystemIndex:false
-add: nsIndexType:eq
+default: objectClass:top
+default: objectClass:nsIndex
+default: cn:dhcpClassData
+default: nsSystemIndex:false
+default: nsIndexType:eq
 
 #### Server base objects ######################################################
 
 dn: cn=dhcp,$SUFFIX
-add: objectClass: top
-add: objectClass: dhcpService
-add: dhcpStatements: authoritative
-add: dhcpStatements: default-lease-time 43200
-add: dhcpStatements: max-lease-time 86400
-add: dhcpStatements: one-lease-per-client on
+default: objectClass: top
+default: objectClass: dhcpService
+default: dhcpStatements: authoritative
+default: dhcpStatements: default-lease-time 43200
+default: dhcpStatements: max-lease-time 86400
+default: dhcpStatements: one-lease-per-client on
 
 dn: cn=v4,cn=dhcp,$SUFFIX
-add: objectclass: nsContainer
-add: objectclass: top
-add: objectClass: dhcpService
-add: dhcpStatements: authoritative
-add: dhcpStatements: default-lease-time 43200
-add: dhcpStatements: max-lease-time 86400
-add: dhcpStatements: one-lease-per-client on
+default: objectclass: nsContainer
+default: objectclass: top
+default: objectClass: dhcpService
+default: dhcpStatements: authoritative
+default: dhcpStatements: default-lease-time 43200
+default: dhcpStatements: max-lease-time 86400
+default: dhcpStatements: one-lease-per-client on
 
 dn: cn=v6,cn=dhcp,$SUFFIX
-add: objectclass: nsContainer
-add: objectclass: top
-add: objectClass: dhcpService
-add: dhcpStatements: authoritative
-add: dhcpStatements: default-lease-time 43200
-add: dhcpStatements: max-lease-time 86400
-add: dhcpStatements: one-lease-per-client on
+default: objectclass: nsContainer
+default: objectclass: top
+default: objectClass: dhcpService
+default: dhcpStatements: authoritative
+default: dhcpStatements: default-lease-time 43200
+default: dhcpStatements: max-lease-time 86400
+default: dhcpStatements: one-lease-per-client on
 
 #### Managed permissions ######################################################
 
 dn: cn=System: Add DHCP Fail Over,cn=permissions,cn=pbac,$SUFFIX
-add: objectClass: groupofnames
-add: objectClass: ipapermission
-add: objectClass: ipapermissionv2
-add: objectClass: top
-add: ipaPermBindRuleType: permission
-add: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
-add: ipaPermissionType: MANAGED
-add: ipaPermissionType: SYSTEM
-add: ipaPermissionType: V2
-add: ipaPermRight: add
-add: ipaPermTargetFilter: (objectclass=dhcpFailOverPeer)
-add: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
+default: objectClass: groupofnames
+default: objectClass: ipapermission
+default: objectClass: ipapermissionv2
+default: objectClass: top
+default: ipaPermBindRuleType: permission
+default: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
+default: ipaPermissionType: MANAGED
+default: ipaPermissionType: SYSTEM
+default: ipaPermissionType: V2
+default: ipaPermRight: default
+default: ipaPermTargetFilter: (objectclass=dhcpFailOverPeer)
+default: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
 
 dn: cn=System: Add DHCP Groups,cn=permissions,cn=pbac,$SUFFIX
-add: objectClass: groupofnames
-add: objectClass: ipapermission
-add: objectClass: ipapermissionv2
-add: objectClass: top
-add: ipaPermBindRuleType: permission
-add: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
-add: ipaPermissionType: MANAGED
-add: ipaPermissionType: SYSTEM
-add: ipaPermissionType: V2
-add: ipaPermRight: add
-add: ipaPermTargetFilter: (objectclass=dhcpgroup)
-add: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
+default: objectClass: groupofnames
+default: objectClass: ipapermission
+default: objectClass: ipapermissionv2
+default: objectClass: top
+default: ipaPermBindRuleType: permission
+default: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
+default: ipaPermissionType: MANAGED
+default: ipaPermissionType: SYSTEM
+default: ipaPermissionType: V2
+default: ipaPermRight: default
+default: ipaPermTargetFilter: (objectclass=dhcpgroup)
+default: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
 
 dn: cn=System: Add DHCP Hosts,cn=permissions,cn=pbac,$SUFFIX
-add: objectClass: groupofnames
-add: objectClass: ipapermission
-add: objectClass: ipapermissionv2
-add: objectClass: top
-add: ipaPermBindRuleType: permission
-add: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
-add: ipaPermissionType: MANAGED
-add: ipaPermissionType: SYSTEM
-add: ipaPermissionType: V2
-add: ipaPermRight: add
-add: ipaPermTargetFilter: (objectclass=dhcphost)
-add: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
-add: member: cn=Host Administrators,cn=privileges,cn=pbac,$SUFFIX
+default: objectClass: groupofnames
+default: objectClass: ipapermission
+default: objectClass: ipapermissionv2
+default: objectClass: top
+default: ipaPermBindRuleType: permission
+default: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
+default: ipaPermissionType: MANAGED
+default: ipaPermissionType: SYSTEM
+default: ipaPermissionType: V2
+default: ipaPermRight: default
+default: ipaPermTargetFilter: (objectclass=dhcphost)
+default: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
+default: member: cn=Host Administrators,cn=privileges,cn=pbac,$SUFFIX
 
 dn: cn=System: Add DHCP Pools,cn=permissions,cn=pbac,$SUFFIX
-add: objectClass: groupofnames
-add: objectClass: ipapermission
-add: objectClass: ipapermissionv2
-add: objectClass: top
-add: cn: System: Add DHCP Pools
-add: ipaPermBindRuleType: permission
-add: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
-add: ipaPermissionType: MANAGED
-add: ipaPermissionType: SYSTEM
-add: ipaPermissionType: V2
-add: ipaPermRight: add
-add: ipaPermTargetFilter: (objectclass=dhcppool)
-add: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
+default: objectClass: groupofnames
+default: objectClass: ipapermission
+default: objectClass: ipapermissionv2
+default: objectClass: top
+default: cn: System: Add DHCP Pools
+default: ipaPermBindRuleType: permission
+default: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
+default: ipaPermissionType: MANAGED
+default: ipaPermissionType: SYSTEM
+default: ipaPermissionType: V2
+default: ipaPermRight: default
+default: ipaPermTargetFilter: (objectclass=dhcppool)
+default: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
 
 dn: cn=System: Add DHCP Servers,cn=permissions,cn=pbac,$SUFFIX
-add: objectClass: groupofnames
-add: objectClass: ipapermission
-add: objectClass: ipapermissionv2
-add: objectClass: top
-add: ipaPermBindRuleType: permission
-add: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
-add: ipaPermissionType: MANAGED
-add: ipaPermissionType: SYSTEM
-add: ipaPermissionType: V2
-add: ipaPermRight: add
-add: ipaPermTargetFilter: (objectclass=dhcpserver)
-add: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
+default: objectClass: groupofnames
+default: objectClass: ipapermission
+default: objectClass: ipapermissionv2
+default: objectClass: top
+default: ipaPermBindRuleType: permission
+default: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
+default: ipaPermissionType: MANAGED
+default: ipaPermissionType: SYSTEM
+default: ipaPermissionType: V2
+default: ipaPermRight: default
+default: ipaPermTargetFilter: (objectclass=dhcpserver)
+default: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
 
 dn: cn=System: Add DHCP Shared Networks,cn=permissions,cn=pbac,$SUFFIX
-add: objectClass: groupofnames
-add: objectClass: ipapermission
-add: objectClass: ipapermissionv2
-add: objectClass: top
-add: ipaPermBindRuleType: permission
-add: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
-add: ipaPermissionType: MANAGED
-add: ipaPermissionType: SYSTEM
-add: ipaPermissionType: V2
-add: ipaPermRight: add
-add: ipaPermTargetFilter: (objectclass=dhcpSharedNetwork)
-add: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
+default: objectClass: groupofnames
+default: objectClass: ipapermission
+default: objectClass: ipapermissionv2
+default: objectClass: top
+default: ipaPermBindRuleType: permission
+default: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
+default: ipaPermissionType: MANAGED
+default: ipaPermissionType: SYSTEM
+default: ipaPermissionType: V2
+default: ipaPermRight: default
+default: ipaPermTargetFilter: (objectclass=dhcpSharedNetwork)
+default: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
 
 dn: cn=System: Modify DHCP Fail Over,cn=permissions,cn=pbac,$SUFFIX
-add: objectClass: groupofnames
-add: objectClass: ipapermission
-add: objectClass: ipapermissionv2
-add: objectClass: top
-add: ipaPermBindRuleType: permission
-add: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
-add: ipaPermDefaultAttr: cn
-add: ipaPermDefaultAttr: dhcpcomments
-add: ipaPermDefaultAttr: dhcpoption
-add: ipaPermDefaultAttr: dhcppermitlist
-add: ipaPermDefaultAttr: dhcpprimarydn
-add: ipaPermDefaultAttr: dhcprange
-add: ipaPermDefaultAttr: dhcpsecondarydn
-add: ipaPermDefaultAttr: dhcpstatements
-add: ipaPermDefaultAttr: objectclass
-add: ipaPermissionType: MANAGED
-add: ipaPermissionType: SYSTEM
-add: ipaPermissionType: V2
-add: ipaPermRight: write
-add: ipaPermTargetFilter: (objectclass=dhcpFailOverPeer)
-add: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
+default: objectClass: groupofnames
+default: objectClass: ipapermission
+default: objectClass: ipapermissionv2
+default: objectClass: top
+default: ipaPermBindRuleType: permission
+default: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
+default: ipaPermDefaultAttr: cn
+default: ipaPermDefaultAttr: dhcpcomments
+default: ipaPermDefaultAttr: dhcpoption
+default: ipaPermDefaultAttr: dhcppermitlist
+default: ipaPermDefaultAttr: dhcpprimarydn
+default: ipaPermDefaultAttr: dhcprange
+default: ipaPermDefaultAttr: dhcpsecondarydn
+default: ipaPermDefaultAttr: dhcpstatements
+default: ipaPermDefaultAttr: objectclass
+default: ipaPermissionType: MANAGED
+default: ipaPermissionType: SYSTEM
+default: ipaPermissionType: V2
+default: ipaPermRight: write
+default: ipaPermTargetFilter: (objectclass=dhcpFailOverPeer)
+default: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
 
 dn: cn=System: Modify DHCP Groups,cn=permissions,cn=pbac,$SUFFIX
-add: objectClass: groupofnames
-add: objectClass: ipapermission
-add: objectClass: ipapermissionv2
-add: objectClass: top
-add: ipaPermBindRuleType: permission
-add: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
-add: ipaPermDefaultAttr: cn
-add: ipaPermDefaultAttr: dhcpcomments
-add: ipaPermDefaultAttr: dhcpoption
-add: ipaPermDefaultAttr: dhcppermitlist
-add: ipaPermDefaultAttr: dhcpprimarydn
-add: ipaPermDefaultAttr: dhcprange
-add: ipaPermDefaultAttr: dhcpsecondarydn
-add: ipaPermDefaultAttr: dhcpstatements
-add: ipaPermDefaultAttr: objectclass
-add: ipaPermissionType: MANAGED
-add: ipaPermissionType: SYSTEM
-add: ipaPermissionType: V2
-add: ipaPermRight: write
-add: ipaPermTargetFilter: (objectclass=dhcpgroup)
-add: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
+default: objectClass: groupofnames
+default: objectClass: ipapermission
+default: objectClass: ipapermissionv2
+default: objectClass: top
+default: ipaPermBindRuleType: permission
+default: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
+default: ipaPermDefaultAttr: cn
+default: ipaPermDefaultAttr: dhcpcomments
+default: ipaPermDefaultAttr: dhcpoption
+default: ipaPermDefaultAttr: dhcppermitlist
+default: ipaPermDefaultAttr: dhcpprimarydn
+default: ipaPermDefaultAttr: dhcprange
+default: ipaPermDefaultAttr: dhcpsecondarydn
+default: ipaPermDefaultAttr: dhcpstatements
+default: ipaPermDefaultAttr: objectclass
+default: ipaPermissionType: MANAGED
+default: ipaPermissionType: SYSTEM
+default: ipaPermissionType: V2
+default: ipaPermRight: write
+default: ipaPermTargetFilter: (objectclass=dhcpgroup)
+default: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
 
 dn: cn=System: Modify DHCP Hosts,cn=permissions,cn=pbac,$SUFFIX
-add: objectClass: groupofnames
-add: objectClass: ipapermission
-add: objectClass: ipapermissionv2
-add: objectClass: top
-add: ipaPermBindRuleType: permission
-add: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
-add: ipaPermDefaultAttr: cn
-add: ipaPermDefaultAttr: dhcpcomments
-add: ipaPermDefaultAttr: dhcphwaddress
-add: ipaPermDefaultAttr: dhcpoption
-add: ipaPermDefaultAttr: dhcpstatements
-add: ipaPermDefaultAttr: objectclass
-add: ipaPermissionType: MANAGED
-add: ipaPermissionType: SYSTEM
-add: ipaPermissionType: V2
-add: ipaPermRight: write
-add: ipaPermTargetFilter: (objectclass=dhcphost)
-add: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
-add: member: cn=Host Administrators,cn=privileges,cn=pbac,$SUFFIX
+default: objectClass: groupofnames
+default: objectClass: ipapermission
+default: objectClass: ipapermissionv2
+default: objectClass: top
+default: ipaPermBindRuleType: permission
+default: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
+default: ipaPermDefaultAttr: cn
+default: ipaPermDefaultAttr: dhcpcomments
+default: ipaPermDefaultAttr: dhcphwdefaultress
+default: ipaPermDefaultAttr: dhcpoption
+default: ipaPermDefaultAttr: dhcpstatements
+default: ipaPermDefaultAttr: objectclass
+default: ipaPermissionType: MANAGED
+default: ipaPermissionType: SYSTEM
+default: ipaPermissionType: V2
+default: ipaPermRight: write
+default: ipaPermTargetFilter: (objectclass=dhcphost)
+default: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
+default: member: cn=Host Administrators,cn=privileges,cn=pbac,$SUFFIX
 
 dn: cn=System: Modify DHCP Pools,cn=permissions,cn=pbac,$SUFFIX
-add: objectClass: groupofnames
-add: objectClass: ipapermission
-add: objectClass: ipapermissionv2
-add: objectClass: top
-add: ipaPermBindRuleType: permission
-add: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
-add: ipaPermDefaultAttr: cn
-add: ipaPermDefaultAttr: dhcpcomments
-add: ipaPermDefaultAttr: dhcpoption
-add: ipaPermDefaultAttr: dhcppermitlist
-add: ipaPermDefaultAttr: dhcpprimarydn
-add: ipaPermDefaultAttr: dhcprange
-add: ipaPermDefaultAttr: dhcpsecondarydn
-add: ipaPermDefaultAttr: dhcpstatements
-add: ipaPermDefaultAttr: objectclass
-add: ipaPermissionType: MANAGED
-add: ipaPermissionType: SYSTEM
-add: ipaPermissionType: V2
-add: ipaPermRight: write
-add: ipaPermTargetFilter: (objectclass=dhcppool)
-add: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
+default: objectClass: groupofnames
+default: objectClass: ipapermission
+default: objectClass: ipapermissionv2
+default: objectClass: top
+default: ipaPermBindRuleType: permission
+default: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
+default: ipaPermDefaultAttr: cn
+default: ipaPermDefaultAttr: dhcpcomments
+default: ipaPermDefaultAttr: dhcpoption
+default: ipaPermDefaultAttr: dhcppermitlist
+default: ipaPermDefaultAttr: dhcpprimarydn
+default: ipaPermDefaultAttr: dhcprange
+default: ipaPermDefaultAttr: dhcpsecondarydn
+default: ipaPermDefaultAttr: dhcpstatements
+default: ipaPermDefaultAttr: objectclass
+default: ipaPermissionType: MANAGED
+default: ipaPermissionType: SYSTEM
+default: ipaPermissionType: V2
+default: ipaPermRight: write
+default: ipaPermTargetFilter: (objectclass=dhcppool)
+default: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
 
 dn: cn=System: Modify DHCP Servers,cn=permissions,cn=pbac,$SUFFIX
-add: objectClass: groupofnames
-add: objectClass: ipapermission
-add: objectClass: ipapermissionv2
-add: objectClass: top
-add: ipaPermBindRuleType: permission
-add: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
-add: ipaPermDefaultAttr: cn
-add: ipaPermDefaultAttr: dhcpcomments
-add: ipaPermDefaultAttr: dhcpoption
-add: ipaPermDefaultAttr: dhcpprimarydn
-add: ipaPermDefaultAttr: dhcpsecondarydn
-add: ipaPermDefaultAttr: dhcpservicedn
-add: ipaPermDefaultAttr: dhcpstatements
-add: ipaPermDefaultAttr: objectclass
-add: ipaPermissionType: MANAGED
-add: ipaPermissionType: SYSTEM
-add: ipaPermissionType: V2
-add: ipaPermRight: write
-add: ipaPermTargetFilter: (objectclass=dhcpserver)
-add: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
+default: objectClass: groupofnames
+default: objectClass: ipapermission
+default: objectClass: ipapermissionv2
+default: objectClass: top
+default: ipaPermBindRuleType: permission
+default: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
+default: ipaPermDefaultAttr: cn
+default: ipaPermDefaultAttr: dhcpcomments
+default: ipaPermDefaultAttr: dhcpoption
+default: ipaPermDefaultAttr: dhcpprimarydn
+default: ipaPermDefaultAttr: dhcpsecondarydn
+default: ipaPermDefaultAttr: dhcpservicedn
+default: ipaPermDefaultAttr: dhcpstatements
+default: ipaPermDefaultAttr: objectclass
+default: ipaPermissionType: MANAGED
+default: ipaPermissionType: SYSTEM
+default: ipaPermissionType: V2
+default: ipaPermRight: write
+default: ipaPermTargetFilter: (objectclass=dhcpserver)
+default: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
 
 dn: cn=System: Modify DHCP Shared Networks,cn=permissions,cn=pbac,$SUFFIX
-add: objectClass: groupofnames
-add: objectClass: ipapermission
-add: objectClass: ipapermissionv2
-add: objectClass: top
-add: ipaPermBindRuleType: permission
-add: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
-add: ipaPermDefaultAttr: cn
-add: ipaPermDefaultAttr: dhcpcomments
-add: ipaPermDefaultAttr: dhcpoption
-add: ipaPermDefaultAttr: dhcppermitlist
-add: ipaPermDefaultAttr: dhcpprimarydn
-add: ipaPermDefaultAttr: dhcprange
-add: ipaPermDefaultAttr: dhcpsecondarydn
-add: ipaPermDefaultAttr: dhcpstatements
-add: ipaPermDefaultAttr: objectclass
-add: ipaPermissionType: MANAGED
-add: ipaPermissionType: SYSTEM
-add: ipaPermissionType: V2
-add: ipaPermRight: write
-add: ipaPermTargetFilter: (objectclass=dhcpSharedNetwork)
-add: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
+default: objectClass: groupofnames
+default: objectClass: ipapermission
+default: objectClass: ipapermissionv2
+default: objectClass: top
+default: ipaPermBindRuleType: permission
+default: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
+default: ipaPermDefaultAttr: cn
+default: ipaPermDefaultAttr: dhcpcomments
+default: ipaPermDefaultAttr: dhcpoption
+default: ipaPermDefaultAttr: dhcppermitlist
+default: ipaPermDefaultAttr: dhcpprimarydn
+default: ipaPermDefaultAttr: dhcprange
+default: ipaPermDefaultAttr: dhcpsecondarydn
+default: ipaPermDefaultAttr: dhcpstatements
+default: ipaPermDefaultAttr: objectclass
+default: ipaPermissionType: MANAGED
+default: ipaPermissionType: SYSTEM
+default: ipaPermissionType: V2
+default: ipaPermRight: write
+default: ipaPermTargetFilter: (objectclass=dhcpSharedNetwork)
+default: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
 
 dn: cn=System: Modify DHCP Subnets,cn=permissions,cn=pbac,$SUFFIX
-add: objectClass: groupofnames
-add: objectClass: ipapermission
-add: objectClass: ipapermissionv2
-add: objectClass: top
-add: ipaPermBindRuleType: permission
-add: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
-add: ipaPermDefaultAttr: cn
-add: ipaPermDefaultAttr: dhcpcomments
-add: ipaPermDefaultAttr: dhcpoption
-add: ipaPermDefaultAttr: dhcpprimarydn
-add: ipaPermDefaultAttr: dhcpsecondarydn
-add: ipaPermDefaultAttr: dhcpstatements
-add: ipaPermDefaultAttr: objectclass
-add: ipaPermissionType: MANAGED
-add: ipaPermissionType: SYSTEM
-add: ipaPermissionType: V2
-add: ipaPermRight: write
-add: ipaPermTargetFilter: (objectclass=dhcpsubnet)
-add: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
+default: objectClass: groupofnames
+default: objectClass: ipapermission
+default: objectClass: ipapermissionv2
+default: objectClass: top
+default: ipaPermBindRuleType: permission
+default: ipaPermLocation: cn=v6,cn=dhcp,$SUFFIX
+default: ipaPermDefaultAttr: cn
+default: ipaPermDefaultAttr: dhcpcomments
+default: ipaPermDefaultAttr: dhcpoption
+default: ipaPermDefaultAttr: dhcpprimarydn
+default: ipaPermDefaultAttr: dhcpsecondarydn
+default: ipaPermDefaultAttr: dhcpstatements
+default: ipaPermDefaultAttr: objectclass
+default: ipaPermissionType: MANAGED
+default: ipaPermissionType: SYSTEM
+default: ipaPermissionType: V2
+default: ipaPermRight: write
+default: ipaPermTargetFilter: (objectclass=dhcpsubnet)
+default: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
 
 dn: cn=System: Read DHCP Configuration,cn=permissions,cn=pbac,$SUFFIX
-add: objectClass: groupofnames
-add: objectClass: ipapermission
-add: objectClass: ipapermissionv2
-add: objectClass: top
-add: ipaPermBindRuleType: anonymous
-add: ipaPermLocation: dc=red-home,dc=nl
-add: ipaPermDefaultAttr: cn
-add: ipaPermDefaultAttr: dhcpclassesdn
-add: ipaPermDefaultAttr: dhcpcomments
-add: ipaPermDefaultAttr: dhcpdelayedserviceparameter
-add: ipaPermDefaultAttr: dhcpfailoverendpointstate
-add: ipaPermDefaultAttr: dhcpfailoverpeerdn
-add: ipaPermDefaultAttr: dhcpgroupdn
-add: ipaPermDefaultAttr: dhcphashbucketassignment
-add: ipaPermDefaultAttr: dhcphostdn
-add: ipaPermDefaultAttr: dhcphwaddress
-add: ipaPermDefaultAttr: dhcpimplementation
-add: ipaPermDefaultAttr: dhcpkeydn
-add: ipaPermDefaultAttr: dhcplocatordn
-add: ipaPermDefaultAttr: dhcpmaxclientleadtime
-add: ipaPermDefaultAttr: dhcpnetmask
-add: ipaPermDefaultAttr: dhcpoption
-add: ipaPermDefaultAttr: dhcpoptionsdn
-add: ipaPermDefaultAttr: dhcppermitlist
-add: ipaPermDefaultAttr: dhcpprimarydn
-add: ipaPermDefaultAttr: dhcprange
-add: ipaPermDefaultAttr: dhcpsecondarydn
-add: ipaPermDefaultAttr: dhcpserverdn
-add: ipaPermDefaultAttr: dhcpservicedn
-add: ipaPermDefaultAttr: dhcpsharednetworkdn
-add: ipaPermDefaultAttr: dhcpstatements
-add: ipaPermDefaultAttr: dhcpsubnetdn
-add: ipaPermDefaultAttr: dhcpversion
-add: ipaPermDefaultAttr: dhcpzonedn
-add: ipaPermDefaultAttr: modifytimestamp
-add: ipaPermDefaultAttr: objectclass
-add: ipaPermissionType: MANAGED
-add: ipaPermissionType: SYSTEM
-add: ipaPermissionType: V2
-add: ipaPermRight: compare
-add: ipaPermRight: read
-add: ipaPermRight: search
-add: ipaPermTarget: cn=v4,$SUFFIX
+default: objectClass: groupofnames
+default: objectClass: ipapermission
+default: objectClass: ipapermissionv2
+default: objectClass: top
+default: ipaPermBindRuleType: anonymous
+default: ipaPermLocation: dc=red-home,dc=nl
+default: ipaPermDefaultAttr: cn
+default: ipaPermDefaultAttr: dhcpclassesdn
+default: ipaPermDefaultAttr: dhcpcomments
+default: ipaPermDefaultAttr: dhcpdelayedserviceparameter
+default: ipaPermDefaultAttr: dhcpfailoverendpointstate
+default: ipaPermDefaultAttr: dhcpfailoverpeerdn
+default: ipaPermDefaultAttr: dhcpgroupdn
+default: ipaPermDefaultAttr: dhcphashbucketassignment
+default: ipaPermDefaultAttr: dhcphostdn
+default: ipaPermDefaultAttr: dhcphwdefaultress
+default: ipaPermDefaultAttr: dhcpimplementation
+default: ipaPermDefaultAttr: dhcpkeydn
+default: ipaPermDefaultAttr: dhcplocatordn
+default: ipaPermDefaultAttr: dhcpmaxclientleadtime
+default: ipaPermDefaultAttr: dhcpnetmask
+default: ipaPermDefaultAttr: dhcpoption
+default: ipaPermDefaultAttr: dhcpoptionsdn
+default: ipaPermDefaultAttr: dhcppermitlist
+default: ipaPermDefaultAttr: dhcpprimarydn
+default: ipaPermDefaultAttr: dhcprange
+default: ipaPermDefaultAttr: dhcpsecondarydn
+default: ipaPermDefaultAttr: dhcpserverdn
+default: ipaPermDefaultAttr: dhcpservicedn
+default: ipaPermDefaultAttr: dhcpsharednetworkdn
+default: ipaPermDefaultAttr: dhcpstatements
+default: ipaPermDefaultAttr: dhcpsubnetdn
+default: ipaPermDefaultAttr: dhcpversion
+default: ipaPermDefaultAttr: dhcpzonedn
+default: ipaPermDefaultAttr: modifytimestamp
+default: ipaPermDefaultAttr: objectclass
+default: ipaPermissionType: MANAGED
+default: ipaPermissionType: SYSTEM
+default: ipaPermissionType: V2
+default: ipaPermRight: compare
+default: ipaPermRight: read
+default: ipaPermRight: search
+default: ipaPermTarget: cn=v4,$SUFFIX
 
-dn: cn=System: Read DHCP Enteries,cn=permissions,cn=pbac,$SUFFIX
-add: objectClass: groupofnames
-add: objectClass: ipapermission
-add: objectClass: ipapermissionv2
-add: objectClass: top
-add: ipaPermBindRuleType: all
-add: ipaPermLocation: cn=dhcp,$SUFFIX
-add: ipaPermIncludedAttr: *
-add: ipaPermIncludedAttr: cn
-add: ipaPermIncludedAttr: createtimestamp
-add: ipaPermIncludedAttr: description
-add: ipaPermIncludedAttr: dhcpClassesDN
-add: ipaPermIncludedAttr: dhcpComments
-add: ipaPermIncludedAttr: dhcpDelayedServiceParameter
-add: ipaPermIncludedAttr: dhcpFailOverEndpointState
-add: ipaPermIncludedAttr: dhcpFailOverPeerDN
-add: ipaPermIncludedAttr: dhcpGroupDN
-add: ipaPermIncludedAttr: dhcpHashBucketAssignment
-add: ipaPermIncludedAttr: dhcpHostDN
-add: ipaPermIncludedAttr: dhcpHWAddress
-add: ipaPermIncludedAttr: dhcpImplementation
-add: ipaPermIncludedAttr: dhcpKeyDN
-add: ipaPermIncludedAttr: dhcpLocatorDN
-add: ipaPermIncludedAttr: dhcpMaxClientLeadTime
-add: ipaPermIncludedAttr: dhcpOption
-add: ipaPermIncludedAttr: dhcpOptionsDN
-add: ipaPermIncludedAttr: dhcpPrimaryDN
-add: ipaPermIncludedAttr: dhcpSecondaryDN
-add: ipaPermIncludedAttr: dhcpServerDN
-add: ipaPermIncludedAttr: dhcpServiceDN
-add: ipaPermIncludedAttr: dhcpSharedNetworkDN
-add: ipaPermIncludedAttr: dhcpStatements
-add: ipaPermIncludedAttr: dhcpSubnetDN
-add: ipaPermIncludedAttr: dhcpVersion
-add: ipaPermIncludedAttr: dhcpZoneDN
-add: ipaPermIncludedAttr: entryusn
-add: ipaPermIncludedAttr: modifytimestamp
-add: ipaPermIncludedAttr: objectclass
-add: ipaPermissionType: SYSTEM
-add: ipaPermissionType: V2
-add: ipaPermRight: compare
-add: ipaPermRight: read
-add: ipaPermRight: search
+dn: cn=System: Read DHCP Entries,cn=permissions,cn=pbac,$SUFFIX
+default: objectClass: groupofnames
+default: objectClass: ipapermission
+default: objectClass: ipapermissionv2
+default: objectClass: top
+default: ipaPermBindRuleType: all
+default: ipaPermLocation: cn=dhcp,$SUFFIX
+default: ipaPermIncludedAttr: *
+default: ipaPermIncludedAttr: cn
+default: ipaPermIncludedAttr: createtimestamp
+default: ipaPermIncludedAttr: description
+default: ipaPermIncludedAttr: dhcpClassesDN
+default: ipaPermIncludedAttr: dhcpComments
+default: ipaPermIncludedAttr: dhcpDelayedServiceParameter
+default: ipaPermIncludedAttr: dhcpFailOverEndpointState
+default: ipaPermIncludedAttr: dhcpFailOverPeerDN
+default: ipaPermIncludedAttr: dhcpGroupDN
+default: ipaPermIncludedAttr: dhcpHashBucketAssignment
+default: ipaPermIncludedAttr: dhcpHostDN
+default: ipaPermIncludedAttr: dhcpHWAddress
+default: ipaPermIncludedAttr: dhcpImplementation
+default: ipaPermIncludedAttr: dhcpKeyDN
+default: ipaPermIncludedAttr: dhcpLocatorDN
+default: ipaPermIncludedAttr: dhcpMaxClientLeadTime
+default: ipaPermIncludedAttr: dhcpOption
+default: ipaPermIncludedAttr: dhcpOptionsDN
+default: ipaPermIncludedAttr: dhcpPrimaryDN
+default: ipaPermIncludedAttr: dhcpSecondaryDN
+default: ipaPermIncludedAttr: dhcpServerDN
+default: ipaPermIncludedAttr: dhcpServiceDN
+default: ipaPermIncludedAttr: dhcpSharedNetworkDN
+default: ipaPermIncludedAttr: dhcpStatements
+default: ipaPermIncludedAttr: dhcpSubnetDN
+default: ipaPermIncludedAttr: dhcpVersion
+default: ipaPermIncludedAttr: dhcpZoneDN
+default: ipaPermIncludedAttr: entryusn
+default: ipaPermIncludedAttr: modifytimestamp
+default: ipaPermIncludedAttr: objectclass
+default: ipaPermissionType: SYSTEM
+default: ipaPermissionType: V2
+default: ipaPermRight: compare
+default: ipaPermRight: read
+default: ipaPermRight: search
 
 dn: cn=System: Read DHCP leases,cn=permissions,cn=pbac,$SUFFIX
-add: objectClass: groupofnames
-add: objectClass: nestedgroup
-add: objectClass: top
-add: description: Read DHCP leases
-add: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
-add: member: cn=DHCP Servers,cn=privileges,cn=pbac,$SUFFIX
+default: objectClass: groupofnames
+default: objectClass: nestedgroup
+default: objectClass: top
+default: description: Read DHCP leases
+default: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
+default: member: cn=DHCP Servers,cn=privileges,cn=pbac,$SUFFIX
 
 dn: cn=System: Write DHCP Configuration,cn=permissions,cn=pbac,$SUFFIX
-add: objectClass: groupofnames
-add: objectClass: ipapermission
-add: objectClass: ipapermissionv2
-add: objectClass: top
-add: ipaPermBindRuleType: permission
-add: ipaPermLocation: dc=red-home,dc=nl
-add: ipaPermDefaultAttr: cn
-add: ipaPermDefaultAttr: dhcpcomments
-add: ipaPermDefaultAttr: dhcpoption
-add: ipaPermDefaultAttr: dhcpprimarydn
-add: ipaPermDefaultAttr: dhcpsecondarydn
-add: ipaPermDefaultAttr: dhcpstatements
-add: ipaPermDefaultAttr: objectclass
-add: ipaPermissionType: MANAGED
-add: ipaPermissionType: SYSTEM
-add: ipaPermissionType: V2
-add: ipaPermRight: write
-add: ipaPermTarget: cn=v4,$SUFFIX
-add: ipaPermTargetFilter: (objectclass=dhcpservice)
-add: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
+default: objectClass: groupofnames
+default: objectClass: ipapermission
+default: objectClass: ipapermissionv2
+default: objectClass: top
+default: ipaPermBindRuleType: permission
+default: ipaPermLocation: dc=red-home,dc=nl
+default: ipaPermDefaultAttr: cn
+default: ipaPermDefaultAttr: dhcpcomments
+default: ipaPermDefaultAttr: dhcpoption
+default: ipaPermDefaultAttr: dhcpprimarydn
+default: ipaPermDefaultAttr: dhcpsecondarydn
+default: ipaPermDefaultAttr: dhcpstatements
+default: ipaPermDefaultAttr: objectclass
+default: ipaPermissionType: MANAGED
+default: ipaPermissionType: SYSTEM
+default: ipaPermissionType: V2
+default: ipaPermRight: write
+default: ipaPermTarget: cn=v4,$SUFFIX
+default: ipaPermTargetFilter: (objectclass=dhcpservice)
+default: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
 
 dn: cn=System: Write DNS Configuration,cn=permissions,cn=pbac,$SUFFIX
-add: objectClass: groupofnames
-add: objectClass: ipapermission
-add: objectClass: ipapermissionv2
-add: objectClass: top
-add: ipaPermBindRuleType: permission
-add: ipaPermLocation: dc=red-home,dc=nl
-add: ipaPermDefaultAttr: idnsallowsyncptr
-add: ipaPermDefaultAttr: idnsforwarders
-add: ipaPermDefaultAttr: idnsforwardpolicy
-add: ipaPermDefaultAttr: idnspersistentsearch
-add: ipaPermDefaultAttr: idnszonerefresh
-add: ipaPermissionType: MANAGED
-add: ipaPermissionType: SYSTEM
-add: ipaPermissionType: V2
-add: ipaPermRight: write
-add: ipaPermTarget: cn=dns,$SUFFIX
-add: ipaPermTargetFilter: (objectclass=idnsConfigObject)
-add: member: cn=DNS Administrators,cn=privileges,cn=pbac,$SUFFIX
-add: member: cn=DNS Servers,cn=privileges,cn=pbac,$SUFFIX
+default: objectClass: groupofnames
+default: objectClass: ipapermission
+default: objectClass: ipapermissionv2
+default: objectClass: top
+default: ipaPermBindRuleType: permission
+default: ipaPermLocation: dc=red-home,dc=nl
+default: ipaPermDefaultAttr: idnsallowsyncptr
+default: ipaPermDefaultAttr: idnsforwarders
+default: ipaPermDefaultAttr: idnsforwardpolicy
+default: ipaPermDefaultAttr: idnspersistentsearch
+default: ipaPermDefaultAttr: idnszonerefresh
+default: ipaPermissionType: MANAGED
+default: ipaPermissionType: SYSTEM
+default: ipaPermissionType: V2
+default: ipaPermRight: write
+default: ipaPermTarget: cn=dns,$SUFFIX
+default: ipaPermTargetFilter: (objectclass=idnsConfigObject)
+default: member: cn=DNS Administrators,cn=privileges,cn=pbac,$SUFFIX
+default: member: cn=DNS Servers,cn=privileges,cn=pbac,$SUFFIX
 
 #### Managed privileges ######################################################
 
 dn: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
-add: objectClass: groupofnames
-add: objectClass: nestedgroup
-add: objectClass: top
+default: objectClass: groupofnames
+default: objectClass: nestedgroup
+default: objectClass: top
 only: description: DHCP Administrators
-add: memberOf: cn=System: Add DHCP Fail Over,cn=permissions,cn=pbac,$SUFFIX
-add: memberOf: cn=System: Add DHCP Groups,cn=permissions,cn=pbac,$SUFFIX
-add: memberOf: cn=System: Add DHCP Hosts,cn=permissions,cn=pbac,$SUFFIX
-add: memberOf: cn=System: Add DHCP Pools,cn=permissions,cn=pbac,$SUFFIX
-add: memberOf: cn=System: Add DHCP Servers,cn=permissions,cn=pbac,$SUFFIX
-add: memberOf: cn=System: Add DHCP Shared Networks,cn=permissions,cn=pbac,$SUFFIX
-add: memberOf: cn=System: Add DHCP Subnets,cn=permissions,cn=pbac,$SUFFIX
-add: memberOf: cn=System: Modify DHCP Fail Over,cn=permissions,cn=pbac,$SUFFIX
-add: memberOf: cn=System: Modify DHCP Groups,cn=permissions,cn=pbac,$SUFFIX
-add: memberOf: cn=System: Modify DHCP Hosts,cn=permissions,cn=pbac,$SUFFIX
-add: memberOf: cn=System: Modify DHCP Pools,cn=permissions,cn=pbac,$SUFFIX
-add: memberOf: cn=System: Modify DHCP Servers,cn=permissions,cn=pbac,$SUFFIX
-add: memberOf: cn=System: Modify DHCP Shared Networks,cn=permissions,cn=pbac,$SUFFIX
-add: memberOf: cn=System: Modify DHCP Subnets,cn=permissions,cn=pbac,$SUFFIX
-add: memberOf: cn=System: Read DHCP leases,cn=permissions,cn=pbac,$SUFFIX
-add: memberOf: cn=System: Remove DHCP Fail Over,cn=permissions,cn=pbac,$SUFFIX
-add: memberOf: cn=System: Remove DHCP Groups,cn=permissions,cn=pbac,$SUFFIX
-add: memberOf: cn=System: Remove DHCP Hosts,cn=permissions,cn=pbac,$SUFFIX
-add: memberOf: cn=System: Remove DHCP Pools,cn=permissions,cn=pbac,$SUFFIX
-add: memberOf: cn=System: Remove DHCP Servers,cn=permissions,cn=pbac,$SUFFIX
-add: memberOf: cn=System: Remove DHCP Shared Networks,cn=permissions,cn=pbac,$SUFFIX
-add: memberOf: cn=System: Remove DHCP Subnets,cn=permissions,cn=pbac,$SUFFIX
-add: memberOf: cn=System: Write DHCP Configuration,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Add DHCP Fail Over,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Add DHCP Groups,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Add DHCP Hosts,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Add DHCP Pools,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Add DHCP Servers,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Add DHCP Shared Networks,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Add DHCP Subnets,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Modify DHCP Fail Over,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Modify DHCP Groups,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Modify DHCP Hosts,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Modify DHCP Pools,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Modify DHCP Servers,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Modify DHCP Shared Networks,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Modify DHCP Subnets,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Read DHCP leases,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Remove DHCP Fail Over,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Remove DHCP Groups,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Remove DHCP Hosts,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Remove DHCP Pools,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Remove DHCP Servers,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Remove DHCP Shared Networks,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Remove DHCP Subnets,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Write DHCP Configuration,cn=permissions,cn=pbac,$SUFFIX
 
 dn: cn=DHCP Servers,cn=privileges,cn=pbac,$SUFFIX
-add: objectClass: groupofnames
-add: objectClass: nestedgroup
-add: objectClass: top
-add: cn: DHCP Servers
+default: objectClass: groupofnames
+default: objectClass: nestedgroup
+default: objectClass: top
+default: cn: DHCP Servers
 only: description: DHCP Servers
-add: memberOf: cn=System: Read DHCP leases,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Read DHCP leases,cn=permissions,cn=pbac,$SUFFIX
 
 ###############################################################################
-
-plugin: update_managed_permissions
+plugin: dhcp

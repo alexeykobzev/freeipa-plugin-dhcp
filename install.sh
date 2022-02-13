@@ -33,8 +33,8 @@ SCHEMA_DEST=/usr/share/ipa/updates
 echo ''
 echo 'Installing schemata...'
 
-for schema in ${SCHEMATA[@]}; do
-    ${INSTALL} -v -o root -g root -m 644 ${SCRIPTPATH}/plugin/schema/${schema} ${SCHEMA_DEST}
+for schema in "${SCHEMATA[@]}"; do
+    ${INSTALL} -v -o root -g root -m 644 "${SCRIPTPATH}/plugin/schema/${schema}" "${SCHEMA_DEST}"
 done
 
 ###############################################################################
@@ -44,8 +44,8 @@ UPDATE_DEST=/usr/share/ipa/updates
 echo ''
 echo 'Installing update files...'
 
-for update in ${UPDATES[@]}; do
-    ${INSTALL} -v -o root -g root -m 644 ${SCRIPTPATH}/plugin/update/${update} ${UPDATE_DEST}
+for update in "${UPDATES[@]}"; do
+    ${INSTALL} -v -o root -g root -m 644 "${SCRIPTPATH}/plugin/update/${update}" "${UPDATE_DEST}"
 done
 
 ###############################################################################
@@ -55,8 +55,8 @@ IPALIB_DEST=/usr/lib/python3.6/site-packages/ipaserver/plugins/
 echo ''
 echo 'Installing IPASERVER plugins...'
 
-for plugin in ${IPASERVER_PLUGINS[@]}; do
-	    ${INSTALL} -v -o root -g root -m 644 ${SCRIPTPATH}/plugin/ipaserver/${plugin} ${IPALIB_DEST}
+for plugin in "${IPASERVER_PLUGINS[@]}"; do
+	    ${INSTALL} -v -o root -g root -m 644 "${SCRIPTPATH}/plugin/ipaserver/${plugin}" "${IPALIB_DEST}"
 done
 
 ###############################################################################
@@ -66,11 +66,11 @@ UI_DEST=/usr/share/ipa/ui/js/plugins
 echo ''
 echo 'Installing UI plugins...'
 
-for plugin in ${UI_PLUGINS[@]}; do
-    PLUGIN_FILES=$( ls ${SCRIPTPATH}/plugin/ui/${plugin} )
-    for file in ${PLUGIN_FILES[@]}; do
-        ${INSTALL} -v -o root -g root -m 755 -d ${UI_DEST}/${plugin}
-        ${INSTALL} -v -o root -g root -m 644 -t ${UI_DEST}/${plugin} ${SCRIPTPATH}/plugin/ui/${plugin}/${file}
+for plugin in "${UI_PLUGINS[@]}"; do
+    PLUGIN_FILES=$( ls "${SCRIPTPATH}/ui/${plugin}" )
+    for file in "${PLUGIN_FILES[@]}"; do
+        ${INSTALL} -v -o root -g root -m 755 -d "${UI_DEST}/${plugin}"
+        ${INSTALL} -v -o root -g root -m 644 -t "${UI_DEST}/${plugin}" "${SCRIPTPATH}/plugin/ui/${plugin}/${file}"
     done
 done
 
@@ -78,9 +78,12 @@ done
 
 echo ''
 echo 'Running ipa-ldap-updater.'
-for schema in ${SCHEMATA[@]}; do
-    /usr/sbin/ipa-ldap-updater --schema-file=${SCHEMA_DEST}/${schema}
+SCHEMA_FILES=""
+for schema in "${SCHEMATA[@]}"; do
+  SCHEMA_FILES="${SCHEMA_FILES} --schema-file=${SCHEMA_DEST}/${schema}"
 done
+/usr/sbin/ipa-ldap-updater ${SCHEMA_FILES}
+
 
 ###############################################################################
 
