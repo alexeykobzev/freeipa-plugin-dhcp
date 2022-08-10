@@ -239,7 +239,25 @@ define(
                                         name: 'router',
                                         flags: ['w_if_no_aci'],
                                         validators: [ 'ip_v4_address' ]
-                                    }
+                                    },
+                                    {
+                                        name: 'dhcprange',
+                                        label: 'DHCP Range',
+                                        validators: [
+                                            {
+                                                $type: 'dhcprange',
+                                            },
+                                            // {
+                                            //     $type: 'dhcprange_subnet',
+                                            // },
+                                        ]
+                                    },
+                                    {
+                                        $type: 'multivalued',
+                                        flags: ['w_if_no_aci'],
+                                        name: 'domainnameserver',
+                                        validators: [ 'ip_v4_address' ]
+                                    },
                                 ]
                             },
                             {
@@ -324,6 +342,18 @@ define(
                             name: 'networkaddr',
                             label: 'Subnet/Prefix',
                             validators: [ 'network' ]
+                        },
+                        {
+                            name: 'dhcprange',
+                            label: 'Range',
+                            validators: [
+                                {
+                                    $type: 'dhcprange',
+                                },
+                                // {
+                                //     $type: 'dhcprange_subnet',
+                                // },
+                            ]
                         },
                         {
                             $type: 'textarea',
@@ -431,9 +461,9 @@ define(
                                 {
                                     $type: 'dhcprange',
                                 },
-                                {
-                                    $type: 'dhcprange_subnet',
-                                },
+                                // {
+                                //     $type: 'dhcprange_subnet',
+                                // },
                             ]
                         },
                         {
@@ -450,7 +480,7 @@ define(
         exp.dhcppool_entity_spec = make_dhcppool_spec();
 
 
-//// dhcgroup /////////////////////////////////////////////////////////////////
+//// dhcpgroup /////////////////////////////////////////////////////////////////
 
 
         var make_dhcpgroup_spec = function(element_name,containing_entity) {
@@ -546,7 +576,6 @@ define(
                 ],
                 standard_association_facets: true,
                 adder_dialog: {
-                    $factory: IPA.dhcp.dhcpgroup_adder_dialog,
                     fields: [
                         {
                             name: 'cn'
@@ -655,6 +684,10 @@ define(
                                         read_only: true
                                     },
                                     {
+                                        name: 'hostname',
+                                        flags: ['w_if_no_aci']
+                                    },
+                                    {
                                         name: 'macaddress',
                                         flags: ['w_if_no_aci']
                                     },
@@ -662,6 +695,9 @@ define(
                                         name: 'ipaddress',
                                         flags: ['w_if_no_aci'],
                                         validators: [ 'ip_v4_address' ]
+                                    },
+                                    {
+                                        name: 'dhcpclientid'
                                     },
                                 ]
                             },
@@ -687,12 +723,8 @@ define(
                     }
                 ],
                 adder_dialog: {
+                    method: 'add_dialog',
                     fields: [
-                        {
-                            name: 'cn',
-                            flags: ['w_if_no_aci'],
-                            required: true
-                        },
                         {
                             $type: 'entity_select',
                             name: 'fqdn',
@@ -712,7 +744,8 @@ define(
                         },
                         {
                             $type: 'textarea',
-                            name: 'dhcpcomments'
+                            name: 'dhcpcomments',
+                            label: 'Comments'
                         }
                     ]
                 }
@@ -896,82 +929,80 @@ define(
                     label: menu_lable,
                     children: [
                         {
-                            entity: 'dhcpservice',
+                            entity: menu_entity + 'service',
                             label: 'Configuration'
                         },
                         {
-                            entity: 'dhcpsubnet',
+                            entity: menu_entity + 'subnet',
                             label: 'Subnets',
                             children: [
                                 {
-                                    entity: 'dhcppool',
+                                    entity: menu_entity + 'pool',
                                     lable: 'Pool',
                                     hidden: true,
                                     children: [
                                         {
-                                            entity: 'dhcppoolhost',
+                                            entity: menu_entity + 'poolhost',
                                             label: 'Host',
                                             hidden: true
                                         }
                                     ]
                                 },
                                 {
-                                    entity: 'dhcpsubnetgroup',
+                                    entity: menu_entity + 'subnetgroup',
                                     label: 'Group',
                                     hidden: true,
                                     children: [
                                         {
-                                            entity: 'dhcpsubnetgrouphost',
+                                            entity: menu_entity + 'subnetgrouphost',
                                             label: 'Host',
                                             hidden: true
                                         }
                                     ]
                                 },
                                 {
-                                    entity: 'dhcpsubnethost',
+                                    entity: menu_entity + 'subnethost',
                                     label: 'Host',
                                     hidden: true
                                 }
                             ]
                         },
                         {
-                            entity: 'dhcphost',
+                            entity: menu_entity + 'host',
                             label: 'Hosts'
                         },
                         {
-                            entity: 'dhcpgroup',
+                            entity: menu_entity + 'group',
                             label: 'Groups',
                             children: [
                                 {
-                                    entity: 'dhcpgrouphost',
+                                    entity: menu_entity + 'grouphost',
                                     label: 'Host',
                                     hidden: true
                                 }
                             ]
                         },
                         {
-                            entity: 'dhcpsharednetwork',
+                            entity: menu_entity + 'sharednetwork',
                             label: 'Shared Network'
                         },
                         {
-                            entity: 'dhcpserver',
+                            entity: menu_entity + 'server',
                             label: 'Servers'
                         },
                         {
-                            entity: 'dhcpfailoverpeer',
+                            entity: menu_entity + 'failoverpeer',
                             label: 'Failoverpeer'
                         }
                     ]
                 }
             }
-        exp.dhcp_v4_menu_spec = make_dhcp_menu_spec('dhcpv4','DHCP IPv4');
-        exp.dhcp_v6_menu_spec = make_dhcp_menu_spec('dhcpv6','DHCP IPv6');
+        exp.dhcp_v4_menu_spec = make_dhcp_menu_spec('dhcpv4','DHCP IPv4', 'dhcp' );
 
         exp.add_menu_items = function() {
             network_services_item = menu.query({name: 'network_services'});
             if (network_services_item.length > 0) {
                 menu.add_item( exp.dhcp_v4_menu_spec, 'network_services' );
-                menu.add_item( exp.dhcp_v6_menu_spec, 'network_services' );
             }
         };
 
