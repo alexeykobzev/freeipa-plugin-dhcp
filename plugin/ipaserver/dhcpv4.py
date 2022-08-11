@@ -462,14 +462,24 @@ class dhcpsubnet_add_cidr(Command):
             cli_name='networkaddr',
             label=_('Network Address'),
             doc=_("Network address in CIDR notation.")
+        ),
+        Str(
+            'dhcprange?',
+            cli_name='range',
+            label=_('Range'),
+            doc=_('DHCP range.')
         )
     )
 
     def execute(self, *args, **kw):
-        ip = IPNetwork(args[-1])
+        ip = IPNetwork(args[0])
         cn = unicode(ip.network)
         dhcpnetmask = ip.prefixlen
-        result = api.Command['dhcpsubnet_add'](cn, dhcpnetmask=dhcpnetmask)
+        if len(args) > 1:
+          dhcprange = args[1]
+          result = api.Command['dhcpsubnet_add'](cn, dhcpnetmask=dhcpnetmask, dhcprange=dhcprange)
+        else:
+          result = api.Command['dhcpsubnet_add'](cn, dhcpnetmask=dhcpnetmask)
         return dict(result=result['result'], value=cn)
 
 
