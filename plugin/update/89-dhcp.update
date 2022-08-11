@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#### Indexing properties ######################################################
+
 dn: cn=dhcpHWAddress,cn=index,cn=userRoot,cn=ldbm database,cn=plugins,cn=config
 default: objectClass:top
 default: objectClass:nsIndex
@@ -27,6 +29,8 @@ default: objectClass:nsIndex
 default: cn:dhcpClassData
 default: nsSystemIndex:false
 default: nsIndexType:eq
+
+#### Server base objects ######################################################
 
 dn: cn=v4,cn=dhcp,$SUFFIX
 add: objectClass: top
@@ -578,7 +582,7 @@ default: objectClass: groupofnames
 default: objectClass: ipapermission
 default: objectClass: ipapermissionv2
 default: objectClass: top
-default: ipaPermBindRuleType: anonymous
+default: ipaPermBindRuleType: permission
 default: ipaPermLocation: dc=vigo,dc=internal
 default: ipaPermDefaultAttr: cn
 default: ipaPermDefaultAttr: objectclass
@@ -610,6 +614,7 @@ default: ipaPermDefaultAttr: dhcpmaxclientleadtime
 default: ipaPermDefaultAttr: dhcpgroupdn
 default: ipaPermDefaultAttr: dhcpsubnetdn
 default: ipaPermDefaultAttr: dhcpfailoverpeerdn
+default: ipaPermissionType: MANAGED
 default: ipaPermissionType: SYSTEM
 default: ipaPermissionType: V2
 default: ipaPermRight: compare
@@ -617,6 +622,43 @@ default: ipaPermRight: read
 default: ipaPermRight: search
 default: ipaPermTarget: cn=v4,cn=dhcp,$SUFFIX
 default: ipaPermTargetFilter: (objectclass=dhcpservice)
+
+dn: cn=System: Write DHCP Configuration,cn=permissions,cn=pbac,$SUFFIX
+default: objectClass: groupofnames
+default: objectClass: ipapermission
+default: objectClass: ipapermissionv2
+default: objectClass: top
+default: ipaPermBindRuleType: permission
+default: ipaPermLocation: dc=vigo,dc=internal
+default: ipaPermDefaultAttr: cn
+default: ipaPermDefaultAttr: objectclass
+default: ipaPermDefaultAttr: modifytimestamp
+default: ipaPermDefaultAttr: dhcpprimarydn
+default: ipaPermDefaultAttr: dhcpsecondarydn
+default: ipaPermDefaultAttr: dhcpstatements
+default: ipaPermDefaultAttr: dhcpoption
+default: ipaPermDefaultAttr: dhcpcomments
+default: ipaPermissionType: MANAGED
+default: ipaPermissionType: SYSTEM
+default: ipaPermissionType: V2
+default: ipaPermRight: write
+default: ipaPermTarget: cn=v4,cn=dhcp,$SUFFIX
+default: ipaPermTargetFilter: (objectclass=dhcpservice)
+
+dn: cn=System: Read DHCP Entries,cn=permissions,cn=pbac,$SUFFIX
+default: objectClass: groupofnames
+default: objectClass: ipapermission
+default: objectClass: ipapermissionv2
+default: objectClass: top
+default: ipaPermBindRuleType: permission
+default: ipaPermLocation: dc=vigo,dc=internal
+default: ipaPermDefaultAttr: *
+default: ipaPermissionType: SYSTEM
+default: ipaPermissionType: V2
+default: ipaPermRight: compare
+default: ipaPermRight: read
+default: ipaPermRight: search
+default: ipaPermTarget: cn=v4,cn=dhcp,$SUFFIX
 
 #### Managed privileges ######################################################
 
@@ -647,6 +689,7 @@ default: memberOf: cn=System: Remove DHCP Servers,cn=permissions,cn=pbac,$SUFFIX
 default: memberOf: cn=System: Remove DHCP Shared Networks,cn=permissions,cn=pbac,$SUFFIX
 default: memberOf: cn=System: Remove DHCP Subnets,cn=permissions,cn=pbac,$SUFFIX
 default: memberOf: cn=System: Read DHCP Configuration,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Write DHCP Configuration,cn=permissions,cn=pbac,$SUFFIX
 
 dn: cn=DHCP Servers,cn=privileges,cn=pbac,$SUFFIX
 default: objectClass: groupofnames
@@ -654,7 +697,7 @@ default: objectClass: nestedgroup
 default: objectClass: top
 default: cn: DHCP Servers
 only: description: DHCP Servers
-default: memberOf: cn=System: Read DHCP Configuration,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Read DHCP Entries,cn=permissions,cn=pbac,$SUFFIX
 
 ###############################################################################
 

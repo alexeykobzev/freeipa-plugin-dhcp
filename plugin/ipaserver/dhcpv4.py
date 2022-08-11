@@ -83,7 +83,20 @@ class dhcpservice(LDAPObject):
 		        'dhcpgroupdn', 'dhcpsubnetdn', 'dhcpfailoverpeerdn'
             },
             'default_privileges': {'DHCP Administrators'},
-        }
+        },
+        'System: Write DHCP Configuration': {
+            'non_object': True,
+            'ipapermright': {'write'},
+            'ipapermlocation': dhcp_dn,
+            'ipapermtarget': container_dhcp_dn,
+            'ipapermtargetfilter': ['(objectclass=dhcpservice)'],
+            'ipapermdefaultattr': {
+                'cn', 'objectclass',
+                'dhcpprimarydn', 'dhcpsecondarydn',
+                'dhcpstatements', 'dhcpoption', 'dhcpcomments'
+            },
+            'default_privileges': {'DHCP Administrators'},
+        },
     }
 
     takes_params = (
