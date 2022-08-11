@@ -59,12 +59,30 @@ class dhcpservice(LDAPObject):
 
     managed_permissions = {
         'System: Read DHCP Configuration': {
+            'non_object': True,
             'ipapermlocation': dhcp_dn,
             'ipapermtarget': container_dhcp_dn,
-            'ipapermbindruletype': 'permission',
+            'ipapermbindruletype': 'anonymous',
+            'replaces_global_anonymous_aci': True,
             'ipapermright': {'read', 'search', 'compare'},
-            'ipapermdefaultattr': {'*'},
-            'default_privileges': {'DHCP Administrators','DHCP Servers'},
+            'ipapermtargetfilter': ['(objectclass=dhcpservice)'],
+            'ipapermdefaultattr': {
+                'cn', 'objectclass',
+                'dhcpprimarydn', 'dhcpsecondarydn',
+                'dhcpnetmask',
+                'dhcprange', 'dhcppermitlist',
+                'dhcpservicedn',
+                'dhcphwaddress',
+                'dhcpstatements', 'dhcpoption', 'dhcpcomments',
+		        'modifytimestamp', 'dhcpkeydn', 'dhcpimplementation',
+		        'dhcpfailoverendpointstate', 'dhcpoptionsdn',
+		        'dhcpdelayedserviceparameter', 'dhcpversion',
+		        'dhcphashbucketassignment', 'dhcpserverdn',
+		        'dhcpclassesdn', 'dhcpsharednetworkdn', 'dhcplocatordn',
+		        'dhcpzonedn', 'dhcphostdn', 'dhcpmaxclientleadtime',
+		        'dhcpgroupdn', 'dhcpsubnetdn', 'dhcpfailoverpeerdn'
+            },
+            'default_privileges': {'DHCP Administrators'},
         }
     }
 

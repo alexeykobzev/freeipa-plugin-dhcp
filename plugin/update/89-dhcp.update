@@ -578,17 +578,45 @@ default: objectClass: groupofnames
 default: objectClass: ipapermission
 default: objectClass: ipapermissionv2
 default: objectClass: top
-default: ipaPermBindRuleType: permission
+default: ipaPermBindRuleType: anonymous
 default: ipaPermLocation: dc=vigo,dc=internal
-default: ipaPermDefaultAttr: *
+default: ipaPermDefaultAttr: cn
+default: ipaPermDefaultAttr: objectclass
+default: ipaPermDefaultAttr: modifytimestamp
+default: ipaPermDefaultAttr: dhcpprimarydn
+default: ipaPermDefaultAttr: dhcpsecondarydn
+default: ipaPermDefaultAttr: dhcpnetmask
+default: ipaPermDefaultAttr: dhcprange
+default: ipaPermDefaultAttr: dhcppermitlist
+default: ipaPermDefaultAttr: dhcpservicedn
+default: ipaPermDefaultAttr: dhcphwaddress
+default: ipaPermDefaultAttr: dhcpstatements
+default: ipaPermDefaultAttr: dhcpoption
+default: ipaPermDefaultAttr: dhcpcomments
+default: ipaPermDefaultAttr: dhcpkeydn
+default: ipaPermDefaultAttr: dhcpimplementation
+default: ipaPermDefaultAttr: dhcpfailoverendpointstate
+default: ipaPermDefaultAttr: dhcpoptionsdn
+default: ipaPermDefaultAttr: dhcpdelayedserviceparameter
+default: ipaPermDefaultAttr: dhcpversion
+default: ipaPermDefaultAttr: dhcphashbucketassignment
+default: ipaPermDefaultAttr: dhcpserverdn
+default: ipaPermDefaultAttr: dhcpclassesdn
+default: ipaPermDefaultAttr: dhcpsharednetworkdn
+default: ipaPermDefaultAttr: dhcplocatordn
+default: ipaPermDefaultAttr: dhcpzonedn
+default: ipaPermDefaultAttr: dhcphostdn
+default: ipaPermDefaultAttr: dhcpmaxclientleadtime
+default: ipaPermDefaultAttr: dhcpgroupdn
+default: ipaPermDefaultAttr: dhcpsubnetdn
+default: ipaPermDefaultAttr: dhcpfailoverpeerdn
 default: ipaPermissionType: SYSTEM
 default: ipaPermissionType: V2
 default: ipaPermRight: compare
 default: ipaPermRight: read
 default: ipaPermRight: search
 default: ipaPermTarget: cn=v4,cn=dhcp,$SUFFIX
-default: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
-default: member: cn=DHCP Servers,cn=privileges,cn=pbac,$SUFFIX
+default: ipaPermTargetFilter: (objectclass=dhcpservice)
 
 #### Managed privileges ######################################################
 
