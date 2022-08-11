@@ -383,8 +383,8 @@ class dhcpsubnet(LDAPObject):
             default=24
         ),
         Str(
-            'dhcprange',
-            cli_name='dhcprange',
+            'dhcprange?',
+            cli_name='range',
             label=_('Range'),
             doc=_('DHCP range.')
         ),
@@ -1196,7 +1196,7 @@ class dhcppool_is_valid(Command):
             doc=_('DHCP subnet.')
         ),
         Str(
-            'dhcprange',
+            'dhcprange+',
             cli_name='range',
             label=_('Range'),
             doc=_('DHCP range.')
@@ -1303,7 +1303,7 @@ class dhcpgroup(LDAPObject):
         ),
         Str(
             'dhcprange',
-            cli_name='dhcprange',
+            cli_name='range',
             label=_('Range'),
             doc=_('DHCP range.')
         ),

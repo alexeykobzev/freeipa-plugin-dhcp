@@ -242,7 +242,7 @@ define(
                                     },
                                     {
                                         name: 'dhcprange',
-                                        label: 'DHCP Range',
+                                        label: 'Range',
                                         validators: [
                                             {
                                                 $type: 'dhcprange',
@@ -353,7 +353,8 @@ define(
                                 // {
                                 //     $type: 'dhcprange_subnet',
                                 // },
-                            ]
+                            ],
+                            required: false
                         },
                         {
                             $type: 'textarea',
