@@ -101,10 +101,10 @@ def dhcp_modify_permitunknownclients( dhcp_version, options, dhcpPermitList) :
 def dhcp_modify_domainname( dhcp_version, options, dhcpOptions, dhcpStatements ):
     if dhcp_version == 4 :
         start_with_options = 'domain-name '
-        start_with_statements = 'dddns-domainname '
+        start_with_statements = 'ddns-domainname '
     elif dhcp_version == 6 :
         start_with_options = 'domain-name '
-        start_with_statements = 'dddns-domainname '
+        start_with_statements = 'ddns-domainname '
 
     option_item = 'domainname'
     if option_item in options:

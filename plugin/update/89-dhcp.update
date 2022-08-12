@@ -448,7 +448,7 @@ default: ipaPermissionType: MANAGED
 default: ipaPermissionType: SYSTEM
 default: ipaPermissionType: V2
 default: ipaPermRight: add
-default: ipaPermTargetFilter: (objectclass=dhcpserver)
+default: ipaPermTargetFilter: (objectclass=dhcpServer)
 default: member: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
 
 dn: cn=System: Modify DHCP Servers,cn=permissions,cn=pbac,$SUFFIX
@@ -641,21 +641,6 @@ default: ipaPermRight: write
 default: ipaPermTarget: cn=v4,cn=dhcp,$SUFFIX
 default: ipaPermTargetFilter: (objectclass=dhcpservice)
 
-dn: cn=System: Read DHCP Entries,cn=permissions,cn=pbac,$SUFFIX
-default: objectClass: groupofnames
-default: objectClass: ipapermission
-default: objectClass: ipapermissionv2
-default: objectClass: top
-default: ipaPermBindRuleType: permission
-default: ipaPermLocation: dc=vigo,dc=internal
-default: ipaPermDefaultAttr: *
-default: ipaPermissionType: SYSTEM
-default: ipaPermissionType: V2
-default: ipaPermRight: compare
-default: ipaPermRight: read
-default: ipaPermRight: search
-default: ipaPermTarget: cn=v4,cn=dhcp,$SUFFIX
-
 #### Managed privileges ######################################################
 
 dn: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
@@ -686,14 +671,6 @@ default: memberOf: cn=System: Remove DHCP Shared Networks,cn=permissions,cn=pbac
 default: memberOf: cn=System: Remove DHCP Subnets,cn=permissions,cn=pbac,$SUFFIX
 default: memberOf: cn=System: Read DHCP Configuration,cn=permissions,cn=pbac,$SUFFIX
 default: memberOf: cn=System: Write DHCP Configuration,cn=permissions,cn=pbac,$SUFFIX
-
-dn: cn=DHCP Servers,cn=privileges,cn=pbac,$SUFFIX
-default: objectClass: groupofnames
-default: objectClass: nestedgroup
-default: objectClass: top
-default: cn: DHCP Servers
-only: description: DHCP Servers
-default: memberOf: cn=System: Read DHCP Entries,cn=permissions,cn=pbac,$SUFFIX
 
 ###############################################################################
 

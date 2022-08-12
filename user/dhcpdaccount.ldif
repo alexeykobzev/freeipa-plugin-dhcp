@@ -1,0 +1,8 @@
+dn: uid=dhcp,cn=sysaccounts,cn=etc,dc=vigo,dc=internal
+cn: uid=dhcp,cn=sysaccounts,cn=etc,dc=vigo,dc=internal
+userPassword: "maehe5iqu0pae3yiiyee6ieyoo7jahzeizaiqueep3dighej"
+objectClass: account
+objectClass: simpleSecurityObject
+objectClass: top
+objectClass: groupOfPrincipals
+uid: dhcp

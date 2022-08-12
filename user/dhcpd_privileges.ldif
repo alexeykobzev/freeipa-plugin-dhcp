@@ -1,0 +1,4 @@
+dn: dc=vigo,dc=internal
+changetype: modify
+add: aci
+aci: (target="ldap:///cn=dhcp,dc=vigo,dc=internal")(targetattr="*")(version 3.0; acl "DHCP user can read/search"; allow (read, search) userdn = "ldap:///uid=dhcp,cn=sysaccounts,cn=etc,dc=vigo,dc=internal";)
