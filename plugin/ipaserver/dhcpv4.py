@@ -2018,13 +2018,6 @@ class dhcphost(LDAPObject):
             flags=['virtual_attribute']
         ),
         Str(
-            'hostname?',
-            cli_name='hostname',
-            label=_('Host name'),
-            doc=_('Host name.'),
-            flags=['virtual_attribute']
-        ),
-        Str(
             'dhcpclientid?',
             cli_name='dhcpclientid',
             label=_('Client Identifier'),
@@ -2061,7 +2054,7 @@ class dhcphost(LDAPObject):
                 entry_attrs['ipaddress'] = v
             elif statements.startswith('ddns-hostname '):
                 (o, v) = statements.split(' ', 1)
-                entry_attrs['hostname'] = v.replace('"', '')
+                entry_attrs['fqdn'] = v.replace('"', '')
 
         dhcpHWaddress = entry_attrs.get('dhcphwaddress', [])
 
@@ -2075,7 +2068,7 @@ class dhcphost(LDAPObject):
         for option in dhcpOptions:
             if option.startswith('host-name '):
                 (o, v) = option.split(' ', 1)
-                entry_attrs['hostname'] = v.replace('"', '')
+                entry_attrs['fqdn'] = v.replace('"', '')
 
         return entry_attrs
 
@@ -2131,10 +2124,10 @@ class dhcphost_add(Command):
 
     takes_args = (
         Str(
-            'hostname',
-            cli_name='hostname',
-            label=_('Hostname'),
-            doc=_("Hostname.")
+            'fqdn',
+            cli_name='fqdn',
+            label=_('Host Name'),
+            doc=_('Host name.')
         ),
         Str(
             'macaddress',
@@ -2181,10 +2174,10 @@ class dhcphost_del(Command):
 
     takes_args = (
         Str(
-            'hostname',
-            cli_name='hostname',
-            label=_('Hostname'),
-            doc=_("Hostname.")
+            'fqdn',
+            cli_name='fqdn',
+            label=_('Host Name'),
+            doc=_('Host name.')
         ),
         Str(
             'macaddress',
