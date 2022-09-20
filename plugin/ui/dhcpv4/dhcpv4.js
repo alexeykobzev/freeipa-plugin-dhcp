@@ -481,7 +481,7 @@ define(
         exp.dhcppool_entity_spec = make_dhcppool_spec();
 
 
-//// dhcpgroup /////////////////////////////////////////////////////////////////
+//// dhcgroup /////////////////////////////////////////////////////////////////
 
 
         var make_dhcpgroup_spec = function(element_name,containing_entity) {
@@ -577,6 +577,7 @@ define(
                 ],
                 standard_association_facets: true,
                 adder_dialog: {
+                    $factory: IPA.dhcp.dhcpgroup_adder_dialog,
                     fields: [
                         {
                             name: 'cn'

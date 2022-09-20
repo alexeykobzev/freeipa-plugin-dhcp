@@ -36,6 +36,7 @@ from ipapython.dn import DN
 from ipapython.dnsutil import DNSName
 from netaddr import *
 
+from ipaserver.plugins.dhcpcommon import *
 
 #### Constants ################################################################
 
@@ -44,6 +45,8 @@ dhcp_dn = '{0}'.format(api.env.basedn)
 container_dhcp_dn = DN(('cn', 'v4'), 'cn=dhcp')
 register = Registry()
 
+dhcp_version = 4
+dhcp_set_version( dhcp_version )
 
 #### dhcpservice ##############################################################
 
@@ -243,66 +246,17 @@ class dhcpservice_mod(LDAPUpdate):
             entry = ldap.get_entry(dn)
             dhcpStatements = entry.get('dhcpstatements', [])
 
-        if 'defaultleasetime' in options:
-            statement = 'default-lease-time {0}'.format(options['defaultleasetime'])
-            foundStatement = False
-            for i, s in enumerate(dhcpStatements):
-                if s.startswith('default-lease-time '):
-                    foundStatement = True
-                    dhcpStatements[i] = statement
-                    break
-            if not foundStatement:
-                dhcpStatements.append(statement)
-
-        if 'maxleasetime' in options:
-            statement = 'max-lease-time {0}'.format(options['maxleasetime'])
-            foundStatement = False
-            for i, s in enumerate(dhcpStatements):
-                if s.startswith('max-lease-time '):
-                    foundStatement = True
-                    dhcpStatements[i] = statement
-                    break
-            if not foundStatement:
-                dhcpStatements.append(statement)
-
         if 'dhcpoption' in entry_attrs:
             dhcpOptions = entry_attrs.get('dhcpoption', [])
         else:
             entry = ldap.get_entry(dn)
             dhcpOptions = entry.get('dhcpoption', [])
 
-        if 'domainname' in options:
-            option = 'domain-name "{0}"'.format(options['domainname'])
-            foundOption = False
-            for i, s in enumerate(dhcpOptions):
-                if s.startswith('domain-name '):
-                    foundOption = True
-                    dhcpOptions[i] = option
-                    break
-            if not foundOption:
-                dhcpOptions.append(option)
-
-        if 'domainnameservers' in options:
-            option = 'domain-name-servers ' + ', '.join(options['domainnameservers'])
-            foundOption = False
-            for i, s in enumerate(dhcpOptions):
-                if s.startswith('domain-name-servers '):
-                    foundOption = True
-                    dhcpOptions[i] = option
-                    break
-            if not foundOption:
-                dhcpOptions.append(option)
-
-        if 'domainsearch' in options:
-            option = 'domain-search ' + ', '.join('"' + s + '"' for s in options['domainsearch'])
-            foundOption = False
-            for i, s in enumerate(dhcpOptions):
-                if s.startswith('domain-search '):
-                    foundOption = True
-                    dhcpOptions[i] = option
-                    break
-            if not foundOption:
-                dhcpOptions.append(option)
+        dhcp_modify_domainname( dhcp_version, options, dhcpOptions, dhcpStatements )
+        dhcp_modify_domainserver( dhcp_version, options, dhcpOptions )
+        dhcp_modify_domainsearch( dhcp_version, options, dhcpOptions )
+        dhcp_modify_defaultleasetime( dhcp_version, options, dhcpStatements )
+        dhcp_modify_maxleasetime( dhcp_version, options, dhcpStatements )
 
         entry_attrs['dhcpstatements'] = dhcpStatements
         entry_attrs['dhcpoption'] = dhcpOptions
@@ -373,7 +327,7 @@ class dhcpsubnet(LDAPObject):
                 'dhcpLeasesDN', 'dhcpOptionsDN',
                 'dhcpZoneDN', 'dhcpKeyDN',
                 'dhcpFailOverPeerDN', 'dhcpStatements',
-                'dhcpComments', 'dhcpOption'
+                'dhcpComments', 'dhcpOption', 'dhcpPermitList'
             },
             'default_privileges': {'DHCP Administrators'},
         }
@@ -409,6 +363,12 @@ class dhcpsubnet(LDAPObject):
             doc=_('DHCP statements.')
         ),
         Str(
+            'dhcppermitlist*',
+            cli_name='dhcppermitlist',
+            label=_('DHCP permit list'),
+            doc=_('DHCP permit list.')
+        ),
+        Str(
             'dhcpoption*',
             cli_name='dhcpoptions',
             label=_('DHCP Options'),
@@ -426,6 +386,13 @@ class dhcpsubnet(LDAPObject):
             label=_('Router'),
             doc=_('Router.'),
             flags=['virtual_attribute']
+        ),
+        Str(
+            'domainnameservers*',
+            cli_name='domainnameservers',
+            label=_('Domain Name Server'),
+            doc=_('Domain Name Servers.').
+            flags=['virtual_attribute']
         )
     )
 
@@ -439,6 +406,10 @@ class dhcpsubnet(LDAPObject):
             if option.startswith('routers '):
                 (o, v) = option.split(' ', 1)
                 entry_attrs['router'] = v
+
+            elif option.startswith('domain-name-servers '):
+                (o, v) = option.split(' ', 1)
+                entry_attrs['domainnameservers'] = v.split(', ')
 
         return entry_attrs
 
@@ -528,6 +499,11 @@ class dhcpsubnet_mod(LDAPUpdate):
 
         entry = ldap.get_entry(dn)
 
+        if 'dhcpstatements' in entry_attrs:
+            dhcpStatements = entry_attrs.get('dhcpstatements', [])
+        else:
+            dhcpStatements = entry.get('dhcpstatements', [])
+
         if 'dhcpoption' in entry_attrs:
             dhcpOptions = entry_attrs.get('dhcpoption', [])
         else:
@@ -544,6 +520,12 @@ class dhcpsubnet_mod(LDAPUpdate):
             if not foundOption:
                 dhcpOptions.append(option)
 
+        dhcp_modify_router( dhcp_version, options, dhcpOptions )      
+        dhcp_modify_domainname( dhcp_version, options, dhcpOptions, dhcpStatements )
+        dhcp_modify_domainserver( dhcp_version, options, dhcpOptions )
+        dhcp_modify_domainsearch( dhcp_version, options, dhcpOptions )
+
+        entry_attrs['dhcpstatements'] = dhcpStatements
         entry_attrs['dhcpoption'] = dhcpOptions
 
         return dn
@@ -1091,7 +1073,7 @@ class dhcppool_add(LDAPCreate):
             for i, s in enumerate(entryDHCPStatements):
                 if s.startswith('max-lease-time'):
                     foundStatement = True
-                    maxDHCPStatements[i] = 'max-lease-time {0}'.format(maxLeaseTime)
+                    entryDHCPStatements[i] = 'max-lease-time {0}'.format(maxLeaseTime)
                     break
             if foundStatement is False:
                 entryDHCPStatements.append('max-lease-time {0}'.format(maxLeaseTime))
@@ -1138,57 +1120,29 @@ class dhcppool_mod(LDAPUpdate):
         else:
             dhcpPermitList = entry.get('dhcppermitlist', [])
 
-        if 'permitknownclients' in options:
-            item = '{0} known-clients'.format('allow' if options['permitknownclients'] else 'deny')
-            newPermitList = [p for p in dhcpPermitList if not p.endswith(' known-clients')]
-            newPermitList.append(item)
-            dhcpPermitList = newPermitList
-
-        if 'permitunknownclients' in options:
-            item = '{0} unknown-clients'.format('allow' if options['permitunknownclients'] else 'deny')
-            newPermitList = [p for p in dhcpPermitList if not p.endswith(' unknown-clients')]
-            newPermitList.append(item)
-            dhcpPermitList = newPermitList
-
+        dhcpPermitList = dhcp_modify_permitknownclients( dhcp_version, options, dhcpPermitList )
+        dhcpPermitList = dhcp_modify_permitunknownclients( dhcp_version, options, dhcpPermitList )
+        
         entry_attrs['dhcppermitlist'] = dhcpPermitList
-
 
         if 'dhcpstatements' in entry_attrs:
             dhcpStatements = entry_attrs.get('dhcpstatements', [])
         else:
             dhcpStatements = entry.get('dhcpstatements', [])
 
-        if 'defaultleasetime' in options:
-            statement = 'default-lease-time {0}'.format(options['defaultleasetime'])
-            foundStatement = False
-            for i, s in enumerate(dhcpStatements):
-                if s.startswith('default-lease-time '):
-                    foundStatement = True
-                    dhcpStatements[i] = statement
-                    break
-            if not foundStatement:
-                dhcpStatements.append(statement)
-
-        if 'maxleasetime' in options:
-            statement = 'max-lease-time {0}'.format(options['maxleasetime'])
-            foundStatement = False
-            for i, s in enumerate(dhcpStatements):
-                if s.startswith('max-lease-time '):
-                    foundStatement = True
-                    dhcpStatements[i] = statement
-                    break
-            if not foundStatement:
-                dhcpStatements.append(statement)
-
-        entry_attrs['dhcpstatements'] = dhcpStatements
-
-
         if 'dhcpoption' in entry_attrs:
             dhcpOptions = entry_attrs.get('dhcpoption', [])
         else:
             dhcpOptions = entry.get('dhcpoption', [])
 
+        dhcp_modify_domainname( dhcp_version, options, dhcpOptions, dhcpStatements )
+        dhcp_modify_domainserver( dhcp_version, options, dhcpOptions )
+        dhcp_modify_domainsearch( dhcp_version, options, dhcpOptions )
+        dhcp_modify_defaultleasetime( dhcp_version, options, dhcpStatements )
+        dhcp_modify_maxleasetime( dhcp_version, options, dhcpStatements )
 
+
+        entry_attrs['dhcpstatements'] = dhcpStatements
         entry_attrs['dhcpoption'] = dhcpOptions
 
         return dn
@@ -1531,7 +1485,7 @@ class dhcpgroup_add(LDAPCreate):
             for i, s in enumerate(entryDHCPStatements):
                 if s.startswith('max-lease-time'):
                     foundStatement = True
-                    maxDHCPStatements[i] = 'max-lease-time {0}'.format(maxLeaseTime)
+                    entryDHCPStatements[i] = 'max-lease-time {0}'.format(maxLeaseTime)
                     break
             if foundStatement is False:
                 entryDHCPStatements.append('max-lease-time {0}'.format(maxLeaseTime))
@@ -1542,7 +1496,7 @@ class dhcpgroup_add(LDAPCreate):
         if 'dhcpoption' in entry_attrs:
             dhcpOptions = entry_attrs.get('dhcpoption', [])
         else:
-            dhcpOptions = entry.get('dhcpoption', [])
+            dhcpOptions = []
 
         if 'domainname' in options:
             option = 'domain-name "{0}"'.format(options['domainname'])
@@ -1617,89 +1571,29 @@ class dhcpgroup_mod(LDAPUpdate):
             dhcpPermitList = entry_attrs.get('dhcppermitlist', [])
         else:
             dhcpPermitList = entry.get('dhcppermitlist', [])
-
-        if 'permitknownclients' in options:
-            item = '{0} known-clients'.format('allow' if options['permitknownclients'] else 'deny')
-            newPermitList = [p for p in dhcpPermitList if not p.endswith(' known-clients')]
-            newPermitList.append(item)
-            dhcpPermitList = newPermitList
-
-        if 'permitunknownclients' in options:
-            item = '{0} unknown-clients'.format('allow' if options['permitunknownclients'] else 'deny')
-            newPermitList = [p for p in dhcpPermitList if not p.endswith(' unknown-clients')]
-            newPermitList.append(item)
-            dhcpPermitList = newPermitList
-
+        
+        dhcp_modify_permitknownclients( dhcp_version, options, dhcpPermitList )
+        dhcp_modify_permitunknownclients( dhcp_version, options, dhcpPermitList )
         entry_attrs['dhcppermitlist'] = dhcpPermitList
-
 
         if 'dhcpstatements' in entry_attrs:
             dhcpStatements = entry_attrs.get('dhcpstatements', [])
         else:
             dhcpStatements = entry.get('dhcpstatements', [])
 
-        if 'defaultleasetime' in options:
-            statement = 'default-lease-time {0}'.format(options['defaultleasetime'])
-            foundStatement = False
-            for i, s in enumerate(dhcpStatements):
-                if s.startswith('default-lease-time '):
-                    foundStatement = True
-                    dhcpStatements[i] = statement
-                    break
-            if not foundStatement:
-                dhcpStatements.append(statement)
-
-        if 'maxleasetime' in options:
-            statement = 'max-lease-time {0}'.format(options['maxleasetime'])
-            foundStatement = False
-            for i, s in enumerate(dhcpStatements):
-                if s.startswith('max-lease-time '):
-                    foundStatement = True
-                    dhcpStatements[i] = statement
-                    break
-            if not foundStatement:
-                dhcpStatements.append(statement)
-
-        entry_attrs['dhcpStatements'] = dhcpStatements
-
         if 'dhcpoption' in entry_attrs:
             dhcpOptions = entry_attrs.get('dhcpoption', [])
         else:
             dhcpOptions = entry.get('dhcpoption', [])
 
-        if 'domainname' in options:
-            option = 'domain-name "{0}"'.format(options['domainname'])
-            foundOption = False
-            for i, s in enumerate(dhcpOptions):
-                if s.startswith('domain-name '):
-                    foundOption = True
-                    dhcpOptions[i] = option
-                    break
-            if not foundOption:
-                dhcpOptions.append(option)
-                
-        if 'domainsearch' in options:
-            option = 'domain-search ' + ', '.join('"' + s + '"' for s in options['domainsearch'])
-            foundOption = False
-            for i, s in enumerate(dhcpOptions):
-                if s.startswith('domain-search '):
-                    foundOption = True
-                    dhcpOptions[i] = option
-                    break
-            if not foundOption:
-                dhcpOptions.append(option)
+        dhcp_modify_router( dhcp_version, options, dhcpOptions )
+        dhcp_modify_domainname( dhcp_version, options, dhcpOptions, dhcpStatements )
+        dhcp_modify_domainserver( dhcp_version, options, dhcpOptions )
+        dhcp_modify_domainsearch( dhcp_version, options, dhcpOptions )
+        dhcp_modify_defaultleasetime( dhcp_version, options, dhcpStatements )
+        dhcp_modify_maxleasetime( dhcp_version, options, dhcpStatements )
 
-        if 'router' in options:
-            option = 'routers {0}'.format(options['router'])
-            foundOption = False
-            for i, s in enumerate(dhcpOptions):
-                if s.startswith('routers '):
-                    foundOption = True
-                    dhcpOptions[i] = option
-                    break
-            if not foundOption:
-                dhcpOptions.append(option)
-
+        entry_attrs['dhcpStatements'] = dhcpStatements
         entry_attrs['dhcpoption'] = dhcpOptions
 
         return dn
@@ -2122,9 +2016,34 @@ class dhcphost(LDAPObject):
             label=_('Host IP Address'),
             doc=_('Host IP Address.'),
             flags=['virtual_attribute']
-        )
+        ),
+        Str(
+            'hostname?',
+            cli_name='hostname',
+            label=_('Host name'),
+            doc=_('Host name.'),
+            flags=['virtual_attribute']
+        ),
+        Str(
+            'dhcpclientid?',
+            cli_name='dhcpclientid',
+            label=_('Client Identifier'),
+            doc=_('Client Identifier.')
+        ),
+        Str(
+            'dhcpstatements*',
+            cli_name='dhcpstatements',
+            label=_('DHCP Statements'),
+            doc=_('DHCP statements.')
+        ),
+        Str(
+            'dhcpoption*',
+            cli_name='dhcpoptions',
+            label=_('DHCP Options'),
+            doc=_('DHCP options.')
+        ),
     )
-    
+
     @staticmethod
     def extract_virtual_params(ldap, dn, entry_attrs, keys, options):
 
@@ -2133,7 +2052,10 @@ class dhcphost(LDAPObject):
         for statements in dhcpStatements:
             if statements.startswith('fixed-address '):
                 (o, v) = statements.split(' ', 1)
-                entry_attrs['ipaddress'] = v.replace('"', '')
+                entry_attrs['ipaddress'] = v
+            elif statements.startswith('ddns-hostname '):
+                (o, v) = statements.split(' ', 1)
+                entry_attrs['hostname'] = v.replace('"', '')
 
         dhcpHWaddress = entry_attrs.get('dhcphwaddress', [])
 
@@ -2141,6 +2063,13 @@ class dhcphost(LDAPObject):
             if hwaddress.startswith('ethernet '):
                 (o, v) = hwaddress.split(' ', 1)
                 entry_attrs['macaddress'] = v.replace('"', '')
+
+        dhcpOptions = entry_attrs.get('dhcpoption', [])
+
+        for option in dhcpOptions:
+            if option.startswith('host-name '):
+                (o, v) = option.split(' ', 1)
+                entry_attrs['hostname'] = v.replace('"', '')
 
         return entry_attrs
 
@@ -2183,52 +2112,49 @@ class dhcphost_add(LDAPCreate):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
 
-    def pre_callback(self, ldap, dn, entry_attrs, attrs_list, *keys, **options):
-        assert isinstance(dn, DN)
 
-        if 'fqdn' in options:
-            hostname = options['fqdn']
-            
-        if 'macaddress' in options:
-            macaddress = options['macaddress']
+@register()
+class dhcphost_add_dialog(Command):
 
-        if 'ipaddress' in options:
-            ipaddress = options['ipaddress']
+   takes_args = (
+        Str(
+            'fqdn',
+            cli_name='fqdn',
+            label=_('Hostname'),
+            doc=_("Hostname.")
+        ),
+        Str(
+            'macaddress',
+            normalizer=lambda value: value.upper(),
+            pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
+            pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
+                            'each H is a hexadecimal character.'),
+            cli_name='macaddress',
+            label=_('MAC Address'),
+            doc=_("MAC address.")
+        ),
+        Str(
+            'ipaddress',
+            cli_name='ipaddress',
+            label=_('IP Address'),
+            doc=_("Hosts IP Address.")
+        )
+    )
 
-        if 'dhcpStatements' in entry_attrs:
-             entryDHCPStatements = entry_attrs['dhcpStatements']
-        else:
-             entryDHCPStatements = []
-
-        entryDHCPStatements.append(u'ddns-hostname {0}'.format(hostname))
-        entryDHCPStatements.append(u'fixed-address {0}'.format(ipaddress))
-
-        entry_attrs['dhcpstatements'] = entryDHCPStatements
-
-        if 'dhcpoption' in entry_attrs:
-            entryDHCPOptions = entry_attrs['dhcpoption']
-        else:
-            entryDHCPOptions = []
-
-        entryDHCPOptions.append(u'host-name "{0}"'.format(hostname))
-
-
-        macaddress = '{macaddress}'.format(macaddress=macaddress).replace('u','').replace('(','').replace(')','').replace('\'','').replace(',','')
-        entry_attrs['dhcpoption'] = entryDHCPOptions
-        entry_attrs['dhcphwaddress'] = 'ethernet {0}'.format(macaddress)
-
-        #entry_attrs['cn'] = '{hostname}-{macaddress}'.format(hostname=hostname,macaddress=macaddress.replace(':', '')) 
-
-        #self.pre_common_callback(ldap, dn, entry_attrs, attrs_list, *keys, **options)
-
-        return dn
-
-    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
-        assert isinstance(dn, DN)
-        entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
-
-        # self.post_common_callback(ldap, dn, entry_attrs, *keys, **options)
-        return dn
+#     def execute(self, *args, **kw):
+#         hostname = args[0]
+#         macaddress = args[1]
+#         cn = u'{hostname}-{macaddress}'.format(
+#             hostname=hostname,
+#             macaddress=macaddress.replace(':', '')
+#         )
+#         result = api.Command['dhcphost_add_dhcpschema'](
+#             cn,
+#             dhcphwaddress=u'ethernet {0}'.format(macaddress),
+#             dhcpstatements=[u'fixed-address {0}'.format(hostname)],
+#             dhcpoption=[u'host-name "{0}"'.format(hostname)]
+#         )
+#         return dict(result=result['result'], value=cn)
 
 @register()
 class dhcphost_mod(LDAPUpdate):
@@ -2287,7 +2213,7 @@ class dhcphost_add_cmd(Command):
         result = api.Command['dhcphost_add_dhcpschema'](
             cn,
             dhcphwaddress=u'ethernet {0}'.format(macaddress),
-            dhcpstatements=[u'fixed-address {0}'.format(hostname)],
+            dhcpstatements=[u'fixed-address {0}'.format(hostname), u'ddnshostname "{0}"'.format(hostname)],
             dhcpoption=[u'host-name "{0}"'.format(hostname)]
         )
         return dict(result=result['result'], value=cn)

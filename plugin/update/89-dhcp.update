@@ -33,12 +33,13 @@ default: nsIndexType:eq
 #### Server base objects ######################################################
 
 dn: cn=v4,cn=dhcp,$SUFFIX
-add: objectClass: top
-add: objectClass: dhcpService
-add: dhcpStatements: authoritative
-add: dhcpStatements: default-lease-time 43200
-add: dhcpStatements: max-lease-time 86400
-add: dhcpStatements: one-lease-per-client on
+default: objectclass: nsContainer
+default: objectclass: top
+default: objectClass: dhcpService
+default: dhcpStatements: authoritative
+default: dhcpStatements: default-lease-time 43200
+default: dhcpStatements: max-lease-time 86400
+default: dhcpStatements: one-lease-per-client on
 
 #### Managed permissions ######################################################
 
