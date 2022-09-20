@@ -1988,6 +1988,13 @@ class dhcphost(LDAPObject):
 
     takes_params = (
         Str(
+            'cn?',
+            cli_name='cn',
+            label=_('Canonical Name'),
+            doc=_('Canonical name.'),
+            primary_key=True
+        ),
+        Str(
             'fqdn',
             cli_name='fqdn',
             label=_('Host Name'),
@@ -2034,6 +2041,12 @@ class dhcphost(LDAPObject):
             cli_name='dhcpoptions',
             label=_('DHCP Options'),
             doc=_('DHCP options.')
+        ),
+        Str(
+            'dhcpcomments?',
+            cli_name='dhcpcomments',
+            label=_('Comments'),
+            doc=_('DHCP Comments.')
         ),
     )
 
@@ -2099,12 +2112,6 @@ class dhcphost_del_dhcpschema(LDAPDelete):
     msg_summary = _('Deleted DHCP host "%(value)s"')
 
 
-
-@register()
-class dhcphost_add(LDAPCreate):
-    __doc__ = _('Create a new DHCP host.')
-    msg_summary = _('Created DHCP host "%(value)s"')
-
 @register()
 class dhcphost_mod(LDAPUpdate):
     __doc__ = _('Modify a DHCP host.')
@@ -2115,14 +2122,9 @@ class dhcphost_mod(LDAPUpdate):
         entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
         return dn
 
-@register()
-class dhcphost_del(LDAPDelete):
-    __doc__ = _('Delete a DHCP host.')
-    msg_summary = _('Deleted DHCP host "%(value)s"')
-
 
 @register()
-class dhcphost_add_cmd(Command):
+class dhcphost_add(Command):
     has_output = output.standard_entry
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
@@ -2145,27 +2147,34 @@ class dhcphost_add_cmd(Command):
             doc=_("MAC address.")
         ),
         Str(
-            'ipaddress',
+            'ipaddress?',
             cli_name='ipaddress',
             label=_('IP Address'),
-            doc=_("Hosts IP Address.")
+            doc=_("Host IP Address.")
         )
     )
 
     def execute(self, *args, **kw):
         hostname = args[0]
         macaddress = args[1]
-        cn = str(hostname)
+        # if ipaddress is present
+        dhcpstatements = [u'ddnshostname "{0}"'.format(hostname)]
+        if (len(args) > 2):
+            dhcpstatements = [u'fixed-address {0}'.format(args[2]), u'ddnshostname "{0}"'.format(hostname)]            
+        cn = u'{hostname}-{macaddress}'.format(
+            hostname=hostname,
+            macaddress=macaddress.replace(':', '')
+        )
         result = api.Command['dhcphost_add_dhcpschema'](
             cn,
             dhcphwaddress=u'ethernet {0}'.format(macaddress),
-            dhcpstatements=[u'fixed-address {0}'.format(hostname), u'ddnshostname "{0}"'.format(hostname)],
+            dhcpstatements,
             dhcpoption=[u'host-name "{0}"'.format(hostname)]
         )
         return dict(result=result['result'], value=cn)
 
 @register()
-class dhcphost_del_cmd(Command):
+class dhcphost_del(Command):
     has_output = output.standard_entry
     __doc__ = _('Delete a DHCP host.')
     msg_summary = _('Deleted DHCP host "%(value)s"')
@@ -2384,7 +2393,10 @@ from . import host
 def host_add_dhcphost(self, ldap, dn, entry_attrs, *keys, **options):
     if 'macaddress' in entry_attrs:
         for addr in entry_attrs['macaddress']:
-            api.Command['dhcphost_add_cmd'](entry_attrs['fqdn'][0], addr)
+            if 'ipaddress' in entry_attrs:
+                api.Command['dhcphost_add'](entry_attrs['fqdn'][0], addr, entry_attrs['ipaddress'][0])
+            else:
+                api.Command['dhcphost_add'](entry_attrs['fqdn'][0], addr)
     return dn
 
 host.host_add.register_post_callback(host_add_dhcphost)
@@ -2440,7 +2452,7 @@ def host_del_dhcphost(self, ldap, dn, *keys, **options):
     if 'macaddress' in entry:
         for addr in entry['macaddress']:
             try:
-                api.Command['dhcphost_del_cmd'](entry['fqdn'][0], addr)
+                api.Command['dhcphost_del'](entry['fqdn'][0], addr)
             except:
                 pass
 
