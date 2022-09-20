@@ -2046,7 +2046,7 @@ class dhcphost(LDAPObject):
             'ipaddress?',
             cli_name='ipaddress',
             label=_('IP Address'),
-            doc=_("Host IP Address.")
+            doc=_("Host IP Address."),
             flags=['virtual_attribute']
         )
     )
