@@ -1280,7 +1280,7 @@ class dhcpgroup(LDAPObject):
             primary_key=True
         ),
         Str(
-            'dhcprange',
+            'dhcprange?',
             cli_name='range',
             label=_('Range'),
             doc=_('DHCP range.')
