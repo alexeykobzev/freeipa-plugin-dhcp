@@ -2151,16 +2151,16 @@ class dhcphost_add(Command):
         hostname = args[0]
         macaddress = args[1]
         # if ipaddress is present
-        dhcpstatements = [u'ddnshostname "{0}"'.format(hostname)]
+        dhcpstatement = [u'ddnshostname "{0}"'.format(hostname)]
         if (len(args) > 2):
-            dhcpstatements = [u'fixed-address {0}'.format(args[2]), u'ddnshostname "{0}"'.format(hostname)]            
+            dhcpstatement = [u'fixed-address {0}'.format(args[2]), u'ddnshostname "{0}"'.format(hostname)]            
         cn = u'{hostname}-{macaddress}'.format(
             hostname=hostname,
             macaddress=macaddress.replace(':', '')
         )
         result = api.Command['dhcphost_add_dhcpschema'](
             cn,
-            dhcpstatements,
+            dhcpstatements=dhcpstatement,
             dhcphwaddress=u'ethernet {0}'.format(macaddress),
             dhcpoption=[u'host-name "{0}"'.format(hostname)]
         )
