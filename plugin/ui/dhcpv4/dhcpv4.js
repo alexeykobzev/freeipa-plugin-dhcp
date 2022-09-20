@@ -686,7 +686,7 @@ define(
                                         read_only: true
                                     },
                                     {
-                                        name: 'hostname',
+                                        name: 'fqdn',
                                         flags: ['w_if_no_aci']
                                     },
                                     {
