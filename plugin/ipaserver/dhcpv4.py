@@ -391,7 +391,7 @@ class dhcpsubnet(LDAPObject):
             'domainnameservers*',
             cli_name='domainnameservers',
             label=_('Domain Name Server'),
-            doc=_('Domain Name Servers.').
+            doc=_('Domain Name Servers.'),
             flags=['virtual_attribute']
         )
     )
@@ -2011,7 +2011,7 @@ class dhcphost(LDAPObject):
             flags=['virtual_attribute']
         ),
         Str(
-            'ipaddress',
+            'ipaddress?',
             cli_name='ipaddress',
             label=_('Host IP Address'),
             doc=_('Host IP Address.'),
@@ -2111,50 +2111,6 @@ class dhcphost_del_dhcpschema(LDAPDelete):
 class dhcphost_add(LDAPCreate):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
-
-
-@register()
-class dhcphost_add_dialog(Command):
-
-   takes_args = (
-        Str(
-            'fqdn',
-            cli_name='fqdn',
-            label=_('Hostname'),
-            doc=_("Hostname.")
-        ),
-        Str(
-            'macaddress',
-            normalizer=lambda value: value.upper(),
-            pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
-            pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
-                            'each H is a hexadecimal character.'),
-            cli_name='macaddress',
-            label=_('MAC Address'),
-            doc=_("MAC address.")
-        ),
-        Str(
-            'ipaddress',
-            cli_name='ipaddress',
-            label=_('IP Address'),
-            doc=_("Hosts IP Address.")
-        )
-    )
-
-#     def execute(self, *args, **kw):
-#         hostname = args[0]
-#         macaddress = args[1]
-#         cn = u'{hostname}-{macaddress}'.format(
-#             hostname=hostname,
-#             macaddress=macaddress.replace(':', '')
-#         )
-#         result = api.Command['dhcphost_add_dhcpschema'](
-#             cn,
-#             dhcphwaddress=u'ethernet {0}'.format(macaddress),
-#             dhcpstatements=[u'fixed-address {0}'.format(hostname)],
-#             dhcpoption=[u'host-name "{0}"'.format(hostname)]
-#         )
-#         return dict(result=result['result'], value=cn)
 
 @register()
 class dhcphost_mod(LDAPUpdate):
