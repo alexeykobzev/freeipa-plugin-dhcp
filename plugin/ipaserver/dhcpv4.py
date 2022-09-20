@@ -391,7 +391,7 @@ class dhcpsubnet(LDAPObject):
             'domainnameservers*',
             cli_name='domainnameservers',
             label=_('Domain Name Server'),
-            doc=_('Domain Name Servers.').
+            doc=_('Domain Name Servers.'),
             flags=['virtual_attribute']
         )
     )
