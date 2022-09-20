@@ -727,6 +727,11 @@ define(
                 adder_dialog: {
                     fields: [
                         {
+                            name: 'cn',
+                            flags: ['w_if_no_aci'],
+                            required: true
+                        },
+                        {
                             $type: 'entity_select',
                             name: 'fqdn',
                             other_entity: 'host',
