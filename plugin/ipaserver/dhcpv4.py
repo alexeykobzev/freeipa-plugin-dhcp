@@ -2167,8 +2167,8 @@ class dhcphost_add(Command):
         )
         result = api.Command['dhcphost_add_dhcpschema'](
             cn,
-            dhcphwaddress=u'ethernet {0}'.format(macaddress),
             dhcpstatements,
+            dhcphwaddress=u'ethernet {0}'.format(macaddress),
             dhcpoption=[u'host-name "{0}"'.format(hostname)]
         )
         return dict(result=result['result'], value=cn)
