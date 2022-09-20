@@ -1988,13 +1988,6 @@ class dhcphost(LDAPObject):
 
     takes_params = (
         Str(
-            'cn',
-            cli_name='cn',
-            label=_('Canonical Name'),
-            doc=_('Canonical name.'),
-            primary_key=True
-        ),
-        Str(
             'fqdn',
             cli_name='fqdn',
             label=_('Host Name'),
@@ -2162,10 +2155,7 @@ class dhcphost_add_cmd(Command):
     def execute(self, *args, **kw):
         hostname = args[0]
         macaddress = args[1]
-        cn = u'{hostname}-{macaddress}'.format(
-            hostname=hostname,
-            macaddress=macaddress.replace(':', '')
-        )
+        cn = str(hostname)
         result = api.Command['dhcphost_add_dhcpschema'](
             cn,
             dhcphwaddress=u'ethernet {0}'.format(macaddress),

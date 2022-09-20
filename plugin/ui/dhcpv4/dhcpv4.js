@@ -725,12 +725,8 @@ define(
                     }
                 ],
                 adder_dialog: {
+                    method: 'add_cmd',
                     fields: [
-                        {
-                            name: 'cn',
-                            flags: ['w_if_no_aci'],
-                            required: true
-                        },
                         {
                             $type: 'entity_select',
                             name: 'fqdn',

@@ -519,7 +519,7 @@ objectClasses: ( 2.16.840.1.113719.1.203.6.3
     MUST ( cn $ dhcpNetMask )
     MAY ( dhcpRange $ dhcpPoolDN $ dhcpGroupDN $ dhcpHostDN $ dhcpClassesDN $
     dhcpLeasesDN $ dhcpOptionsDN $ dhcpZoneDN $ dhcpKeyDN $ dhcpFailOverPeerDN $
-    dhcpStatements $ dhcpComments $ dhcpOption )
+    dhcpStatements $ dhcpComments $ dhcpOption $ dhcpPermitList)
     X-NDS_CONTAINMENT ( 'dhcpService' 'dhcpSharedNetwork' ) )
 #
 ###############################################################################
@@ -530,7 +530,7 @@ objectClasses: ( 2.16.840.1.113719.1.203.6.4
     SUP top
     MUST ( cn $ dhcpRange )
     MAY ( dhcpClassesDN $ dhcpPermitList $ dhcpLeasesDN $ dhcpOptionsDN $
-    dhcpZoneDN $dhcpKeyDN $ dhcpStatements $ dhcpComments $ dhcpOption )
+    dhcpZoneDN $dhcpKeyDN $ dhcpStatements $ dhcpComments $ dhcpOption $ dhcpPermitList)
     X-NDS_CONTAINMENT ( 'dhcpSubnet' 'dhcpSharedNetwork' ) )
 #
 ###############################################################################
@@ -541,7 +541,7 @@ objectClasses: ( 2.16.840.1.113719.1.203.6.5
     SUP top
     MUST ( cn )
     MAY ( dhcpHostDN $ dhcpOptionsDN $ dhcpStatements $ dhcpComments $
-    dhcpOption )
+    dhcpOption $ dhcpPermitList)
     X-NDS_CONTAINMENT ( 'dhcpSubnet' 'dhcpService' ) )
 #
 ###############################################################################
