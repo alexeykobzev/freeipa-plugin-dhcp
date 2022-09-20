@@ -2023,6 +2023,31 @@ class dhcphost(LDAPObject):
             cli_name='dhcpcomments',
             label=_('Comments'),
             doc=_('DHCP Comments.')
+        ),
+        Str(
+            'fqdn',
+            cli_name='fqdn',
+            label=_('Host Name'),
+            doc=_('Host name.'),
+            flags=['virtual_attribute']
+        ),
+        Str(
+            'macaddress',
+            normalizer=lambda value: value.upper(),
+            pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
+            pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
+                            'each H is a hexadecimal character.'),
+            cli_name='macaddress',
+            label=_('MAC Address'),
+            doc=_("MAC address."),
+            flags=['virtual_attribute']
+        ),
+        Str(
+            'ipaddress?',
+            cli_name='ipaddress',
+            label=_('IP Address'),
+            doc=_("Host IP Address.")
+            flags=['virtual_attribute']
         )
     )
 
@@ -2098,40 +2123,6 @@ class dhcphost_mod(LDAPUpdate):
         entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
         return dn
 
-
-@register()
-class dhcphost_add_dialog(Command):
-
-    takes_args = (
-        Str(
-            'fqdn',
-            cli_name='fqdn',
-            label=_('Host Name'),
-            doc=_('Host name.')
-        ),
-        Str(
-            'macaddress',
-            normalizer=lambda value: value.upper(),
-            pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
-            pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
-                            'each H is a hexadecimal character.'),
-            cli_name='macaddress',
-            label=_('MAC Address'),
-            doc=_("MAC address.")
-        ),
-        Str(
-            'ipaddress?',
-            cli_name='ipaddress',
-            label=_('IP Address'),
-            doc=_("Host IP Address.")
-        ),
-        Str(
-            'dhcpcomments?',
-            cli_name='dhcpcomments',
-            label=_('Comments'),
-            doc=_('DHCP comments.')
-        )
-    )
 
 @register()
 class dhcphost_add(Command):
