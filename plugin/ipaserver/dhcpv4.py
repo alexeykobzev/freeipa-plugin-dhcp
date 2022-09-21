@@ -2132,10 +2132,11 @@ class dhcphost_add(Command):
 
     takes_args = (
         Str(
-            'fqdn',
-            cli_name='fqdn',
+            'hostname',
+            cli_name='hostname',
             label=_('Host Name'),
-            doc=_('Host name.')
+            doc=_('Host name.'),
+            flags=['virtual_attribute']
         ),
         Str(
             'macaddress',
@@ -2145,19 +2146,15 @@ class dhcphost_add(Command):
                             'each H is a hexadecimal character.'),
             cli_name='macaddress',
             label=_('MAC Address'),
-            doc=_("MAC address.")
+            doc=_("MAC address."),
+            flags=['virtual_attribute']
         ),
         Str(
             'ipaddress?',
             cli_name='ipaddress',
             label=_('IP Address'),
-            doc=_("Host IP Address.")
-        ),
-        Str(
-            'dhcpcomments?',
-            cli_name='dhcpcomments',
-            label=_('Comments'),
-            doc=_('DHCP comments.')
+            doc=_("Host IP Address."),
+            flags=['virtual_attribute']
         )
     )
 
