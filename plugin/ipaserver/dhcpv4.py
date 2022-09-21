@@ -2094,7 +2094,7 @@ class dhcphost_mod(LDAPUpdate):
     __doc__ = _('Modify a DHCP host.')
     msg_summary = _('Modified a DHCP host.')
 
-    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
+    def pre_callback(self, ldap, dn, entry_attrs, *keys, **options):
         assert isinstance(dn, DN)
         entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
         return dn
@@ -2105,8 +2105,37 @@ class dhcphost_add(LDAPCreate):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
 
-    def pre_callback(self, ldap, dn, entry_attrs, attrs_list, *keys, **options):
-        assert isinstance(dn, DN)
+    takes_args = (
+        Str(
+            'cn',
+            cli_name='hostname',
+            label=_('Hostname'),
+            doc=_('Host name.'),
+            primary_key=True
+        ),
+        Str(
+            'macaddress',
+            normalizer=lambda value: value.upper(),
+            pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
+            pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
+                            'each H is a hexadecimal character.'),
+            cli_name='macaddress',
+            label=_('MAC Address'),
+            doc=_("MAC address.")
+        ),
+        Str(
+            'ipaddress?',
+            cli_name='ipaddress',
+            label=_('IP Address'),
+            doc=_("Host IP Address.")
+        ),
+        Str(
+            'dhcpcomments?',
+            cli_name='dhcpcomments',
+            label=_('Comments'),
+            doc=_('DHCP Comments.')
+        )
+    )
 
         if 'ipaddress' in entry_attrs:
             entryDHCPStatements = [u'fixed-address {0}'.format(entry_attrs['ipaddress']), u'ddnshostname "{0}"'.format(entry_attrs['cn'])]
