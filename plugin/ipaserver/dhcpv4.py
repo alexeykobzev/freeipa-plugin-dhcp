@@ -2100,7 +2100,7 @@ class dhcphost_mod(LDAPUpdate):
     __doc__ = _('Modify a DHCP host.')
     msg_summary = _('Modified a DHCP host.')
 
-    def pre_callback(self, ldap, dn, entry_attrs, *keys, **options):
+    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
         assert isinstance(dn, DN)
         entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
         return dn
@@ -2120,20 +2120,22 @@ class dhcphost_add(Command):
             primary_key=True
         ),
         Str(
-            'macaddress',
+            'macaddress?',
             normalizer=lambda value: value.upper(),
             pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
             pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
                             'each H is a hexadecimal character.'),
             cli_name='macaddress',
             label=_('MAC Address'),
-            doc=_("MAC address.")
+            doc=_("MAC address."),
+            flags=['virtual_attribute']
         ),
         Str(
             'ipaddress?',
             cli_name='ipaddress',
             label=_('IP Address'),
-            doc=_("Host IP Address.")
+            doc=_("Host IP Address."),
+            flags=['virtual_attribute']
         ),
         Str(
             'dhcpcomments?',

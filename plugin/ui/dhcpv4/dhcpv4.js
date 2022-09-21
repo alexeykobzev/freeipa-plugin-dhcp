@@ -712,6 +712,9 @@ define(
                                         name: 'dhcpoption'
                                     },
                                     {
+                                        name: 'dhcphwaddress'
+                                    },
+                                    {
                                         $type: 'textarea',
                                         name: 'dhcpcomments'
                                     }
