@@ -2073,12 +2073,6 @@ class dhcphost(LDAPObject):
         return entry_attrs
 
 @register()
-class dhcphost_add_dhcpschema(LDAPCreate):
-    NO_CLI = True
-    __doc__ = _('Create a new DHCP host.')
-    msg_summary = _('Created DHCP host "%(value)s"')
-
-@register()
 class dhcphost_find(LDAPSearch):
     __doc__ = _('Search for a DHCP host.')
     msg_summary = ngettext(
@@ -2106,64 +2100,24 @@ class dhcphost_mod(LDAPUpdate):
         return dn
 
 @register()
-class dhcphost_add(Command):
+class dhcphost_add(LDAPCreate):
     has_output = output.standard_entry
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
 
-    takes_args = (
-        Str(
-            'cn',
-            cli_name='hostname',
-            label=_('Hostname'),
-            doc=_('Host name.'),
-            primary_key=True
-        ),
-        Str(
-            'macaddress?',
-            normalizer=lambda value: value.upper(),
-            pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
-            pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
-                            'each H is a hexadecimal character.'),
-            cli_name='macaddress',
-            label=_('MAC Address'),
-            doc=_("MAC address."),
-            flags=['virtual_attribute']
-        ),
-        Str(
-            'ipaddress?',
-            cli_name='ipaddress',
-            label=_('IP Address'),
-            doc=_("Host IP Address."),
-            flags=['virtual_attribute']
-        ),
-        Str(
-            'dhcpcomments?',
-            cli_name='dhcpcomments',
-            label=_('Comments'),
-            doc=_('DHCP Comments.')
-        )
-    )
+    def pre_callback(self, ldap, dn, entry_attrs, attrs_list, *keys, **options):
+        assert isinstance(dn, DN)
 
-    def execute(self, *args, **kw):
-        hostname = args[0]
-        macaddress = args[1]
-        dhcpstatement = [u'ddnshostname "{0}"'.format(hostname)]
-        dhcpcomment = []
-        # if ipaddress is present
-        if (len(args) > 2):
-            dhcpstatement = [u'fixed-address {0}'.format(args[2]), u'ddnshostname "{0}"'.format(hostname)]
-        # if dhcpcomments is present
-        if (len(args) > 3):
-            dhcpcomment = args[3]
-        result = api.Command['dhcphost_add_dhcpschema'](
-            cn=hostname,
-            dhcpcomments=dhcpcomment,
-            dhcpstatements=dhcpstatement,
-            dhcphwaddress=u'ethernet {0}'.format(macaddress),
-            dhcpoption=[u'host-name "{0}"'.format(hostname)]
-        )
-        return dict(result=result['result'], value=cn)
+        if 'ipaddress' in entry_attrs:
+            entryDHCPStatements = [u'fixed-address {0}'.format(entry_attrs['ipaddress']), u'ddnshostname "{0}"'.format(entry_attrs['cn'])]
+        else:
+            entryDHCPStatements = [u'ddnshostname "{0}"'.format(entry_attrs['cn'])]
+        entry_attrs['dhcpstatements'] = entryDHCPStatements
+        
+        entry_attrs['dhcphwaddress'] = u'ethernet {0}'.format(entry_attrs['macaddress'])
+        entry_attrs['dhcpoption'] = [u'host-name "{0}"'.format(entry_attrs['cn'])]
+
+        return dn
 
 @register()
 class dhcphost_del(LDAPDelete):
