@@ -2194,65 +2194,9 @@ class dhcpgrouphost_add(dhcphost_add):
     msg_summary = _('Created DHCP host "%(value)s"')
 
 @register()
-class dhcpgrouphost_add_cmd(Command):
-    has_output = output.standard_entry
+class dhcpgrouphost_add_cmd(dhcphost_add):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
-
-    takes_args = (
-        Str(
-            'cn',
-            cli_name='cn',
-            label=_('Hostname'),
-            doc=_('Host name.'),
-            primary_key=True
-        ),
-        Str(
-            'macaddress',
-            normalizer=lambda value: value.upper(),
-            pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
-            pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
-                            'each H is a hexadecimal character.'),
-            cli_name='macaddress',
-            label=_('MAC Address'),
-            doc=_("MAC address.")
-        ),
-        Str(
-            'ipaddress?',
-            cli_name='ipaddress',
-            label=_('IP Address'),
-            doc=_("Host IP Address.")
-        ),
-        Str(
-            'dhcpcomments?',
-            cli_name='dhcpcomments',
-            label=_('Comments'),
-            doc=_('DHCP Comments.')
-        )
-    )
-
-    def execute(self, *args, **kw):
-        hostname = args[0]
-        macaddress = args[1]
-        entryDHCPComments = []
-        # if ipaddress is present
-        if len(args) > 2:
-            entryDHCPStatements = [u'fixed-address {0}'.format(args[2]), u'ddnshostname "{0}"'.format(hostname)]
-        else:
-            entryDHCPStatements = [u'ddnshostname "{0}"'.format(hostname)]
-        # if dhcpcomments is present
-        if len(args) > 3:
-            entryDHCPComments = args[3]
-        else:
-            entryDHCPComments = []
-        result = api.Command['dhcpgrouphost_add'](
-            cn=hostname,
-            dhcpcomments=entryDHCPComments,
-            dhcpstatements=entryDHCPStatements,
-            dhcphwaddress=u'ethernet {0}'.format(macaddress),
-            dhcpoption=[u'host-name "{0}"'.format(hostname)]
-        )
-        return dict(result=result['result'], value=hostname)
 
 @register()
 class dhcpgrouphost_mod(dhcphost_mod):
@@ -2298,65 +2242,9 @@ class dhcpsubnetgrouphost_add(dhcphost_add):
     msg_summary = _('Created DHCP host "%(value)s"')
 
 @register()
-class dhcpsubnetgrouphost_add_cmd(Command):
-    has_output = output.standard_entry
+class dhcpsubnetgrouphost_add_cmd(dhcphost_add):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
-
-    takes_args = (
-        Str(
-            'cn',
-            cli_name='cn',
-            label=_('Hostname'),
-            doc=_('Host name.'),
-            primary_key=True
-        ),
-        Str(
-            'macaddress',
-            normalizer=lambda value: value.upper(),
-            pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
-            pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
-                            'each H is a hexadecimal character.'),
-            cli_name='macaddress',
-            label=_('MAC Address'),
-            doc=_("MAC address.")
-        ),
-        Str(
-            'ipaddress?',
-            cli_name='ipaddress',
-            label=_('IP Address'),
-            doc=_("Host IP Address.")
-        ),
-        Str(
-            'dhcpcomments?',
-            cli_name='dhcpcomments',
-            label=_('Comments'),
-            doc=_('DHCP Comments.')
-        )
-    )
-
-    def execute(self, *args, **kw):
-        hostname = args[0]
-        macaddress = args[1]
-        entryDHCPComments = []
-        # if ipaddress is present
-        if len(args) > 2:
-            entryDHCPStatements = [u'fixed-address {0}'.format(args[2]), u'ddnshostname "{0}"'.format(hostname)]
-        else:
-            entryDHCPStatements = [u'ddnshostname "{0}"'.format(hostname)]
-        # if dhcpcomments is present
-        if len(args) > 3:
-            entryDHCPComments = args[3]
-        else:
-            entryDHCPComments = []
-        result = api.Command['dhcpsubnetgrouphost_add'](
-            cn=hostname,
-            dhcpcomments=entryDHCPComments,
-            dhcpstatements=entryDHCPStatements,
-            dhcphwaddress=u'ethernet {0}'.format(macaddress),
-            dhcpoption=[u'host-name "{0}"'.format(hostname)]
-        )
-        return dict(result=result['result'], value=hostname)
 
 @register()
 class dhcpsubnetgrouphost_mod(dhcphost_mod):
@@ -2402,65 +2290,9 @@ class dhcpsubnethost_add(dhcphost_add):
     msg_summary = _('Created DHCP host "%(value)s"')
 
 @register()
-class dhcpsubnethost_add_cmd(Command):
-    has_output = output.standard_entry
+class dhcpsubnethost_add_cmd(dhcphost_add):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
-
-    takes_args = (
-        Str(
-            'cn',
-            cli_name='cn',
-            label=_('Hostname'),
-            doc=_('Host name.'),
-            primary_key=True
-        ),
-        Str(
-            'macaddress',
-            normalizer=lambda value: value.upper(),
-            pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
-            pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
-                            'each H is a hexadecimal character.'),
-            cli_name='macaddress',
-            label=_('MAC Address'),
-            doc=_("MAC address.")
-        ),
-        Str(
-            'ipaddress?',
-            cli_name='ipaddress',
-            label=_('IP Address'),
-            doc=_("Host IP Address.")
-        ),
-        Str(
-            'dhcpcomments?',
-            cli_name='dhcpcomments',
-            label=_('Comments'),
-            doc=_('DHCP Comments.')
-        )
-    )
-
-    def execute(self, *args, **kw):
-        hostname = args[0]
-        macaddress = args[1]
-        entryDHCPComments = []
-        # if ipaddress is present
-        if len(args) > 2:
-            entryDHCPStatements = [u'fixed-address {0}'.format(args[2]), u'ddnshostname "{0}"'.format(hostname)]
-        else:
-            entryDHCPStatements = [u'ddnshostname "{0}"'.format(hostname)]
-        # if dhcpcomments is present
-        if len(args) > 3:
-            entryDHCPComments = args[3]
-        else:
-            entryDHCPComments = []
-        result = api.Command['dhcpsubnethost_add'](
-            cn=hostname,
-            dhcpcomments=entryDHCPComments,
-            dhcpstatements=entryDHCPStatements,
-            dhcphwaddress=u'ethernet {0}'.format(macaddress),
-            dhcpoption=[u'host-name "{0}"'.format(hostname)]
-        )
-        return dict(result=result['result'], value=hostname)
 
 @register()
 class dhcpsubnethost_mod(dhcphost_mod):
@@ -2507,65 +2339,9 @@ class dhcppoolhost_add(dhcphost_add):
     msg_summary = _('Created DHCP host "%(value)s"')
 
 @register()
-class dhcppoolhost_add_cmd(Command):
-    has_output = output.standard_entry
+class dhcppoolhost_add_cmd(dhcphost_add):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
-
-    takes_args = (
-        Str(
-            'cn',
-            cli_name='cn',
-            label=_('Hostname'),
-            doc=_('Host name.'),
-            primary_key=True
-        ),
-        Str(
-            'macaddress',
-            normalizer=lambda value: value.upper(),
-            pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
-            pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
-                            'each H is a hexadecimal character.'),
-            cli_name='macaddress',
-            label=_('MAC Address'),
-            doc=_("MAC address.")
-        ),
-        Str(
-            'ipaddress?',
-            cli_name='ipaddress',
-            label=_('IP Address'),
-            doc=_("Host IP Address.")
-        ),
-        Str(
-            'dhcpcomments?',
-            cli_name='dhcpcomments',
-            label=_('Comments'),
-            doc=_('DHCP Comments.')
-        )
-    )
-
-    def execute(self, *args, **kw):
-        hostname = args[0]
-        macaddress = args[1]
-        entryDHCPComments = []
-        # if ipaddress is present
-        if len(args) > 2:
-            entryDHCPStatements = [u'fixed-address {0}'.format(args[2]), u'ddnshostname "{0}"'.format(hostname)]
-        else:
-            entryDHCPStatements = [u'ddnshostname "{0}"'.format(hostname)]
-        # if dhcpcomments is present
-        if len(args) > 3:
-            entryDHCPComments = args[3]
-        else:
-            entryDHCPComments = []
-        result = api.Command['dhcppoolhost_add'](
-            cn=hostname,
-            dhcpcomments=entryDHCPComments,
-            dhcpstatements=entryDHCPStatements,
-            dhcphwaddress=u'ethernet {0}'.format(macaddress),
-            dhcpoption=[u'host-name "{0}"'.format(hostname)]
-        )
-        return dict(result=result['result'], value=hostname)
 
 @register()
 class dhcppoolhost_mod(dhcphost_mod):
