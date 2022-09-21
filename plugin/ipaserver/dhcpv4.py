@@ -2167,6 +2167,12 @@ class dhcphost_mod(LDAPUpdate):
 
 
 @register()
+class dhcphost_del(LDAPDelete):
+    __doc__ = _('Delete a DHCP host.')
+    msg_summary = _('Deleted DHCP host "%(value)s"')
+
+
+@register()
 class dhcphost_add_cmd(Command):
     has_output = output.standard_entry
     __doc__ = _('Create a new DHCP host.')
