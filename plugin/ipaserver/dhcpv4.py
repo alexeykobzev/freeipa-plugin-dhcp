@@ -2096,7 +2096,13 @@ class dhcphost_mod(LDAPUpdate):
         return dn
 
 @register()
-class dhcphost_add_cmd(Command):
+class dhcphost_add_dhcpschema(LDAPCreate):
+    NO_CLI = True
+    __doc__ = _('Create a new DHCP host.')
+    msg_summary = _('Created DHCP host "%(value)s"')
+
+@register()
+class dhcphost_add(Command):
     has_output = output.standard_entry
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
@@ -2147,7 +2153,7 @@ class dhcphost_add_cmd(Command):
             entryDHCPComments = args[3]
         else:
             entryDHCPComments = []
-        result = api.Command['dhcphost_add'](
+        result = api.Command['dhcphost_add_dhcpschema'](
             cn=hostname,
             dhcpcomments=entryDHCPComments,
             dhcpstatements=entryDHCPStatements,
@@ -2190,11 +2196,6 @@ class dhcpgrouphost_show(dhcphost_show):
 
 @register()
 class dhcpgrouphost_add(dhcphost_add):
-    __doc__ = _('Create a new DHCP host.')
-    msg_summary = _('Created DHCP host "%(value)s"')
-
-@register()
-class dhcpgrouphost_add_cmd(dhcphost_add_cmd):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
 
@@ -2242,11 +2243,6 @@ class dhcpsubnetgrouphost_add(dhcphost_add):
     msg_summary = _('Created DHCP host "%(value)s"')
 
 @register()
-class dhcpsubnetgrouphost_add_cmd(dhcphost_add_cmd):
-    __doc__ = _('Create a new DHCP host.')
-    msg_summary = _('Created DHCP host "%(value)s"')
-
-@register()
 class dhcpsubnetgrouphost_mod(dhcphost_mod):
     __doc__ = _('Modify a DHCP host.')
     msg_summary = _('Modified a DHCP host.')
@@ -2286,11 +2282,6 @@ class dhcpsubnethost_show(dhcphost_show):
 
 @register()
 class dhcpsubnethost_add(dhcphost_add):
-    __doc__ = _('Create a new DHCP host.')
-    msg_summary = _('Created DHCP host "%(value)s"')
-
-@register()
-class dhcpsubnethost_add_cmd(dhcphost_add_cmd):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
 
@@ -2335,11 +2326,6 @@ class dhcppoolhost_show(dhcphost_show):
 
 @register()
 class dhcppoolhost_add(dhcphost_add):
-    __doc__ = _('Create a new DHCP host.')
-    msg_summary = _('Created DHCP host "%(value)s"')
-
-@register()
-class dhcppoolhost_add_cmd(dhcphost_add_cmd):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
 

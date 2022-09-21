@@ -724,7 +724,6 @@ define(
                     }
                 ],
                 adder_dialog: {
-                    method: "add_cmd",
                     fields: [
                         {
                             $type: 'entity_select',
