@@ -2024,12 +2024,6 @@ class dhcphost(LDAPObject):
             doc=_('Client Identifier.')
         ),
         Str(
-            'dhcphwaddress?',
-            cli_name='dhcphwaddress',
-            label=_('DHCP Hardware Address'),
-            doc=_('DHCP Hardware Address.')
-        ),
-        Str(
             'dhcpstatements*',
             cli_name='dhcpstatements',
             label=_('DHCP Statements'),
@@ -2040,6 +2034,18 @@ class dhcphost(LDAPObject):
             cli_name='dhcpoptions',
             label=_('DHCP Options'),
             doc=_('DHCP options.')
+        ),
+        Str(
+            'dhcphwaddress?',
+            cli_name='dhcphwaddress',
+            label=_('DHCP Hardware Address'),
+            doc=_('DHCP Hardware Address.')
+        ),
+        Str(
+            'dhcpcomments?',
+            cli_name='dhcpcomments',
+            label=_('Comments'),
+            doc=_('DHCP Comments.')
         )
     )
 
