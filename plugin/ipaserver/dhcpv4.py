@@ -1988,7 +1988,7 @@ class dhcphost(LDAPObject):
 
     takes_params = (
         Str(
-            'cn',
+            'cn?',
             cli_name='cn',
             label=_('Canonical Name'),
             doc=_('Canonical name.'),
@@ -2001,7 +2001,7 @@ class dhcphost(LDAPObject):
             doc=_('Client Identifier.')
         ),
         Str(
-            'dhcphwaddress',
+            'dhcphwaddress*',
             cli_name='dhcphwaddress',
             label=('DHCP Hardware Address'),
             doc=_('DHCP hardware address.')
@@ -2080,13 +2080,11 @@ class dhcphost(LDAPObject):
 
         return entry_attrs
 
-
 @register()
 class dhcphost_add_dhcpschema(LDAPCreate):
     NO_CLI = True
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
-
 
 @register()
 class dhcphost_find(LDAPSearch):
@@ -2095,7 +2093,6 @@ class dhcphost_find(LDAPSearch):
         '%(count)d DHCP host matched',
         '%(count)d DHCP hosts matched', 0
     )
-
 
 @register()
 class dhcphost_show(LDAPRetrieve):
@@ -2106,19 +2103,50 @@ class dhcphost_show(LDAPRetrieve):
         entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
         return dn
 
-
 @register()
 class dhcphost_del_dhcpschema(LDAPDelete):
     NO_CLI = True
     __doc__ = _('Delete a DHCP host.')
     msg_summary = _('Deleted DHCP host "%(value)s"')
 
-
 @register()
 class dhcphost_add(LDAPCreate):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
 
+@register()
+class dhcphost_add_dialog(Command):
+
+   takes_args = (
+        Str(
+            'fqdn',
+            cli_name='fqdn',
+            label=_('Hostname'),
+            doc=_("Hostname.")
+        ),
+        Str(
+            'macaddress',
+            normalizer=lambda value: value.upper(),
+            pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
+            pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
+                            'each H is a hexadecimal character.'),
+            cli_name='macaddress',
+            label=_('MAC Address'),
+            doc=_("MAC address.")
+        ),
+        Str(
+            'ipaddress?',
+            cli_name='ipaddress',
+            label=_('IP Address'),
+            doc=_("Hosts IP Address.")
+        ),
+        Str(
+            'dhcpcomments?',
+            cli_name='dhcpcomments',
+            label=_('Comments'),
+            doc=_('DHCP Comments.')
+        )
+    )
 
 @register()
 class dhcphost_mod(LDAPUpdate):
@@ -2130,12 +2158,10 @@ class dhcphost_mod(LDAPUpdate):
         entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
         return dn
 
-
 @register()
 class dhcphost_del(LDAPDelete):
     __doc__ = _('Delete a DHCP host.')
     msg_summary = _('Deleted DHCP host "%(value)s"')
-
 
 @register()
 class dhcphost_add_cmd(Command):
@@ -2345,6 +2371,40 @@ class dhcpsubnethost_add(dhcphost_add):
     msg_summary = _('Created DHCP host "%(value)s"')
 
 @register()
+class dhcpsubnethost_add_dialog(Command):
+
+   takes_args = (
+        Str(
+            'fqdn',
+            cli_name='fqdn',
+            label=_('Hostname'),
+            doc=_("Hostname.")
+        ),
+        Str(
+            'macaddress',
+            normalizer=lambda value: value.upper(),
+            pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
+            pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
+                            'each H is a hexadecimal character.'),
+            cli_name='macaddress',
+            label=_('MAC Address'),
+            doc=_("MAC address.")
+        ),
+        Str(
+            'ipaddress?',
+            cli_name='ipaddress',
+            label=_('IP Address'),
+            doc=_("Hosts IP Address.")
+        ),
+        Str(
+            'dhcpcomments?',
+            cli_name='dhcpcomments',
+            label=_('Comments'),
+            doc=_('DHCP Comments.')
+        )
+    )
+
+@register()
 class dhcpsubnethost_mod(dhcphost_mod):
     __doc__ = _('Modify a DHCP host.')
     msg_summary = _('Modified a DHCP host.')
@@ -2387,7 +2447,6 @@ class dhcppoolhost_show(dhcphost_show):
 class dhcppoolhost_add(dhcphost_add):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
-
 
 @register()
 class dhcppoolhost_mod(dhcphost_mod):
