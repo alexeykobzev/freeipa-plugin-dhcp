@@ -686,7 +686,7 @@ define(
                                         read_only: true
                                     },
                                     {
-                                        name: 'fqdn',
+                                        name: 'hostname',
                                         flags: ['w_if_no_aci']
                                     },
                                     {
@@ -728,7 +728,7 @@ define(
                     fields: [
                         {
                             $type: 'entity_select',
-                            name: 'fqdn',
+                            name: 'hostname',
                             other_entity: 'host',
                             other_field: 'fqdn',
                             required: true

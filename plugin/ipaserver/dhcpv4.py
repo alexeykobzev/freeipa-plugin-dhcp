@@ -1988,23 +1988,40 @@ class dhcphost(LDAPObject):
 
     takes_params = (
         Str(
-            'cn',
+            'cn?',
             cli_name='cn',
             label=_('Canonical Name'),
             doc=_('Canonical name.'),
             primary_key=True
         ),
         Str(
+            'hostname?',
+            cli_name='hostname',
+            label=_('Host name'),
+            doc=_('Host name.'),
+            flags=['virtual_attribute']
+        ),
+        Str('macaddress*',
+            normalizer=lambda value: value.upper(),
+            pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
+            pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
+                            'each H is a hexadecimal character.'),
+            label=_('MAC address'),
+            doc=_('Hardware MAC address(es) on this host'),
+            flags=['virtual_attribute']
+        ),
+        Str(
+            'ipaddress?',
+            cli_name='ipaddress',
+            label=_('Host IP Address'),
+            doc=_('Host IP Address.'),
+            flags=['virtual_attribute']
+        ),
+        Str(
             'dhcpclientid?',
             cli_name='dhcpclientid',
             label=_('Client Identifier'),
             doc=_('Client Identifier.')
-        ),
-        Str(
-            'dhcphwaddress',
-            cli_name='dhcphwaddress',
-            label=('DHCP Hardware Address'),
-            doc=_('DHCP hardware address.')
         ),
         Str(
             'dhcpstatements*',
@@ -2017,12 +2034,6 @@ class dhcphost(LDAPObject):
             cli_name='dhcpoptions',
             label=_('DHCP Options'),
             doc=_('DHCP options.')
-        ),
-        Str(
-            'dhcpcomments?',
-            cli_name='dhcpcomments',
-            label=_('Comments'),
-            doc=_('DHCP Comments.')
         )
     )
 
@@ -2037,7 +2048,7 @@ class dhcphost(LDAPObject):
                 entry_attrs['ipaddress'] = v
             elif statements.startswith('ddns-hostname '):
                 (o, v) = statements.split(' ', 1)
-                entry_attrs['fqdn'] = v.replace('"', '')
+                entry_attrs['hostname'] = v.replace('"', '')
 
         dhcpHWaddress = entry_attrs.get('dhcphwaddress', [])
 
@@ -2051,7 +2062,7 @@ class dhcphost(LDAPObject):
         for option in dhcpOptions:
             if option.startswith('host-name '):
                 (o, v) = option.split(' ', 1)
-                entry_attrs['fqdn'] = v.replace('"', '')
+                entry_attrs['hostname'] = v.replace('"', '')
 
         return entry_attrs
 
@@ -2102,11 +2113,10 @@ class dhcphost_add(Command):
 
     takes_args = (
         Str(
-            'fqdn',
-            cli_name='fqdn',
-            label=_('Host Name'),
-            doc=_('Host name.'),
-            flags=['virtual_attribute']
+            'hostname',
+            cli_name='hostname',
+            label=_('Hostname'),
+            doc=_("Hostname.")
         ),
         Str(
             'macaddress',
@@ -2116,15 +2126,13 @@ class dhcphost_add(Command):
                             'each H is a hexadecimal character.'),
             cli_name='macaddress',
             label=_('MAC Address'),
-            doc=_("MAC address."),
-            flags=['virtual_attribute']
+            doc=_("MAC address.")
         ),
         Str(
             'ipaddress?',
             cli_name='ipaddress',
             label=_('IP Address'),
-            doc=_("Host IP Address."),
-            flags=['virtual_attribute']
+            doc=_("Host IP Address.")
         ),
         Str(
             'dhcpcomments?',
@@ -2377,9 +2385,9 @@ def host_add_dhcphost(self, ldap, dn, entry_attrs, *keys, **options):
     if 'macaddress' in entry_attrs:
         for addr in entry_attrs['macaddress']:
             if 'ipaddress' in entry_attrs:
-                api.Command['dhcphost_add'](entry_attrs['fqdn'][0], addr, entry_attrs['ipaddress'][0])
+                api.Command['dhcphost_add'](entry_attrs['hostname'][0], addr, entry_attrs['ipaddress'][0])
             else:
-                api.Command['dhcphost_add'](entry_attrs['fqdn'][0], addr)
+                api.Command['dhcphost_add'](entry_attrs['hostname'][0], addr)
     return dn
 
 host.host_add.register_post_callback(host_add_dhcphost)
@@ -2396,7 +2404,7 @@ def host_mod_dhcphost(self, ldap, dn, entry_attrs, *keys, **options):
 
     filter = ldap.make_filter(
         {
-            'cn': entry_attrs['fqdn'][0]
+            'cn': entry_attrs['hostname'][0]
         },
         exact=False,
         leading_wildcard=False,
@@ -2416,12 +2424,12 @@ def host_mod_dhcphost(self, ldap, dn, entry_attrs, *keys, **options):
     for entry in entries:
         entry_macaddr = entry['dhcpHWAddress'][0].replace('ethernet ', '')
         if entry_macaddr not in macaddresses:
-            api.Command['dhcphost_del'](entry_attrs['fqdn'][0], entry_macaddr)
+            api.Command['dhcphost_del'](entry_attrs['hostname'][0], entry_macaddr)
         if entry_macaddr in macaddresses:
             macaddresses.remove(entry_macaddr)
 
     for new_macaddr in macaddresses:
-        api.Command['dhcphost_add'](entry_attrs['fqdn'][0], new_macaddr)
+        api.Command['dhcphost_add'](entry_attrs['hostname'][0], new_macaddr)
 
     return dn
 
@@ -2435,7 +2443,7 @@ def host_del_dhcphost(self, ldap, dn, *keys, **options):
     if 'macaddress' in entry:
         for addr in entry['macaddress']:
             try:
-                api.Command['dhcphost_del'](entry['fqdn'][0], addr)
+                api.Command['dhcphost_del'](entry['hostname'][0], addr)
             except:
                 pass
 
