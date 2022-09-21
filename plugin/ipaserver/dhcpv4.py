@@ -1995,7 +1995,7 @@ class dhcphost(LDAPObject):
             primary_key=True
         ),
         Str(
-            'macaddress?',
+            'macaddress',
             normalizer=lambda value: value.upper(),
             pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
             pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
@@ -2030,7 +2030,7 @@ class dhcphost(LDAPObject):
             doc=_('DHCP options.')
         ),
         Str(
-            'dhcphwaddress',
+            'dhcphwaddress?',
             cli_name='dhcphwaddress',
             label=_('DHCP Hardware Address'),
             doc=_('DHCP Hardware Address.')
@@ -2113,7 +2113,7 @@ class dhcphost_add(LDAPCreate):
         else:
             entryDHCPStatements = [u'ddnshostname "{0}"'.format(entry_attrs['cn'])]
         entry_attrs['dhcpstatements'] = entryDHCPStatements
-        
+
         entry_attrs['dhcphwaddress'] = u'ethernet {0}'.format(entry_attrs['macaddress'])
         entry_attrs['dhcpoption'] = [u'host-name "{0}"'.format(entry_attrs['cn'])]
 
