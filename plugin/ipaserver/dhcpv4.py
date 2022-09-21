@@ -1988,14 +1988,14 @@ class dhcphost(LDAPObject):
 
     takes_params = (
         Str(
-            'cn?',
+            'cn',
             cli_name='cn',
             label=_('Canonical Name'),
             doc=_('Canonical name.'),
             primary_key=True
         ),
         Str(
-            'hostname',
+            'hostname?',
             cli_name='hostname',
             label=_('Host name'),
             doc=_('Host name.'),
