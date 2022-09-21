@@ -2189,41 +2189,14 @@ class dhcpgrouphost_show(dhcphost_show):
     __doc__ = _('Display a DHCP host.')
 
 @register()
-class dhcpgrouphost_add_cmd(dhcphost_add):
+class dhcpgrouphost_add(dhcphost_add):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
 
-    takes_args = (
-        Str(
-            'cn',
-            cli_name='cn',
-            label=_('Hostname'),
-            doc=_('Host name.'),
-            primary_key=True
-        ),
-        Str(
-            'macaddress',
-            normalizer=lambda value: value.upper(),
-            pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
-            pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
-                            'each H is a hexadecimal character.'),
-            cli_name='macaddress',
-            label=_('MAC Address'),
-            doc=_("MAC address.")
-        ),
-        Str(
-            'ipaddress?',
-            cli_name='ipaddress',
-            label=_('IP Address'),
-            doc=_("Host IP Address.")
-        ),
-        Str(
-            'dhcpcomments?',
-            cli_name='dhcpcomments',
-            label=_('Comments'),
-            doc=_('DHCP Comments.')
-        )
-    )
+@register()
+class dhcpgrouphost_add_cmd(dhcphost_add):
+    __doc__ = _('Create a new DHCP host.')
+    msg_summary = _('Created DHCP host "%(value)s"')
 
 @register()
 class dhcpgrouphost_mod(dhcphost_mod):
@@ -2264,42 +2237,14 @@ class dhcpsubnetgrouphost_show(dhcphost_show):
     __doc__ = _('Display a DHCP host.')
 
 @register()
-class dhcpsubnetgrouphost_add_cmd(dhcphost_add):
+class dhcpsubnetgrouphost_add(dhcphost_add):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
 
-    takes_args = (
-        Str(
-            'cn',
-            cli_name='cn',
-            label=_('Hostname'),
-            doc=_('Host name.'),
-            primary_key=True
-        ),
-        Str(
-            'macaddress',
-            normalizer=lambda value: value.upper(),
-            pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
-            pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
-                            'each H is a hexadecimal character.'),
-            cli_name='macaddress',
-            label=_('MAC Address'),
-            doc=_("MAC address.")
-        ),
-        Str(
-            'ipaddress?',
-            cli_name='ipaddress',
-            label=_('IP Address'),
-            doc=_("Host IP Address.")
-        ),
-        Str(
-            'dhcpcomments?',
-            cli_name='dhcpcomments',
-            label=_('Comments'),
-            doc=_('DHCP Comments.')
-        )
-    )
-
+@register()
+class dhcpsubnetgrouphost_add_cmd(dhcphost_add):
+    __doc__ = _('Create a new DHCP host.')
+    msg_summary = _('Created DHCP host "%(value)s"')
 
 @register()
 class dhcpsubnetgrouphost_mod(dhcphost_mod):
@@ -2340,41 +2285,14 @@ class dhcpsubnethost_show(dhcphost_show):
     __doc__ = _('Display a DHCP host.')
 
 @register()
-class dhcpsubnethost_add_cmd(dhcphost_add):
+class dhcpsubnethost_add(dhcphost_add):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
 
-    takes_args = (
-        Str(
-            'cn',
-            cli_name='cn',
-            label=_('Hostname'),
-            doc=_('Host name.'),
-            primary_key=True
-        ),
-        Str(
-            'macaddress',
-            normalizer=lambda value: value.upper(),
-            pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
-            pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
-                            'each H is a hexadecimal character.'),
-            cli_name='macaddress',
-            label=_('MAC Address'),
-            doc=_("MAC address.")
-        ),
-        Str(
-            'ipaddress?',
-            cli_name='ipaddress',
-            label=_('IP Address'),
-            doc=_("Host IP Address.")
-        ),
-        Str(
-            'dhcpcomments?',
-            cli_name='dhcpcomments',
-            label=_('Comments'),
-            doc=_('DHCP Comments.')
-        )
-    )
+@register()
+class dhcpsubnethost_add_cmd(dhcphost_add):
+    __doc__ = _('Create a new DHCP host.')
+    msg_summary = _('Created DHCP host "%(value)s"')
 
 @register()
 class dhcpsubnethost_mod(dhcphost_mod):
@@ -2416,41 +2334,14 @@ class dhcppoolhost_show(dhcphost_show):
     __doc__ = _('Display a DHCP host.')
 
 @register()
-class dhcppoolhost_add_cmd(dhcphost_add):
+class dhcppoolhost_add(dhcphost_add):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
 
-    takes_args = (
-        Str(
-            'cn',
-            cli_name='cn',
-            label=_('Hostname'),
-            doc=_('Host name.'),
-            primary_key=True
-        ),
-        Str(
-            'macaddress',
-            normalizer=lambda value: value.upper(),
-            pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
-            pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
-                            'each H is a hexadecimal character.'),
-            cli_name='macaddress',
-            label=_('MAC Address'),
-            doc=_("MAC address.")
-        ),
-        Str(
-            'ipaddress?',
-            cli_name='ipaddress',
-            label=_('IP Address'),
-            doc=_("Host IP Address.")
-        ),
-        Str(
-            'dhcpcomments?',
-            cli_name='dhcpcomments',
-            label=_('Comments'),
-            doc=_('DHCP Comments.')
-        )
-    )
+@register()
+class dhcppoolhost_add_cmd(dhcphost_add):
+    __doc__ = _('Create a new DHCP host.')
+    msg_summary = _('Created DHCP host "%(value)s"')
 
 @register()
 class dhcppoolhost_mod(dhcphost_mod):
