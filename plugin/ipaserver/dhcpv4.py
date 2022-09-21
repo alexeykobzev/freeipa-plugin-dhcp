@@ -2154,7 +2154,7 @@ class dhcphost_add_cmd(Command):
             dhcphwaddress=u'ethernet {0}'.format(macaddress),
             dhcpoption=[u'host-name "{0}"'.format(hostname)]
         )
-        return dict(result=result['result'], value=cn)
+        return dict(result=result['result'], value=hostname)
 
 @register()
 class dhcphost_del(LDAPDelete):
