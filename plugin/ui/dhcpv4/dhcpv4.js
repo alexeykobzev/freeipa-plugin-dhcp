@@ -713,7 +713,7 @@ define(
                                     },
                                     {
                                         name: 'dhcphwaddress'
-                                    },                            
+                                    },
                                     {
                                         $type: 'textarea',
                                         name: 'dhcpcomments'
@@ -1011,7 +1011,6 @@ define(
 //// phases ///////////////////////////////////////////////////////////////////
 
 
-        phases.on('customization', exp.customize_host_ui);
         phases.on('registration', exp.register);
         phases.on('profile', exp.add_menu_items, 20);
 
