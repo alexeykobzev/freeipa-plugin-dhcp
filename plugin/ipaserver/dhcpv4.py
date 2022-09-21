@@ -1995,7 +1995,7 @@ class dhcphost(LDAPObject):
             primary_key=True
         ),
         Str(
-            'hostname?',
+            'hostname',
             cli_name='hostname',
             label=_('Host name'),
             doc=_('Host name.'),
@@ -2036,7 +2036,7 @@ class dhcphost(LDAPObject):
             doc=_('DHCP options.')
         ),
         Str(
-            'dhcphwaddress?',
+            'dhcphwaddress',
             cli_name='dhcphwaddress',
             label=_('DHCP Hardware Address'),
             doc=_('DHCP Hardware Address.')
@@ -2185,10 +2185,10 @@ class dhcphost_del(Command):
 
     takes_args = (
         Str(
-            'fqdn',
-            cli_name='fqdn',
-            label=_('Host Name'),
-            doc=_('Host name.')
+            'hostname',
+            cli_name='hostname',
+            label=_('Hostname'),
+            doc=_("Hostname.")
         ),
         Str(
             'macaddress',
