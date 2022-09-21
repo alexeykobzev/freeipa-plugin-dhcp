@@ -2025,7 +2025,7 @@ class dhcphost(LDAPObject):
         ),
         Str(
             'dhcphwaddress?',
-            cli_name='dhcphwaddress?',
+            cli_name='dhcphwaddress',
             label=_('DHCP Hardware Address'),
             doc=_('DHCP Hardware Address.')
         ),
