@@ -1988,7 +1988,7 @@ class dhcphost(LDAPObject):
 
     takes_params = (
         Str(
-            'cn?',
+            'cn',
             cli_name='cn',
             label=_('Canonical Name'),
             doc=_('Canonical name.'),
@@ -2001,7 +2001,7 @@ class dhcphost(LDAPObject):
             doc=_('Client Identifier.')
         ),
         Str(
-            'dhcphwaddress*',
+            'dhcphwaddress',
             cli_name='dhcphwaddress',
             label=('DHCP Hardware Address'),
             doc=_('DHCP hardware address.')
@@ -2023,31 +2023,6 @@ class dhcphost(LDAPObject):
             cli_name='dhcpcomments',
             label=_('Comments'),
             doc=_('DHCP Comments.')
-        ),
-        Str(
-            'fqdn',
-            cli_name='fqdn',
-            label=_('Host Name'),
-            doc=_('Host name.'),
-            flags=['virtual_attribute']
-        ),
-        Str(
-            'macaddress',
-            normalizer=lambda value: value.upper(),
-            pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
-            pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
-                            'each H is a hexadecimal character.'),
-            cli_name='macaddress',
-            label=_('MAC Address'),
-            doc=_("MAC address."),
-            flags=['virtual_attribute']
-        ),
-        Str(
-            'ipaddress?',
-            cli_name='ipaddress',
-            label=_('IP Address'),
-            doc=_("Host IP Address."),
-            flags=['virtual_attribute']
         )
     )
 
