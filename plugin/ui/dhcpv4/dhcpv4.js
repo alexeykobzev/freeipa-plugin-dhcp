@@ -728,7 +728,7 @@ define(
                     fields: [
                         {
                             $type: 'entity_select',
-                            name: 'hostname',
+                            name: 'cn',
                             other_entity: 'host',
                             other_field: 'fqdn',
                             required: true

@@ -1989,7 +1989,7 @@ class dhcphost(LDAPObject):
     takes_params = (
         Str(
             'cn',
-            cli_name='hostname',
+            cli_name='cn',
             label=_('Hostname'),
             doc=_('Host name.'),
             primary_key=True
@@ -2104,7 +2104,7 @@ class dhcphost_add_cmd(Command):
     takes_args = (
         Str(
             'cn',
-            cli_name='hostname',
+            cli_name='cn',
             label=_('Hostname'),
             doc=_('Host name.'),
             primary_key=True
