@@ -686,10 +686,6 @@ define(
                                         read_only: true
                                     },
                                     {
-                                        name: 'hostname',
-                                        flags: ['w_if_no_aci']
-                                    },
-                                    {
                                         name: 'macaddress',
                                         flags: ['w_if_no_aci']
                                     },
@@ -728,7 +724,7 @@ define(
                     fields: [
                         {
                             $type: 'entity_select',
-                            name: 'hostname',
+                            name: 'cn',
                             other_entity: 'host',
                             other_field: 'fqdn',
                             required: true
