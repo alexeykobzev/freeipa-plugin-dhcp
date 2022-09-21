@@ -1995,7 +1995,8 @@ class dhcphost(LDAPObject):
             primary_key=True
         ),
         Str(
-            'macaddress?',
+            'macaddress',
+            cli_name='macaddress',
             normalizer=lambda value: value.upper(),
             pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
             pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
@@ -2052,9 +2053,6 @@ class dhcphost(LDAPObject):
             if statements.startswith('fixed-address '):
                 (o, v) = statements.split(' ', 1)
                 entry_attrs['ipaddress'] = v
-            elif statements.startswith('ddns-hostname '):
-                (o, v) = statements.split(' ', 1)
-                entry_attrs['hostname'] = v.replace('"', '')
 
         dhcpHWaddress = entry_attrs.get('dhcphwaddress', [])
 
@@ -2063,18 +2061,10 @@ class dhcphost(LDAPObject):
                 (o, v) = hwaddress.split(' ', 1)
                 entry_attrs['macaddress'] = v.replace('"', '')
 
-        dhcpOptions = entry_attrs.get('dhcpoption', [])
-
-        for option in dhcpOptions:
-            if option.startswith('host-name '):
-                (o, v) = option.split(' ', 1)
-                entry_attrs['hostname'] = v.replace('"', '')
-
         return entry_attrs
 
 @register()
-class dhcphost_add_dhcpschema(LDAPCreate):
-    NO_CLI = True
+class dhcphost_add(LDAPCreate):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
 
@@ -2106,7 +2096,7 @@ class dhcphost_mod(LDAPUpdate):
         return dn
 
 @register()
-class dhcphost_add(Command):
+class dhcphost_add_cmd(Command):
     has_output = output.standard_entry
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
@@ -2120,22 +2110,20 @@ class dhcphost_add(Command):
             primary_key=True
         ),
         Str(
-            'macaddress?',
+            'macaddress',
             normalizer=lambda value: value.upper(),
             pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
             pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
                             'each H is a hexadecimal character.'),
             cli_name='macaddress',
             label=_('MAC Address'),
-            doc=_("MAC address."),
-            flags=['virtual_attribute']
+            doc=_("MAC address.")
         ),
         Str(
             'ipaddress?',
             cli_name='ipaddress',
             label=_('IP Address'),
-            doc=_("Host IP Address."),
-            flags=['virtual_attribute']
+            doc=_("Host IP Address.")
         ),
         Str(
             'dhcpcomments?',
@@ -2148,18 +2136,21 @@ class dhcphost_add(Command):
     def execute(self, *args, **kw):
         hostname = args[0]
         macaddress = args[1]
-        dhcpstatement = [u'ddnshostname "{0}"'.format(hostname)]
-        dhcpcomment = []
+        entryDHCPComments = []
         # if ipaddress is present
-        if (len(args) > 2):
-            dhcpstatement = [u'fixed-address {0}'.format(args[2]), u'ddnshostname "{0}"'.format(hostname)]
+        if len(args) > 2:
+            entryDHCPStatements = [u'fixed-address {0}'.format(args[2]), u'ddnshostname "{0}"'.format(hostname)]
+        else:
+            entryDHCPStatements = [u'ddnshostname "{0}"'.format(hostname)]
         # if dhcpcomments is present
-        if (len(args) > 3):
-            dhcpcomment = args[3]
-        result = api.Command['dhcphost_add_dhcpschema'](
+        if len(args) > 3:
+            entryDHCPComments = args[3]
+        else:
+            entryDHCPComments = []
+        result = api.Command['dhcphost_add'](
             cn=hostname,
-            dhcpcomments=dhcpcomment,
-            dhcpstatements=dhcpstatement,
+            dhcpcomments=entryDHCPComments,
+            dhcpstatements=entryDHCPStatements,
             dhcphwaddress=u'ethernet {0}'.format(macaddress),
             dhcpoption=[u'host-name "{0}"'.format(hostname)]
         )
@@ -2198,10 +2189,9 @@ class dhcpgrouphost_show(dhcphost_show):
     __doc__ = _('Display a DHCP host.')
 
 @register()
-class dhcpgrouphost_add(dhcphost_add):
+class dhcpgrouphost_add_cmd(dhcphost_add):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
-
 
 @register()
 class dhcpgrouphost_mod(dhcphost_mod):
@@ -2242,7 +2232,7 @@ class dhcpsubnetgrouphost_show(dhcphost_show):
     __doc__ = _('Display a DHCP host.')
 
 @register()
-class dhcpsubnetgrouphost_add(dhcphost_add):
+class dhcpsubnetgrouphost_add_cmd(dhcphost_add):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
 
@@ -2286,7 +2276,7 @@ class dhcpsubnethost_show(dhcphost_show):
     __doc__ = _('Display a DHCP host.')
 
 @register()
-class dhcpsubnethost_add(dhcphost_add):
+class dhcpsubnethost_add_cmd(dhcphost_add):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
 
@@ -2330,7 +2320,7 @@ class dhcppoolhost_show(dhcphost_show):
     __doc__ = _('Display a DHCP host.')
 
 @register()
-class dhcppoolhost_add(dhcphost_add):
+class dhcppoolhost_add_cmd(dhcphost_add):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
 

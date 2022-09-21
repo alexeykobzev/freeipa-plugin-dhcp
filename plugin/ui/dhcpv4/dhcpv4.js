@@ -712,6 +712,9 @@ define(
                                         name: 'dhcpoption'
                                     },
                                     {
+                                        name: 'dhcphwaddress'
+                                    },                            
+                                    {
                                         $type: 'textarea',
                                         name: 'dhcpcomments'
                                     }
@@ -721,10 +724,11 @@ define(
                     }
                 ],
                 adder_dialog: {
+                    method: "add_cmd",
                     fields: [
                         {
                             $type: 'entity_select',
-                            name: 'cn',
+                            name: 'hostname',
                             other_entity: 'host',
                             other_field: 'fqdn',
                             required: true
@@ -1001,20 +1005,6 @@ define(
             if (network_services_item.length > 0) {
                 menu.add_item( exp.dhcp_v4_menu_spec, 'network_services' );
             }
-        };
-
-
-//// customize_host_ui ////////////////////////////////////////////////////////
-
-
-        exp.customize_host_ui = function() {
-            var adder_dialog = IPA.host.entity_spec.adder_dialog;
-            var fields = adder_dialog.sections[1].fields;
-            var macaddress_field_spec = {
-                $type: 'multivalued',
-                name: 'macaddress'
-            }
-            fields.splice(2, 0, macaddress_field_spec)
         };
 
 
