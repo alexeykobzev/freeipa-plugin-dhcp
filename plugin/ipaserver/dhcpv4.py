@@ -2064,11 +2064,6 @@ class dhcphost(LDAPObject):
         return entry_attrs
 
 @register()
-class dhcphost_add(LDAPCreate):
-    __doc__ = _('Create a new DHCP host.')
-    msg_summary = _('Created DHCP host "%(value)s"')
-
-@register()
 class dhcphost_find(LDAPSearch):
     __doc__ = _('Search for a DHCP host.')
     msg_summary = ngettext(
