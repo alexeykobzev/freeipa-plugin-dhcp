@@ -2121,41 +2121,6 @@ class dhcphost_add(LDAPCreate):
 
 
 @register()
-class dhcphost_add_dialog(Command):
-
-   takes_args = (
-        Str(
-            'fqdn',
-            cli_name='fqdn',
-            label=_('Hostname'),
-            doc=_("Hostname.")
-        ),
-        Str(
-            'macaddress',
-            normalizer=lambda value: value.upper(),
-            pattern='^([a-fA-F0-9]{2}[:|\-]?){5}[a-fA-F0-9]{2}$',
-            pattern_errmsg=('Must be of the form HH:HH:HH:HH:HH:HH, where '
-                            'each H is a hexadecimal character.'),
-            cli_name='macaddress',
-            label=_('MAC Address'),
-            doc=_("MAC address.")
-        ),
-        Str(
-            'ipaddress',
-            cli_name='ipaddress',
-            label=_('IP Address'),
-            doc=_("Hosts IP Address.")
-        ),
-        Str(
-            'dhcpcomments?',
-            cli_name='dhcpcomments',
-            label=_('Comments'),
-            doc=_('DHCP Comments.')
-        )
-    )
-
-
-@register()
 class dhcphost_mod(LDAPUpdate):
     __doc__ = _('Modify a DHCP host.')
     msg_summary = _('Modified a DHCP host.')
