@@ -2128,7 +2128,6 @@ class dhcphost_mod(LDAPUpdate):
 
     def pre_callback(self, ldap, dn, entry_attrs, attrs_list, *keys, **options):
         assert isinstance(dn, DN)
-        entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
 
         if 'dhcpstatements' in entry_attrs:
             dhcpStatements = entry_attrs.get('dhcpstatements', [])
@@ -2155,16 +2154,11 @@ class dhcphost_mod(LDAPUpdate):
             dhcpComments = entry.get('dhcpcomments', [])
 
         if 'macaddress' in options:
-            macaddress = options['macaddress']
-            dhcpHWAddress = u'ethernet {0}'.format(macaddress)
+            dhcpHWAddress = u'ethernet {0}'.format(options['macaddress'])
+        else:
+            entry = ldap.get_entry(dn)
+            dhcpHWAddress = entry.get('dhcphwaddress', [])
 
-        if 'ipaddress' in options:
-            ipaddress = options['ipaddress']
-            for statement in dhcpStatements:
-                if statement.startswith('fixed-address '):
-                    statement = u'fixed-address {0}'.format(ipaddress)
-
-        dhcp_modify_macaddress( dhcp_version, options, dhcpHWAddress )
         dhcp_modify_ipaddress( dhcp_version, options, dhcpStatements )
 
         entry_attrs['dhcphwaddress'] = dhcpHWAddress

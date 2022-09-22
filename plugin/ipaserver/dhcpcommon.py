@@ -68,6 +68,12 @@ def dhcp_modify_domainsearch( dhcp_version, options, dhcpOptions ):
         option_value = start_with_options + ', '.join('"' + s + '"' for s in options[option_item])
         dhcp_modify_options( option_value, dhcpOptions, start_with_options )
 
+def dhcp_modify_ipaddress( dhcp_version, options, dhcpStatements ):
+    start_with_options = 'fixed-address '
+    option_item = 'ipaddress'
+
+    dhcp_modify_statements_value( options, option_item, dhcpStatements, start_with_options )
+
 def dhcp_modify_router( dhcp_version, options, dhcpOptions):
     start_with_options = 'routers '
     option_item = 'router'
