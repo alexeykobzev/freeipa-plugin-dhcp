@@ -2107,8 +2107,8 @@ class dhcphost_add(LDAPCreate):
         else:
             entryDHCPComments = []
 
-        entryDHCPOptions.append(u'host-name "{0}"'.format(options['cn']))
-        entryDHCPStatements.append(u'ddns-hostname {0}'.format(options['cn']))
+        entryDHCPOptions.append(u'host-name "{0}"'.format(options['hostname']))
+        entryDHCPStatements.append(u'ddns-hostname {0}'.format(options['hostname']))
         if 'dhcpcomments' in options:
             entryDHCPComments.append(options['dhcpcomments'])
 
