@@ -2081,16 +2081,6 @@ class dhcphost_show(LDAPRetrieve):
         return dn
 
 @register()
-class dhcphost_mod(LDAPUpdate):
-    __doc__ = _('Modify a DHCP host.')
-    msg_summary = _('Modified a DHCP host.')
-
-    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
-        assert isinstance(dn, DN)
-        entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
-        return dn
-
-@register()
 class dhcphost_add(LDAPCreate):
     __doc__ = _('Create a new DHCP host.')
     msg_summary = _('Created DHCP host "%(value)s"')
@@ -2117,10 +2107,10 @@ class dhcphost_add(LDAPCreate):
         else:
             entryDHCPComments = []
 
-        entryDHCPComments.append(options['dhcpcomments'])
-
         entryDHCPOptions.append(u'host-name "{0}"'.format(options['cn']))
         entryDHCPStatements.append(u'ddns-hostname {0}'.format(options['cn']))
+        if 'dhcpcomments' in options:
+            entryDHCPComments.append(options['dhcpcomments'])
 
         entry_attrs['dhcpstatements'] = entryDHCPStatements
         entry_attrs['dhcpcomments'] = entryDHCPComments
@@ -2134,6 +2124,16 @@ class dhcphost_add(LDAPCreate):
         entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
 
         # self.post_common_callback(ldap, dn, entry_attrs, *keys, **options)
+        return dn
+
+@register()
+class dhcphost_mod(LDAPUpdate):
+    __doc__ = _('Modify a DHCP host.')
+    msg_summary = _('Modified a DHCP host.')
+
+    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
+        assert isinstance(dn, DN)
+        entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
         return dn
 
 @register()
