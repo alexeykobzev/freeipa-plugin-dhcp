@@ -2082,10 +2082,6 @@ class dhcphost_add(LDAPCreate):
     def pre_callback(self, ldap, dn, entry_attrs, attrs_list, *keys, **options):
         assert isinstance(dn, DN)
 
-        if 'ipaddress' in options:
-            ipaddress = options['ipaddress']
-            entryDHCPStatements.append(u'fixed-address {0}'.format(ipaddress))
-
         if 'dhcpstatements' in entry_attrs:
              entryDHCPStatements = entry_attrs['dhcpStatements']
         else:
@@ -2101,18 +2097,18 @@ class dhcphost_add(LDAPCreate):
         else:
             entryDHCPComments = []
 
-        if 'fqdn' in options:
-            hostname = options['fqdn']
-            entryDHCPOptions.append(u'host-name "{0}"'.format(hostname))
-            entryDHCPStatements.append(u'ddns-hostname {0}'.format(hostname))
+        entryDHCPOptions.append(u'host-name "{0}"'.format(options['fqdn']))
+        entryDHCPStatements.append(u'ddns-hostname {0}'.format(options['fqdn']))
+        entryDHCPHWAddress = u'ethernet {0}'.format(options['macaddress'])
 
-        if 'macaddress' in options:
-            macaddress = options['macaddress']
-            entry_attrs['dhcphwaddress'] = u'ethernet {0}'.format(macaddress)
+        if 'ipaddress' in options:
+            ipaddress = options['ipaddress']
+            entryDHCPStatements.append(u'fixed-address {0}'.format(ipaddress))
 
         if 'dhcpcomments' in options:
             entryDHCPComments.append(options['dhcpcomments'])
 
+        entry_attrs['dhcphwaddress'] = entryDHCPHWAddress
         entry_attrs['dhcpstatements'] = entryDHCPStatements
         entry_attrs['dhcpcomments'] = entryDHCPComments
         entry_attrs['dhcpoption'] = entryDHCPOptions
@@ -2130,6 +2126,51 @@ class dhcphost_add(LDAPCreate):
 class dhcphost_mod(LDAPUpdate):
     __doc__ = _('Modify a DHCP host.')
     msg_summary = _('Modified a DHCP host.')
+
+    def pre_callback(self, ldap, dn, entry_attrs, attrs_list, *keys, **options):
+        assert isinstance(dn, DN)
+        entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
+
+        if 'dhcpstatements' in entry_attrs:
+            dhcpStatements = entry_attrs.get('dhcpstatements', [])
+        else:
+            entry = ldap.get_entry(dn)
+            dhcpStatements = entry.get('dhcpstatements', [])
+
+        if 'dhcpoption' in entry_attrs:
+            dhcpOptions = entry_attrs.get('dhcpoption', [])
+        else:
+            entry = ldap.get_entry(dn)
+            dhcpOptions = entry.get('dhcpoption', [])
+
+        if 'dhcphwaddress' in entry_attrs:
+            dhcpHWAddress = entry_attrs.get('dhcphwaddress', [])
+        else:
+            entry = ldap.get_entry(dn)
+            dhcpHWAddress = entry.get('dhcphwaddress', [])
+
+        if 'dhcpcomments' in entry_attrs:
+            dhcpComments = entry_attrs.get('dhcpcomments', [])
+        else:
+            entry = ldap.get_entry(dn)
+            dhcpComments = entry.get('dhcpcomments', [])
+
+        if 'macaddress' in options:
+            macaddress = options['macaddress']
+            dhcpHWAddress = u'ethernet {0}'.format(macaddress)
+
+        if 'ipaddress' in options:
+            ipaddress = options['ipaddress']
+            for statement in dhcpStatements:
+                if statement.startswith('fixed-address '):
+                    statement = u'fixed-address {0}'.format(ipaddress)
+
+        entry_attrs['dhcphwaddress'] = dhcpHWAddress
+        entry_attrs['dhcpstatements'] = dhcpStatements
+        entry_attrs['dhcpoption'] = dhcpOptions
+        entry_attrs['dhcpcomments'] = dhcpComments
+
+        return dn
 
     def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
         assert isinstance(dn, DN)
