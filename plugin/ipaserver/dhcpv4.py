@@ -2164,6 +2164,9 @@ class dhcphost_mod(LDAPUpdate):
                 if statement.startswith('fixed-address '):
                     statement = u'fixed-address {0}'.format(ipaddress)
 
+        dhcp_modify_macaddress( dhcp_version, options, dhcpHWAddress )
+        dhcp_modify_ipaddress( dhcp_version, options, dhcpStatements )
+
         entry_attrs['dhcphwaddress'] = dhcpHWAddress
         entry_attrs['dhcpstatements'] = dhcpStatements
         entry_attrs['dhcpoption'] = dhcpOptions
