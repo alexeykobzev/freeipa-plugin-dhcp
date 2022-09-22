@@ -693,10 +693,7 @@ define(
                                         name: 'ipaddress',
                                         flags: ['w_if_no_aci'],
                                         validators: [ 'ip_v4_address' ]
-                                    },
-                                    {
-                                        name: 'dhcpclientid'
-                                    },
+                                    }
                                 ]
                             },
                             {

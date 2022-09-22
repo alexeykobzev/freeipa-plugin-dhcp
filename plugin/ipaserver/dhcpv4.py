@@ -2013,6 +2013,24 @@ class dhcphost(LDAPObject):
             flags=['virtual_attribute']
         ),
         Str(
+            'dhcpstatements*',
+            cli_name='dhcpstatements',
+            label=_('DHCP Statements'),
+            doc=_('DHCP statements.')
+        ),
+        Str(
+            'dhcpoption*',
+            cli_name='dhcpoptions',
+            label=_('DHCP Options'),
+            doc=_('DHCP options.')
+        ),
+        Str(
+            'dhcphwaddress*',
+            cli_name='dhcphwaddress',
+            label=_('DHCP Hardware Address'),
+            doc=_('DHCP Hardware Address.')
+        ),
+        Str(
             'dhcpcomments?',
             cli_name='dhcpcomments',
             label=_('Comments'),
