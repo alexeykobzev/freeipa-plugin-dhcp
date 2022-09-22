@@ -745,7 +745,7 @@ define(
                         {
                             $type: 'textarea',
                             name: 'dhcpcomments',
-                            label: 'Comments'
+                            label: 'DHCP Comments'
                         }
                     ]
                 }

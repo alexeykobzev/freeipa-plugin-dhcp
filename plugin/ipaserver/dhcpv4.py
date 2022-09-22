@@ -1989,9 +1989,9 @@ class dhcphost(LDAPObject):
     takes_params = (
         Str(
             'cn',
-            cli_name='hostname',
+            cli_name='fqdn',
             label=_('Hostname'),
-            doc=_('Host name.'),
+            doc=_('Hostname.'),
             primary_key=True
         ),
         Str(
@@ -2011,30 +2011,6 @@ class dhcphost(LDAPObject):
             label=_('Host IP Address'),
             doc=_('Host IP Address.'),
             flags=['virtual_attribute']
-        ),
-        Str(
-            'dhcpclientid?',
-            cli_name='dhcpclientid',
-            label=_('Client Identifier'),
-            doc=_('Client Identifier.')
-        ),
-        Str(
-            'dhcpstatements*',
-            cli_name='dhcpstatements',
-            label=_('DHCP Statements'),
-            doc=_('DHCP statements.')
-        ),
-        Str(
-            'dhcpoption*',
-            cli_name='dhcpoptions',
-            label=_('DHCP Options'),
-            doc=_('DHCP options.')
-        ),
-        Str(
-            'dhcphwaddress?',
-            cli_name='dhcphwaddress',
-            label=_('DHCP Hardware Address'),
-            doc=_('DHCP Hardware Address.')
         ),
         Str(
             'dhcpcomments?',
@@ -2107,15 +2083,21 @@ class dhcphost_add(LDAPCreate):
         else:
             entryDHCPComments = []
 
-        entryDHCPOptions.append(u'host-name "{0}"'.format(options['hostname']))
-        entryDHCPStatements.append(u'ddns-hostname {0}'.format(options['hostname']))
+        if 'fqdn' in options:
+            hostname = options['fqdn']
+            entryDHCPOptions.append(u'host-name "{0}"'.format(hostname))
+            entryDHCPStatements.append(u'ddns-hostname {0}'.format(hostname))
+
+        if 'macaddress' in options:
+            macaddress = options['macaddress']
+            entry_attrs['dhcphwaddress'] = u'ethernet {0}'.format(macaddress)
+
         if 'dhcpcomments' in options:
             entryDHCPComments.append(options['dhcpcomments'])
 
         entry_attrs['dhcpstatements'] = entryDHCPStatements
         entry_attrs['dhcpcomments'] = entryDHCPComments
         entry_attrs['dhcpoption'] = entryDHCPOptions
-        entry_attrs['dhcphwaddress'] = u'ethernet {0}'.format(options['macaddress'])
 
         return dn
 
