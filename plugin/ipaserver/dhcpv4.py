@@ -2097,16 +2097,15 @@ class dhcphost_add(LDAPCreate):
         else:
             entryDHCPComments = []
 
-        entryDHCPOptions.append(u'host-name "{0}"'.format(options['fqdn']))
-        entryDHCPStatements.append(u'ddns-hostname {0}'.format(options['fqdn']))
+        entryDHCPOptions.append(u'host-name "{0}"'.format(entry_attrs['cn']))
+        entryDHCPStatements.append(u'ddns-hostname {0}'.format(entry_attrs['cn']))
         entryDHCPHWAddress = u'ethernet {0}'.format(options['macaddress'])
 
         if 'ipaddress' in options:
-            ipaddress = options['ipaddress']
-            entryDHCPStatements.append(u'fixed-address {0}'.format(ipaddress))
+            entryDHCPStatements.append(u'fixed-address {0}'.format(options['ipaddress']))
 
-        if 'dhcpcomments' in options:
-            entryDHCPComments.append(options['dhcpcomments'])
+        if 'dhcpcomments' in entry_attrs:
+            entryDHCPComments.append(entry_attrs['dhcpcomments'])
 
         entry_attrs['dhcphwaddress'] = entryDHCPHWAddress
         entry_attrs['dhcpstatements'] = entryDHCPStatements
