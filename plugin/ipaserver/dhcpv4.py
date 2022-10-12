@@ -2182,7 +2182,7 @@ class dhcphost_del(LDAPDelete):
 #### dhcphost_group ###############################################################
 @register()
 class dhcpgrouphost(dhcphost):
-    parent_object = 'dhcpsubnetgroup'
+    parent_object = 'dhcpgroup'
     container_dn = container_dhcp_dn
     object_name = _('DHCP host')
     object_name_plural = _('DHCP hosts')

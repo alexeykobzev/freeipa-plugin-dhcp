@@ -905,7 +905,7 @@ define(
             e.register({type: 'dhcppool', spec: exp.dhcppool_entity_spec});
             e.register({type: 'dhcpgroup', spec: exp.dhcpgroup_entity_spec});
             e.register({type: 'dhcpsubnetgroup', spec: exp.dhcpsubnetgroup_entity_spec});
-            e.register({type: 'dhcpgrouproup', spec: exp.dhcpgroupgroup_entity_spec});
+            e.register({type: 'dhcpgroupgroup', spec: exp.dhcpgroupgroup_entity_spec});
             // e.register({type: 'dhcpsharednetwork', spec: exp.dhcpsharednetwork_entity_spec});
             e.register({type: 'dhcphost', spec: exp.dhcphost_entity_spec});
             e.register({type: 'dhcpgrouphost', spec: exp.dhcpgrouphost_entity_spec});
