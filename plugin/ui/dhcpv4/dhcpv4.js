@@ -612,53 +612,53 @@ define(
 //// dhcpsharednetwork ///////////////////////////////////////////////////////////////
 
 
-        var make_dhcpsharednetwork_spec = function() {
-            return {
-                name: 'dhcpsharednetwork',
-                facets: [
-                    {
-                        $type: 'search',
-                        columns: [
-                            'cn',
-                        ]
-                    },
-                    {
-                        $type: 'details',
-                        sections: [
-                            {
-                                name: 'settings',
-                                fields: [
-                                    {
-                                        $type: 'multivalued',
-                                        name: 'dhcpstatements'
-                                    },
-                                    {
-                                        $type: 'multivalued',
-                                        name: 'dhcpoption'
-                                    },
-                                    {
-                                        $type: 'textarea',
-                                        name: 'dhcpcomments'
-                                    }
-                                ]
-                            }
-                        ],
-                    }
-                ],
-                adder_dialog: {
-                    fields: [
-                        {
-                            $type: 'entity_select',
-                            name: 'cn',
-                            other_entity: 'host',
-                            other_field: 'fqdn',
-                            required: true
-                        }
-                    ]
-                }
-            };
-        };
-        exp.dhcpsharednetwork_entity_spec = make_dhcpsharednetwork_spec();
+        // var make_dhcpsharednetwork_spec = function() {
+        //     return {
+        //         name: 'dhcpsharednetwork',
+        //         facets: [
+        //             {
+        //                 $type: 'search',
+        //                 columns: [
+        //                     'cn',
+        //                 ]
+        //             },
+        //             {
+        //                 $type: 'details',
+        //                 sections: [
+        //                     {
+        //                         name: 'settings',
+        //                         fields: [
+        //                             {
+        //                                 $type: 'multivalued',
+        //                                 name: 'dhcpstatements'
+        //                             },
+        //                             {
+        //                                 $type: 'multivalued',
+        //                                 name: 'dhcpoption'
+        //                             },
+        //                             {
+        //                                 $type: 'textarea',
+        //                                 name: 'dhcpcomments'
+        //                             }
+        //                         ]
+        //                     }
+        //                 ],
+        //             }
+        //         ],
+        //         adder_dialog: {
+        //             fields: [
+        //                 {
+        //                     $type: 'entity_select',
+        //                     name: 'cn',
+        //                     other_entity: 'host',
+        //                     other_field: 'fqdn',
+        //                     required: true
+        //                 }
+        //             ]
+        //         }
+        //     };
+        // };
+        // exp.dhcpsharednetwork_entity_spec = make_dhcpsharednetwork_spec();
 
 //// dhcphost /////////////////////////////////////////////////////////////////
 
@@ -906,7 +906,7 @@ define(
             e.register({type: 'dhcpgroup', spec: exp.dhcpgroup_entity_spec});
             e.register({type: 'dhcpsubnetgroup', spec: exp.dhcpsubnetgroup_entity_spec});
             e.register({type: 'dhcpgrouproup', spec: exp.dhcpgroupgroup_entity_spec});
-            e.register({type: 'dhcpsharednetwork', spec: exp.dhcpsharednetwork_entity_spec});
+            // e.register({type: 'dhcpsharednetwork', spec: exp.dhcpsharednetwork_entity_spec});
             e.register({type: 'dhcphost', spec: exp.dhcphost_entity_spec});
             e.register({type: 'dhcpgrouphost', spec: exp.dhcpgrouphost_entity_spec});
             e.register({type: 'dhcpsubnethost', spec: exp.dhcpsubnethost_entity_spec});
@@ -979,10 +979,10 @@ define(
                                 }
                             ]
                         },
-                        {
-                            entity: menu_entity + 'sharednetwork',
-                            label: 'Shared Network'
-                        },
+                        // {
+                        //     entity: menu_entity + 'sharednetwork',
+                        //     label: 'Shared Network'
+                        // },
                         {
                             entity: menu_entity + 'server',
                             label: 'Servers'
