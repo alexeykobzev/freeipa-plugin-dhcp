@@ -585,7 +585,7 @@ define(
                                 name: 'cn'
                             },
                             { 
-                                name:'dhcphwaddress',
+                                name:'macaddress',
                                 formatter:
                                 {
                                     $type: 'textarea',
