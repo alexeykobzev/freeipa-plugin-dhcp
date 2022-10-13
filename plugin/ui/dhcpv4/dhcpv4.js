@@ -223,17 +223,9 @@ define(
                     {
                         $type: 'search',
                         columns: [
-                            {
-                                name: 'cn'
-                            },
-                            {
-                                name: 'dhcpnetmask',
-                                flags: ['w_if_no_aci']
-                            },
-                            {
-                                name: 'dhcpcomments',
-                                flags: ['w_if_no_aci']
-                            }
+                            'cn',
+                            'dhcpnetmask',
+                            'dhcpcomments'
                         ]
                     },
                     {
@@ -345,11 +337,11 @@ define(
                                 name: 'cn'
                             },
                             {
-                                name: 'dhcphwaddress',
+                                name: 'dhcpHWAddress',
                                 flags: ['w_if_no_aci']
                             },
                             {
-                                name: 'dhcpcomments',
+                                name: 'dhcpComments',
                                 flags: ['w_if_no_aci']
                             }
                         ]
@@ -468,8 +460,8 @@ define(
                             {
                                 name: 'cn'
                             },
-                            'dhcphwaddress',
-                            'dhcpcomments'
+                            'dhcpHWAddress',
+                            'dhcpComments'
                         ]
                     }
                 ],
@@ -592,8 +584,8 @@ define(
                             {
                                 name: 'cn'
                             },
-                            'dhcphwaddress',
-                            'dhcpcomments'
+                            'dhcpHWAddress',
+                            'dhcpComments'
                         ]
                     }
                 ],
@@ -696,8 +688,8 @@ define(
                             {
                                 name: 'cn'
                             },
-                            'dhcphwaddress',
-                            'dhcpcomments'
+                            'dhcpHWAddress',
+                            'dhcpComments'
                         ]
                     },
                     {
@@ -728,18 +720,18 @@ define(
                                 fields: [
                                     {
                                         $type: 'multivalued',
-                                        name: 'dhcpstatements'
+                                        name: 'dhcpStatements'
                                     },
                                     {
                                         $type: 'multivalued',
-                                        name: 'dhcpoption'
+                                        name: 'dhcpOption'
                                     },
                                     {
-                                        name: 'dhcphwaddress'
+                                        name: 'dhcpHWAddress'
                                     },
                                     {
                                         $type: 'textarea',
-                                        name: 'dhcpcomments'
+                                        name: 'dhcpComments'
                                     }
                                 ]
                             }
