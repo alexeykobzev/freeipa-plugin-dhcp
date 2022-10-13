@@ -345,7 +345,7 @@ define(
                                 name: 'cn'
                             },
                             {
-                                name: 'macaddress',
+                                name: 'dhcphwaddress',
                                 flags: ['w_if_no_aci']
                             },
                             {
@@ -468,13 +468,8 @@ define(
                             {
                                 name: 'cn'
                             },
-                            {
-                                name: 'macaddress',
-                                flags: ['w_if_no_aci']
-                            },
-                            {
-                                name: 'dhcpcomments'
-                            }
+                            'dhcphwaddress',
+                            'dhcpcomments'
                         ]
                     }
                 ],
@@ -597,13 +592,8 @@ define(
                             {
                                 name: 'cn'
                             },
-                            {
-                                name: 'macaddress',
-                                flags: ['w_if_no_aci']
-                            },
-                            {
-                                name: 'dhcpcomments'
-                            }
+                            'dhcphwaddress',
+                            'dhcpcomments'
                         ]
                     }
                 ],
@@ -706,14 +696,8 @@ define(
                             {
                                 name: 'cn'
                             },
-                            {
-                                name: 'macaddress',
-                                flags: ['w_if_no_aci']
-                            },
-                            {
-                                name: 'dhcpcomments',
-                                flags: ['w_if_no_aci']
-                            }
+                            'dhcphwaddress',
+                            'dhcpcomments'
                         ]
                     },
                     {

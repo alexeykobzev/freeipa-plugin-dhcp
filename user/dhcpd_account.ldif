@@ -1,6 +1,9 @@
 dn: uid=dhcp,cn=sysaccounts,cn=etc,dc=vigo,dc=internal
 cn: uid=dhcp,cn=sysaccounts,cn=etc,dc=vigo,dc=internal
 userPassword: "maehe5iqu0pae3yiiyee6ieyoo7jahzeizaiqueep3dighej"
+memberprincipal: cn=System: Read Permissions,cn=permissions,cn=pbac,dc=vigo,dc=internal
+memberprincipal: cn=System: Read Privileges,cn=permissions,cn=pbac,dc=vigo,dc=internal
+memberprincipal: cn=System: Read DHCP Entries,cn=permissions,cn=pbac,dc=vigo,dc=internal
 objectClass: account
 objectClass: simpleSecurityObject
 objectClass: top

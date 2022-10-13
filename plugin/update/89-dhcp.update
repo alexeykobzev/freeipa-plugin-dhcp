@@ -642,6 +642,50 @@ default: ipaPermRight: write
 default: ipaPermTarget: cn=v4,cn=dhcp,$SUFFIX
 default: ipaPermTargetFilter: (objectclass=dhcpservice)
 
+dn: cn=System: Read DHCP Entries,cn=permissions,cn=pbac,$SUFFIX
+default: objectClass: groupofnames
+default: objectClass: ipapermission
+default: objectClass: ipapermissionv2
+default: objectClass: top
+default: ipaPermBindRuleType: all
+default: ipaPermLocation: cn=dhcp,$SUFFIX
+default: ipaPermIncludedAttr: *
+default: ipaPermIncludedAttr: cn
+default: ipaPermIncludedAttr: createtimestamp
+default: ipaPermIncludedAttr: description
+default: ipaPermIncludedAttr: dhcpClassesDN
+default: ipaPermIncludedAttr: dhcpComments
+default: ipaPermIncludedAttr: dhcpDelayedServiceParameter
+default: ipaPermIncludedAttr: dhcpFailOverEndpointState
+default: ipaPermIncludedAttr: dhcpFailOverPeerDN
+default: ipaPermIncludedAttr: dhcpGroupDN
+default: ipaPermIncludedAttr: dhcpHashBucketAssignment
+default: ipaPermIncludedAttr: dhcpHostDN
+default: ipaPermIncludedAttr: dhcpHWAddress
+default: ipaPermIncludedAttr: dhcpImplementation
+default: ipaPermIncludedAttr: dhcpKeyDN
+default: ipaPermIncludedAttr: dhcpLocatorDN
+default: ipaPermIncludedAttr: dhcpMaxClientLeadTime
+default: ipaPermIncludedAttr: dhcpOption
+default: ipaPermIncludedAttr: dhcpOptionsDN
+default: ipaPermIncludedAttr: dhcpPrimaryDN
+default: ipaPermIncludedAttr: dhcpSecondaryDN
+default: ipaPermIncludedAttr: dhcpServerDN
+default: ipaPermIncludedAttr: dhcpServiceDN
+default: ipaPermIncludedAttr: dhcpSharedNetworkDN
+default: ipaPermIncludedAttr: dhcpStatements
+default: ipaPermIncludedAttr: dhcpSubnetDN
+default: ipaPermIncludedAttr: dhcpVersion
+default: ipaPermIncludedAttr: dhcpZoneDN
+default: ipaPermIncludedAttr: entryusn
+default: ipaPermIncludedAttr: modifytimestamp
+default: ipaPermIncludedAttr: objectclass
+default: ipaPermissionType: SYSTEM
+default: ipaPermissionType: V2
+default: ipaPermRight: compare
+default: ipaPermRight: read
+default: ipaPermRight: search
+
 #### Managed privileges ######################################################
 
 dn: cn=DHCP Administrators,cn=privileges,cn=pbac,$SUFFIX
