@@ -337,7 +337,7 @@ define(
                                 name: 'cn'
                             },
                             {
-                                name: 'dhcphwAddress',
+                                name: 'dhcphwaddress',
                                 flags: ['w_if_no_aci']
                             },
                             {
@@ -584,8 +584,22 @@ define(
                             {
                                 name: 'cn'
                             },
-                            'dhcphwaddress',
-                            'dhcpcomments'
+                            { 
+                                name:'dhcphwaddress',
+                                formatter:
+                                {
+                                    $type: 'textarea',
+                                    flags: ['w_if_no_aci']
+                                }
+                            },
+                            { 
+                                name: 'dhcpcomments',
+                                formatter:
+                                {
+                                    $type: 'textarea',
+                                    flags: ['w_if_no_aci']
+                                }
+                            }
                         ]
                     }
                 ],

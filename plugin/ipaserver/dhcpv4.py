@@ -2065,11 +2065,6 @@ class dhcphost_find(LDAPSearch):
         '%(count)d DHCP hosts matched', 0
     )
 
-    def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
-        assert isinstance(dn, DN)
-        entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
-        return dn
-
 @register()
 class dhcphost_show(LDAPRetrieve):
     __doc__ = _('Display a DHCP host.')
