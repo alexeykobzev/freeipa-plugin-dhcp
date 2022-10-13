@@ -284,6 +284,7 @@ class dhcpsubnet(LDAPObject):
     label_singular = _('DHCP Subnet')
 
     search_attributes = [ 'cn' ]
+    search_display_attributes = [ 'cn', 'dhcpnetmask', 'dhcpcomments' ]
 
     managed_permissions = {
         'System: Add DHCP Subnets': {
@@ -1945,8 +1946,8 @@ class dhcphost(LDAPObject):
     label = _('DHCP Hosts')
     label_singular = _('DHCP Host')
 
-    search_attributes = [ 'cn', 'macaddress' ]
-    search_display_attributes = [ 'cn', 'macaddress', 'dhcpcomments' ]
+    search_attributes = [ 'cn', 'dhcphwaddress' ]
+    search_display_attributes = [ 'cn', 'dhcphwaddress', 'dhcpcomments' ]
 
     managed_permissions = {
         'System: Add DHCP Hosts': {
@@ -2065,9 +2066,6 @@ class dhcphost_find(LDAPSearch):
         '%(count)d DHCP host matched',
         '%(count)d DHCP hosts matched', 0
     )
-
-    def post_callback(self, ldap, entries, truncated, *args, **options):
-        return truncated
 
 @register()
 class dhcphost_show(LDAPRetrieve):
