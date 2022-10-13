@@ -337,11 +337,11 @@ define(
                                 name: 'cn'
                             },
                             {
-                                name: 'dhcpHWAddress',
+                                name: 'dhcphwAddress',
                                 flags: ['w_if_no_aci']
                             },
                             {
-                                name: 'dhcpComments',
+                                name: 'dhcpcomments',
                                 flags: ['w_if_no_aci']
                             }
                         ]
@@ -460,8 +460,8 @@ define(
                             {
                                 name: 'cn'
                             },
-                            'dhcpHWAddress',
-                            'dhcpComments'
+                            'dhcphwaddress',
+                            'dhcpcomments'
                         ]
                     }
                 ],
@@ -584,8 +584,8 @@ define(
                             {
                                 name: 'cn'
                             },
-                            'dhcpHWAddress',
-                            'dhcpComments'
+                            'dhcphwaddress',
+                            'dhcpcomments'
                         ]
                     }
                 ],
@@ -688,8 +688,8 @@ define(
                             {
                                 name: 'cn'
                             },
-                            'dhcpHWAddress',
-                            'dhcpComments'
+                            'dhcphwaddress',
+                            'dhcpcomments'
                         ]
                     },
                     {
@@ -720,18 +720,18 @@ define(
                                 fields: [
                                     {
                                         $type: 'multivalued',
-                                        name: 'dhcpStatements'
+                                        name: 'dhcpstatements'
                                     },
                                     {
                                         $type: 'multivalued',
-                                        name: 'dhcpOption'
+                                        name: 'dhcpoption'
                                     },
                                     {
-                                        name: 'dhcpHWAddress'
+                                        name: 'dhcphwaddress'
                                     },
                                     {
                                         $type: 'textarea',
-                                        name: 'dhcpComments'
+                                        name: 'dhcpcomments'
                                     }
                                 ]
                             }
