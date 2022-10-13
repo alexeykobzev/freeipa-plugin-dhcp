@@ -71,14 +71,14 @@ class dhcpservice(LDAPObject):
             'ipapermtargetfilter': ['(objectclass=dhcpservice)'],
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
-                'dhcpOption', 'dhcpPrimaryDN',
-                'dhcpSecondaryDN', 'dhcpClassesDN',
-                'dhcpComments', 'dhcpServerDN',
-                'dhcpFailOverPeerDN', 'dhcpGroupDN',
-                'dhcpHostDN', 'dhcpKeyDN',
-                'dhcpOptionsDN', 'dhcpServerDN',
-                'dhcpSharedNetworkDN', 'dhcpSubnetDN',
-                'dhcpZoneDN'
+                'dhcpoption', 'dhcpprimarydn',
+                'dhcpsecondarydn', 'dhcpclassesdn',
+                'dhcpcomments', 'dhcpserverdn',
+                'dhcpfailoverpeerdn', 'dhcpgroupdn',
+                'dhcphostdn', 'dhcpkeydn',
+                'dhcpoptionsdn', 'dhcpserverdn',
+                'dhcpsharednetworkdn', 'dhcpsubnetdn',
+                'dhcpzonedn'
             },
             'default_privileges': {'DHCP Administrators'},
         },
@@ -90,14 +90,14 @@ class dhcpservice(LDAPObject):
             'ipapermtargetfilter': ['(objectclass=dhcpservice)'],
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
-                'dhcpOption', 'dhcpPrimaryDN',
-                'dhcpSecondaryDN', 'dhcpClassesDN',
-                'dhcpComments', 'dhcpServerDN',
-                'dhcpFailOverPeerDN', 'dhcpGroupDN',
-                'dhcpHostDN', 'dhcpKeyDN',
-                'dhcpOptionsDN', 'dhcpServerDN',
-                'dhcpSharedNetworkDN', 'dhcpSubnetDN',
-                'dhcpZoneDN'
+                'dhcpoption', 'dhcpprimarydn',
+                'dhcpsecondarydn', 'dhcpclassesdn',
+                'dhcpcomments', 'dhcpserverdn',
+                'dhcpfailoverpeerdn', 'dhcpgroupdn',
+                'dhcphostdn', 'dhcpkeydn',
+                'dhcpoptionsdn', 'dhcpserverdn',
+                'dhcpsharednetworkdn', 'dhcpsubnetdn',
+                'dhcpzonedn'
             },
             'default_privileges': {'DHCP Administrators'},
         },
@@ -291,13 +291,13 @@ class dhcpsubnet(LDAPObject):
             'ipapermtargetfilter': ['(objectclass=dhcpsubnet)'],
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
-                'dhcpNetMask', 'dhcpRange',
-                'dhcpPoolDN', 'dhcpGroupDN',
-                'dhcpHostDN', 'dhcpClassesDN',
-                'dhcpLeasesDN', 'dhcpOptionsDN',
-                'dhcpZoneDN', 'dhcpKeyDN',
-                'dhcpFailOverPeerDN', 'dhcpStatements',
-                'dhcpComments', 'dhcpOption'
+                'dhcpnetmask', 'dhcprange',
+                'dhcppooldn', 'dhcpgroupdn',
+                'dhcphostdn', 'dhcpclassesdn',
+                'dhcpleasesdn', 'dhcpoptionsdn',
+                'dhcpzonedn', 'dhcpkeydn',
+                'dhcpfailoverpeerdn', 'dhcpstatements',
+                'dhcpcomments', 'dhcpoption'
             },
             'default_privileges': {'DHCP Administrators'},
         },
@@ -306,13 +306,13 @@ class dhcpsubnet(LDAPObject):
             'ipapermtargetfilter': ['(objectclass=dhcpsubnet)'],
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
-                'dhcpNetMask', 'dhcpRange',
-                'dhcpPoolDN', 'dhcpGroupDN',
-                'dhcpHostDN', 'dhcpClassesDN',
-                'dhcpLeasesDN', 'dhcpOptionsDN',
-                'dhcpZoneDN', 'dhcpKeyDN',
-                'dhcpFailOverPeerDN', 'dhcpStatements',
-                'dhcpComments', 'dhcpOption'
+                'dhcpnetmask', 'dhcprange',
+                'dhcppooldn', 'dhcpgroupdn',
+                'dhcphostdn', 'dhcpclassesdn',
+                'dhcpleasesdn', 'dhcpoptionsdn',
+                'dhcpzonedn', 'dhcpkeydn',
+                'dhcpfailoverpeerdn', 'dhcpstatements',
+                'dhcpcomments', 'dhcpoption'
             },
             'default_privileges': {'DHCP Administrators'},
         },
@@ -321,13 +321,13 @@ class dhcpsubnet(LDAPObject):
             'ipapermtargetfilter': ['(objectclass=dhcpsubnet)'],
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
-                'dhcpNetMask', 'dhcpRange',
-                'dhcpPoolDN', 'dhcpGroupDN',
-                'dhcpHostDN', 'dhcpClassesDN',
-                'dhcpLeasesDN', 'dhcpOptionsDN',
-                'dhcpZoneDN', 'dhcpKeyDN',
-                'dhcpFailOverPeerDN', 'dhcpStatements',
-                'dhcpComments', 'dhcpOption', 'dhcpPermitList'
+                'dhcpnetmask', 'dhcprange',
+                'dhcppooldn', 'dhcpgroupdn',
+                'dhcphostdn', 'dhcpclassesdn',
+                'dhcpleasesdn', 'dhcpoptionsdn',
+                'dhcpzonedn', 'dhcpkeydn',
+                'dhcpfailoverpeerdn', 'dhcpstatements',
+                'dhcpcomments', 'dhcpoption', 'dhcppermitlist'
             },
             'default_privileges': {'DHCP Administrators'},
         }
@@ -550,12 +550,12 @@ class dhcpfailoverpeer(LDAPObject):
     container_dn = container_dhcp_dn
     object_name = _('DHCP Fail Over Peer')
     object_name_plural = _('DHCP Fail Over Peers')
-    object_class = ['dhcpFailOverPeer', 'top']
+    object_class = ['dhcpfailoverpeer', 'top']
     default_attributes = ['cn', 
-                         'dhcpFailOverPrimaryServer', 
-                         'dhcpFailOverSecondaryServer',
-                         'dhcpFailOverPrimaryPort',
-                         'dhcpFailOvreSecondaryPort']
+                         'dhcpfailoverprimaryserver', 
+                         'dhcpfailoversecondaryserver',
+                         'dhcpfailoverprimaryport',
+                         'dhcpfailovresecondaryport']
     #uuid_attribute
     #rdn_attribute
     #attributer_members
@@ -565,43 +565,43 @@ class dhcpfailoverpeer(LDAPObject):
     managed_permissions = {
         'System: Add DHCP Fail Over': {
             'ipapermright': {'add'},
-            'ipapermtargetfilter': ['(objectclass=dhcpFailOverPeer)'],
+            'ipapermtargetfilter': ['(objectclass=dhcpfailoverpeer)'],
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
-                'dhcpFailOverPrimaryServer', 'dhcpFailOverSecondaryServer',
-                'dhcpFailoverPrimaryPort', 'dhcpFailOverSecondaryPort',
-                'dhcpFailOverResponseDelay', 'dhcpFailOverUnackedUpdates',
-                'dhcpMaxClientLeadTime', 'dhcpFailOverSplit',
-                'dhcpHashBucketAssignment', 'dhcpFailOverLoadBalanceTime',
-                'dhcpComments'
+                'dhcpfailoverprimaryserver', 'dhcpfailoversecondaryserver',
+                'dhcpfailoverprimaryport', 'dhcpfailoversecondaryport',
+                'dhcpfailoverresponsedelay', 'dhcpfailoverunackedupdates',
+                'dhcpmaxclientleadtime', 'dhcpfailoversplit',
+                'dhcphashbucketassignment', 'dhcpfailoverloadbalancetime',
+                'dhcpcomments'
             },
             'default_privileges': {'DHCP Administrators'},
         },
         'System: Modify DHCP Fail Over': {
             'ipapermright': {'write'},
-            'ipapermtargetfilter': ['(objectclass=dhcpFailOverPeer)'],
+            'ipapermtargetfilter': ['(objectclass=dhcpfailoverpeer)'],
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
-                'dhcpFailOverPrimaryServer', 'dhcpFailOverSecondaryServer',
-                'dhcpFailoverPrimaryPort', 'dhcpFailOverSecondaryPort',
-                'dhcpFailOverResponseDelay', 'dhcpFailOverUnackedUpdates',
-                'dhcpMaxClientLeadTime', 'dhcpFailOverSplit',
-                'dhcpHashBucketAssignment', 'dhcpFailOverLoadBalanceTime',
-                'dhcpComments'
+                'dhcpfailoverprimaryserver', 'dhcpfailoversecondaryserver',
+                'dhcpfailoverprimaryport', 'dhcpfailoversecondaryport',
+                'dhcpfailoverresponsedelay', 'dhcpfailoverunackedupdates',
+                'dhcpmaxclientleadtime', 'dhcpfailoversplit',
+                'dhcphashbucketassignment', 'dhcpfailoverloadbalancetime',
+                'dhcpcomments'
             },
             'default_privileges': {'DHCP Administrators'},
         },
         'System: Remove DHCP Fail Over': {
             'ipapermright': {'delete'},
-            'ipapermtargetfilter': ['(objectclass=dhcpFailOverPeer)'],
+            'ipapermtargetfilter': ['(objectclass=dhcpfailoverpeer)'],
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
-                'dhcpFailOverPrimaryServer', 'dhcpFailOverSecondaryServer',
-                'dhcpFailoverPrimaryPort', 'dhcpFailOverSecondaryPort',
-                'dhcpFailOverResponseDelay', 'dhcpFailOverUnackedUpdates',
-                'dhcpMaxClientLeadTime', 'dhcpFailOverSplit',
-                'dhcpHashBucketAssignment', 'dhcpFailOverLoadBalanceTime',
-                'dhcpComments'
+                'dhcpfailoverprimaryserver', 'dhcpfailoversecondaryserver',
+                'dhcpfailoverprimaryport', 'dhcpfailoversecondaryport',
+                'dhcpfailoverresponsedelay', 'dhcpfailoverunackedupdates',
+                'dhcpmaxclientleadtime', 'dhcpfailoversplit',
+                'dhcphashbucketassignment', 'dhcpfailoverloadbalancetime',
+                'dhcpcomments'
             },
             'default_privileges': {'DHCP Administrators'},
         }
@@ -710,7 +710,7 @@ class dhcpsharednetwork(LDAPObject):
     container_dn = container_dhcp_dn
     object_name = _('DHCP Shared Network')
     object_name_plural = _('DHCP Shared Networks')
-    object_class = ['dhcpSharedNetwork', 'top']
+    object_class = ['dhcpsharednetwork', 'top']
     default_attributes = ['cn']
     #uuid_attribute
     #rdn_attribute
@@ -721,37 +721,37 @@ class dhcpsharednetwork(LDAPObject):
     managed_permissions = {
         'System: Add DHCP Shared Networks': {
             'ipapermright': {'add'},
-            'ipapermtargetfilter': ['(objectclass=dhcpSharedNetwork)'],
+            'ipapermtargetfilter': ['(objectclass=dhcpsharednetwork)'],
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
-                'dhcpSubnetDN', 'dhcpPoolDN',
-                'dhcpOptionsDN', 'dhcpZoneDN', 
-                'dhcpStatements', 'dhcpComments',
-                'dhcpOption'
+                'dhcpsubnetdn', 'dhcppooldn',
+                'dhcpoptionsdn', 'dhcpzonedn', 
+                'dhcpstatements', 'dhcpcomments',
+                'dhcpoption'
             },
             'default_privileges': {'DHCP Administrators'},
         },
         'System: Modify DHCP Shared Networks': {
             'ipapermright': {'write'},
-            'ipapermtargetfilter': ['(objectclass=dhcpSharedNetwork)'],
+            'ipapermtargetfilter': ['(objectclass=dhcpsharednetwork)'],
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
-                'dhcpSubnetDN', 'dhcpPoolDN',
-                'dhcpOptionsDN', 'dhcpZoneDN', 
-                'dhcpStatements', 'dhcpComments',
-                'dhcpOption'
+                'dhcpsubnetdn', 'dhcppooldn',
+                'dhcpoptionsdn', 'dhcpzonedn', 
+                'dhcpstatements', 'dhcpcomments',
+                'dhcpoption'
             },
             'default_privileges': {'DHCP Administrators'},
         },
         'System: Remove DHCP Shared Networks': {
             'ipapermright': {'delete'},
-            'ipapermtargetfilter': ['(objectclass=dhcpSharedNetwork)'],
+            'ipapermtargetfilter': ['(objectclass=dhcpsharednetwork)'],
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
-                'dhcpSubnetDN', 'dhcpPoolDN',
-                'dhcpOptionsDN', 'dhcpZoneDN', 
-                'dhcpStatements', 'dhcpComments',
-                'dhcpOption'
+                'dhcpsubnetdn', 'dhcppooldn',
+                'dhcpoptionsdn', 'dhcpzonedn', 
+                'dhcpstatements', 'dhcpcomments',
+                'dhcpoption'
             },
             'default_privileges': {'DHCP Administrators'},
         }
@@ -855,11 +855,11 @@ class dhcppool(LDAPObject):
             'ipapermtargetfilter': ['(objectclass=dhcppool)'],
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
-                'dhcpRange', 'dhcpClassesDN',
-                'dhcpPermitList', 'dhcpLeasesDN',
-                'dhcpOptionsDN', 'dhcpZoneDN',
-                'dhcpKeyDN', 'dhcpStatements',
-                'dhcpComments', 'dhcpOption'
+                'dhcprange', 'dhcpclassesdn',
+                'dhcppermitlist', 'dhcpleasesdn',
+                'dhcpoptionsdn', 'dhcpzonedn',
+                'dhcpkeydn', 'dhcpstatements',
+                'dhcpcomments', 'dhcpoption'
             },
             'default_privileges': {'DHCP Administrators'},
         },
@@ -868,11 +868,11 @@ class dhcppool(LDAPObject):
             'ipapermtargetfilter': ['(objectclass=dhcppool)'],
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
-                'dhcpRange', 'dhcpClassesDN',
-                'dhcpPermitList', 'dhcpLeasesDN',
-                'dhcpOptionsDN', 'dhcpZoneDN',
-                'dhcpKeyDN', 'dhcpStatements',
-                'dhcpComments', 'dhcpOption'
+                'dhcprange', 'dhcpclassesdn',
+                'dhcppermitlist', 'dhcpleasesdn',
+                'dhcpoptionsdn', 'dhcpzonedn',
+                'dhcpkeydn', 'dhcpstatements',
+                'dhcpcomments', 'dhcpoption'
             },
             'default_privileges': {'DHCP Administrators'},
         },
@@ -881,11 +881,11 @@ class dhcppool(LDAPObject):
             'ipapermtargetfilter': ['(objectclass=dhcppool)'],
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
-                'dhcpRange', 'dhcpClassesDN',
-                'dhcpPermitList', 'dhcpLeasesDN',
-                'dhcpOptionsDN', 'dhcpZoneDN',
-                'dhcpKeyDN', 'dhcpStatements',
-                'dhcpComments', 'dhcpOption'
+                'dhcprange', 'dhcpclassesdn',
+                'dhcppermitlist', 'dhcpleasesdn',
+                'dhcpoptionsdn', 'dhcpzonedn',
+                'dhcpkeydn', 'dhcpstatements',
+                'dhcpcomments', 'dhcpoption'
             },
             'default_privileges': {'DHCP Administrators'},
         }
@@ -1241,9 +1241,9 @@ class dhcpgroup(LDAPObject):
             'ipapermtargetfilter': ['(objectclass=dhcpgroup)'],
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
-                'dhcpHostDN', 'dhcpOptionsDN',
-                'dhcpStatements', 'dhcpComments',
-                'dhcpOption'
+                'dhcphostdn', 'dhcpoptionsdn',
+                'dhcpstatements', 'dhcpcomments',
+                'dhcpoption'
             },
             'default_privileges': {'DHCP Administrators'},
         },
@@ -1252,9 +1252,9 @@ class dhcpgroup(LDAPObject):
             'ipapermtargetfilter': ['(objectclass=dhcpgroup)'],
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
-                'dhcpHostDN', 'dhcpOptionsDN',
-                'dhcpStatements', 'dhcpComments',
-                'dhcpOption'
+                'dhcphostdn', 'dhcpoptionsdn',
+                'dhcpstatements', 'dhcpcomments',
+                'dhcpoption'
             },
             'default_privileges': {'DHCP Administrators'},
         },
@@ -1263,9 +1263,9 @@ class dhcpgroup(LDAPObject):
             'ipapermtargetfilter': ['(objectclass=dhcpgroup)'],
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
-                'dhcpHostDN', 'dhcpOptionsDN',
-                'dhcpStatements', 'dhcpComments',
-                'dhcpOption'
+                'dhcphostdn', 'dhcpoptionsdn',
+                'dhcpstatements', 'dhcpcomments',
+                'dhcpoption'
             },
             'default_privileges': {'DHCP Administrators'},
         }
@@ -1756,12 +1756,12 @@ class dhcpserver(LDAPObject):
             'ipapermtargetfilter': ['(objectclass=dhcpserver)'],
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
-                'dhcpServiceDN', 'dhcpComments',
-                'dhcpDelayedServiceParameter', 'dhcpFailOverEndpointState',
-                'dhcpHashBucketAssignment', 'dhcpImplementation',
-                'dhcpLocatorDN', 'dhcpMaxClientLeadTime',
-                'dhcpOption', 'dhcpStatements',
-                'dhcpVersion'
+                'dhcpservicedn', 'dhcpcomments',
+                'dhcpdelayedserviceparameter', 'dhcpfailoverendpointstate',
+                'dhcphashbucketassignment', 'dhcpimplementation',
+                'dhcplocatordn', 'dhcpmaxclientleadtime',
+                'dhcpoption', 'dhcpstatements',
+                'dhcpversion'
             },
             'default_privileges': {'DHCP Administrators'},
         },
@@ -1770,12 +1770,12 @@ class dhcpserver(LDAPObject):
             'ipapermtargetfilter': ['(objectclass=dhcpserver)'],
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
-                'dhcpServiceDN', 'dhcpComments',
-                'dhcpDelayedServiceParameter', 'dhcpFailOverEndpointState',
-                'dhcpHashBucketAssignment', 'dhcpImplementation',
-                'dhcpLocatorDN', 'dhcpMaxClientLeadTime',
-                'dhcpOption', 'dhcpStatements',
-                'dhcpVersion'
+                'dhcpservicedn', 'dhcpcomments',
+                'dhcpdelayedserviceparameter', 'dhcpfailoverendpointstate',
+                'dhcphashbucketassignment', 'dhcpimplementation',
+                'dhcplocatordn', 'dhcpmaxclientleadtime',
+                'dhcpoption', 'dhcpstatements',
+                'dhcpversion'
             },
             'default_privileges': {'DHCP Administrators'},
         },
@@ -1784,12 +1784,12 @@ class dhcpserver(LDAPObject):
             'ipapermtargetfilter': ['(objectclass=dhcpserver)'],
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
-                'dhcpServiceDN', 'dhcpComments',
-                'dhcpDelayedServiceParameter', 'dhcpFailOverEndpointState',
-                'dhcpHashBucketAssignment', 'dhcpImplementation',
-                'dhcpLocatorDN', 'dhcpMaxClientLeadTime',
-                'dhcpOption', 'dhcpStatements',
-                'dhcpVersion'
+                'dhcpservicedn', 'dhcpcomments',
+                'dhcpdelayedserviceparameter', 'dhcpfailoverendpointstate',
+                'dhcphashbucketassignment', 'dhcpimplementation',
+                'dhcplocatordn', 'dhcpmaxclientleadtime',
+                'dhcpoption', 'dhcpstatements',
+                'dhcpversion'
             },
             'default_privileges': {'DHCP Administrators'},
         }
@@ -1953,10 +1953,10 @@ class dhcphost(LDAPObject):
             'ipapermtargetfilter': ['(objectclass=dhcphost)'],
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
-                'dhcpComments', 'dhcpHWAddress',
-                'dhcpOptionsDN', 'dhcpStatements',
-                'dhcpComments', 'dhcpOption',
-                'dhcpClientId'
+                'dhcpcomments', 'dhcphwaddress',
+                'dhcpoptionsdn', 'dhcpstatements',
+                'dhcpcomments', 'dhcpoption',
+                'dhcpclientid'
             },
             'default_privileges': {'DHCP Administrators', 'Host Administrators'},
         },
@@ -1965,10 +1965,10 @@ class dhcphost(LDAPObject):
             'ipapermtargetfilter': ['(objectclass=dhcphost)'],
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
-                'dhcpComments', 'dhcpHWAddress',
-                'dhcpOptionsDN', 'dhcpStatements',
-                'dhcpComments', 'dhcpOption',
-                'dhcpClientId'
+                'dhcpcomments', 'dhcphwaddress',
+                'dhcpoptionsdn', 'dhcpstatements',
+                'dhcpcomments', 'dhcpoption',
+                'dhcpclientid'
             },
             'default_privileges': {'DHCP Administrators', 'Host Administrators'},
         },
@@ -1977,10 +1977,10 @@ class dhcphost(LDAPObject):
             'ipapermtargetfilter': ['(objectclass=dhcphost)'],
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
-                'dhcpComments', 'dhcpHWAddress',
-                'dhcpOptionsDN', 'dhcpStatements',
-                'dhcpComments', 'dhcpOption',
-                'dhcpClientId'
+                'dhcpcomments', 'dhcphwaddress',
+                'dhcpoptionsdn', 'dhcpstatements',
+                'dhcpcomments', 'dhcpoption',
+                'dhcpclientid'
             },
             'default_privileges': {'DHCP Administrators', 'Host Administrators'},
         }
