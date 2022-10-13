@@ -688,7 +688,7 @@ define(
                             {
                                 name: 'cn'
                             },
-                            'dhcphwaddress',
+                            'macaddress',
                             'dhcpcomments'
                         ]
                     },
