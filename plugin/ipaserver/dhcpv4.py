@@ -2097,8 +2097,6 @@ class dhcphost_add(LDAPCreate):
         else:
             entryDHCPComments = []
 
-        entryDHCPOptions.append(u'host-name "{0}"'.format(entry_attrs['cn']))
-        entryDHCPStatements.append(u'ddns-hostname {0}'.format(entry_attrs['cn']))
         entryDHCPHWAddress = u'ethernet {0}'.format(options['macaddress'])
 
         if 'ipaddress' in options:
@@ -2175,7 +2173,6 @@ class dhcphost_mod(LDAPUpdate):
 
 @register()
 class dhcphost_del(LDAPDelete):
-    has_output = output.standard_entry
     __doc__ = _('Delete a DHCP host.')
     msg_summary = _('Deleted DHCP host "%(value)s"')
 
