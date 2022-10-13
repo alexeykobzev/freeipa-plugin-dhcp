@@ -223,9 +223,17 @@ define(
                     {
                         $type: 'search',
                         columns: [
-                            'cn',
-                            'dhcpnetmask',
-                            'dhcpcomments'
+                            {
+                                name: 'cn'
+                            },
+                            {
+                                name: 'dhcpnetmask',
+                                flags: ['w_if_no_aci']
+                            },
+                            {
+                                name: 'dhcpcomments',
+                                flags: ['w_if_no_aci']
+                            }
                         ]
                     },
                     {
@@ -300,7 +308,10 @@ define(
                             {
                                 name: 'cn'
                             },
-                            'dhcpcomments'
+                            {
+                                name: 'dhcpcomments',
+                                flags: ['w_if_no_aci']
+                            }
                         ]
                     },
                     {
@@ -315,7 +326,10 @@ define(
                             {
                                 name: 'cn'
                             },
-                            'dhcpcomments'
+                            {
+                                name: 'dhcpcomments',
+                                flags: ['w_if_no_aci']
+                            }
                         ]
                     },
                     {
@@ -330,8 +344,14 @@ define(
                             {
                                 name: 'cn'
                             },
-                            'dhcphwaddress',
-                            'dhcpcomments'
+                            {
+                                name: 'macaddress',
+                                flags: ['w_if_no_aci']
+                            },
+                            {
+                                name: 'dhcpcomments',
+                                flags: ['w_if_no_aci']
+                            }
                         ]
                     }
                 ],
@@ -448,8 +468,13 @@ define(
                             {
                                 name: 'cn'
                             },
-                            'dhcphwaddress',
-                            'dhcpcomments'
+                            {
+                                name: 'macaddress',
+                                flags: ['w_if_no_aci']
+                            },
+                            {
+                                name: 'dhcpcomments'
+                            }
                         ]
                     }
                 ],
@@ -494,7 +519,9 @@ define(
                         $type: 'search',
                         tab_label: 'DHCP Groups',
                         columns: [
-                            'cn',
+                            {
+                                name: 'cn'
+                            }
                         ]
                     },
                     {
@@ -570,8 +597,13 @@ define(
                             {
                                 name: 'cn'
                             },
-                            'dhcphwaddress',
-                            'dhcpcomments'
+                            {
+                                name: 'macaddress',
+                                flags: ['w_if_no_aci']
+                            },
+                            {
+                                name: 'dhcpcomments'
+                            }
                         ]
                     }
                 ],
@@ -671,7 +703,17 @@ define(
                     {
                         $type: 'search',
                         columns: [
-                            'cn',
+                            {
+                                name: 'cn'
+                            },
+                            {
+                                name: 'macaddress',
+                                flags: ['w_if_no_aci']
+                            },
+                            {
+                                name: 'dhcpcomments',
+                                flags: ['w_if_no_aci']
+                            }
                         ]
                     },
                     {
@@ -764,7 +806,9 @@ define(
                     {
                         $type: 'search',
                         columns: [
-                            'cn',
+                            {
+                                name: 'cn'
+                            }
                         ]
                     },
                     {
@@ -849,7 +893,9 @@ define(
                     {
                         $type: 'search',
                         columns: [
-                            'cn',
+                            {
+                                name: 'cn'
+                            }
                         ]
                     },
                     {
