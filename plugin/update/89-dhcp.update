@@ -647,7 +647,7 @@ default: objectClass: groupofnames
 default: objectClass: ipapermission
 default: objectClass: ipapermissionv2
 default: objectClass: top
-default: ipaPermBindRuleType: all
+default: ipaPermBindRuleType: permission
 default: ipaPermLocation: cn=dhcp,$SUFFIX
 default: ipaPermIncludedAttr: *
 default: ipaPermIncludedAttr: cn
@@ -716,6 +716,7 @@ default: memberOf: cn=System: Remove DHCP Shared Networks,cn=permissions,cn=pbac
 default: memberOf: cn=System: Remove DHCP Subnets,cn=permissions,cn=pbac,$SUFFIX
 default: memberOf: cn=System: Read DHCP Configuration,cn=permissions,cn=pbac,$SUFFIX
 default: memberOf: cn=System: Write DHCP Configuration,cn=permissions,cn=pbac,$SUFFIX
+default: memberOf: cn=System: Read DHCP Entries,cn=permissions,cn=pbac,$SUFFIX
 
 ###############################################################################
 
