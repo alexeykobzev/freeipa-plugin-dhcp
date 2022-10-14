@@ -2191,6 +2191,7 @@ class dhcpgrouphost(dhcphost):
     label_singular = _('DHCP Host')
 
     search_attributes = [ 'cn', 'dhcphwaddress' ]
+    search_display_attributes = [ 'cn', 'dhcphwaddress', 'dhcpcomments' ]
 
 @register()
 class dhcpgrouphost_find(dhcphost_find):
@@ -2234,6 +2235,7 @@ class dhcpsubnetgrouphost(dhcphost):
     label_singular = _('DHCP Host')
 
     search_attributes = [ 'cn', 'dhcphwaddress' ]
+    search_display_attributes = [ 'cn', 'dhcphwaddress', 'dhcpcomments' ]
 
 @register()
 class dhcpsubnetgrouphost_find(dhcphost_find):
@@ -2277,6 +2279,7 @@ class dhcpsubnethost(dhcphost):
     label_singular = _('DHCP Host')
 
     search_attributes = [ 'cn', 'dhcphwaddress' ]
+    search_display_attributes = [ 'cn', 'dhcphwaddress', 'dhcpcomments' ]
 
 @register()
 class dhcpsubnethost_find(dhcphost_find):
@@ -2321,6 +2324,7 @@ class dhcppoolhost(dhcphost):
     label_singular = _('DHCP Host')
 
     search_attributes = [ 'cn', 'dhcphwaddress' ]
+    search_display_attributes = [ 'cn', 'dhcphwaddress', 'dhcpcomments' ]
 
 @register()
 class dhcppoolhost_find(dhcphost_find):

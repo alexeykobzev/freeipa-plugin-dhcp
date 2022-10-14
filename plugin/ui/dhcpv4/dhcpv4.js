@@ -223,9 +223,25 @@ define(
                     {
                         $type: 'search',
                         columns: [
-                            'cn',
-                            'dhcpnetmask',
-                            'dhcpcomments'
+                            { 
+                                name:'cn',
+                            },
+                            { 
+                                name:'dhcpnetmask',
+                                formatter:
+                                {
+                                    $type: 'textarea',
+                                    flags: ['w_if_no_aci']
+                                }
+                            },
+                            { 
+                                name: 'dhcpcomments',
+                                formatter:
+                                {
+                                    $type: 'textarea',
+                                    flags: ['w_if_no_aci']
+                                }
+                            }
                         ]
                     },
                     {
@@ -336,13 +352,21 @@ define(
                             {
                                 name: 'cn'
                             },
-                            {
-                                name: 'dhcphwaddress',
-                                flags: ['w_if_no_aci']
+                            { 
+                                name:'dhcphwaddress',
+                                formatter:
+                                {
+                                    $type: 'textarea',
+                                    flags: ['w_if_no_aci']
+                                }
                             },
-                            {
+                            { 
                                 name: 'dhcpcomments',
-                                flags: ['w_if_no_aci']
+                                formatter:
+                                {
+                                    $type: 'textarea',
+                                    flags: ['w_if_no_aci']
+                                }
                             }
                         ]
                     }
@@ -460,8 +484,22 @@ define(
                             {
                                 name: 'cn'
                             },
-                            'dhcphwaddress',
-                            'dhcpcomments'
+                            { 
+                                name:'dhcphwaddress',
+                                formatter:
+                                {
+                                    $type: 'textarea',
+                                    flags: ['w_if_no_aci']
+                                }
+                            },
+                            { 
+                                name: 'dhcpcomments',
+                                formatter:
+                                {
+                                    $type: 'textarea',
+                                    flags: ['w_if_no_aci']
+                                }
+                            }
                         ]
                     }
                 ],
@@ -702,8 +740,22 @@ define(
                             {
                                 name: 'cn'
                             },
-                            'dhcphwaddress',
-                            'dhcpcomments'
+                            { 
+                                name:'dhcphwaddress',
+                                formatter:
+                                {
+                                    $type: 'textarea',
+                                    flags: ['w_if_no_aci']
+                                }
+                            },
+                            { 
+                                name: 'dhcpcomments',
+                                formatter:
+                                {
+                                    $type: 'textarea',
+                                    flags: ['w_if_no_aci']
+                                }
+                            }
                         ]
                     },
                     {
