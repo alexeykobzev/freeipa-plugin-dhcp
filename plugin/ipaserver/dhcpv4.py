@@ -40,9 +40,8 @@ from ipaserver.plugins.dhcpcommon import *
 
 #### Constants ################################################################
 
-#dhcp_dn = 'cn=dhcp,{0}'.format(api.env.basedn)
 dhcp_dn = '{0}'.format(api.env.basedn)
-container_dhcp_dn = DN(('cn', 'v4'), 'cn=dhcp')
+container_dhcp_dn = DN(('cn', 'v4'),('cn', 'dhcp'))
 register = Registry()
 
 dhcp_version = 4
@@ -340,7 +339,8 @@ class dhcpsubnet(LDAPObject):
             cli_name='subnet',
             label=_('Subnet'),
             doc=_('DHCP subnet.'),
-            primary_key = True
+            primary_key = True,
+            flags=['no_output']
         ),
         Int(
             'dhcpnetmask',
@@ -1994,7 +1994,8 @@ class dhcphost(LDAPObject):
             cli_name='fqdn',
             label=_('Hostname'),
             doc=_('Hostname.'),
-            primary_key=True
+            primary_key=True,
+            flags=['no_output']
         ),
         Str(
             'macaddress',
