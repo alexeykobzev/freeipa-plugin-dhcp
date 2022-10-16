@@ -1941,12 +1941,12 @@ class dhcphost(LDAPObject):
     object_name = _('DHCP host')
     object_name_plural = _('DHCP hosts')
     object_class = ['dhcphost', 'top']
-    default_attributes = ['cn']
+    default_attributes = [ 'cn', 'dhcphwaddress', 'dhcpcomments' ]
     label = _('DHCP Hosts')
     label_singular = _('DHCP Host')
 
     search_attributes = [ 'cn', 'dhcphwaddress' ]
-    search_display_attributes = [ 'cn', 'dhcphwaddress', 'dhcpcomments' ]
+    #search_display_attributes = [ 'cn', 'dhcphwaddress', 'dhcpcomments' ]
 
     managed_permissions = {
         'System: Add DHCP Hosts': {
@@ -2070,11 +2070,6 @@ class dhcphost_find(LDAPSearch):
 class dhcphost_show(LDAPRetrieve):
     __doc__ = _('Display a DHCP host.')
 
-    def pre_callback(self, ldap, dn, attrs_list, *keys, **options):
-        assert isinstance(dn, DN)
-        options.append('all', True)
-        return dn
-
     def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
         assert isinstance(dn, DN)
         entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
@@ -2190,12 +2185,12 @@ class dhcpgrouphost(dhcphost):
     object_name = _('DHCP host')
     object_name_plural = _('DHCP hosts')
     object_class = ['dhcphost', 'top']
-    default_attributes = ['cn']
+    default_attributes = ['cn', 'dhcphwaddress', 'dhcpcomments']
     label = _('DHCP Hosts')
     label_singular = _('DHCP Host')
 
     search_attributes = [ 'cn', 'dhcphwaddress' ]
-    search_display_attributes = [ 'cn', 'dhcphwaddress', 'dhcpcomments' ]
+    #search_display_attributes = [ 'cn', 'dhcphwaddress', 'dhcpcomments' ]
 
 @register()
 class dhcpgrouphost_find(dhcphost_find):
