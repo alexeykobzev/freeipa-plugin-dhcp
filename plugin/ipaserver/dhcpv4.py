@@ -2070,6 +2070,11 @@ class dhcphost_find(LDAPSearch):
 class dhcphost_show(LDAPRetrieve):
     __doc__ = _('Display a DHCP host.')
 
+    def pre_callback(self, ldap, dn, attrs_list, *keys, **options):
+        assert isinstance(dn, DN)
+        options.append('all', True)
+        return dn
+
     def post_callback(self, ldap, dn, entry_attrs, *keys, **options):
         assert isinstance(dn, DN)
         entry_attrs = dhcphost.extract_virtual_params(ldap, dn, entry_attrs, keys, options)
