@@ -339,8 +339,7 @@ class dhcpsubnet(LDAPObject):
             cli_name='subnet',
             label=_('Subnet'),
             doc=_('DHCP subnet.'),
-            primary_key = True,
-            flags=['no_output']
+            primary_key = True
         ),
         Int(
             'dhcpnetmask',
@@ -1994,8 +1993,7 @@ class dhcphost(LDAPObject):
             cli_name='fqdn',
             label=_('Hostname'),
             doc=_('Hostname.'),
-            primary_key=True,
-            flags=['no_output']
+            primary_key=True
         ),
         Str(
             'macaddress',
