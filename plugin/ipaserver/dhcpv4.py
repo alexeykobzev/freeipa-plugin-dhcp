@@ -278,7 +278,7 @@ class dhcpsubnet(LDAPObject):
     object_name = _('DHCP subnet')
     object_name_plural = _('DHCP subnets')
     object_class = ['dhcpsubnet', 'top']
-    default_attributes = ['cn']
+    default_attributes = [ 'cn', 'dhcpnetmask', 'dhcpcomments' ]
     label = _('DHCP Subnets')
     label_singular = _('DHCP Subnet')
 
